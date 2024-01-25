@@ -3,8 +3,8 @@
 namespace HamiltonVisualizer.Core;
 
 public class RelayCommand(
-    Predicate<object> canExecute,
-    Action<object> execute) : ICommand
+    Action<object> execute,
+    Predicate<object>? canExecute = null) : ICommand
 {
 #nullable disable
     private readonly Predicate<object> _canExecute = canExecute;

@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="HamiltonVisualizer.View.DrawView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HamiltonVisualizer.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Border Background="White">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+                
+            <Border Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
+                <TextBlock  HorizontalAlignment="Center" 
+                            VerticalAlignment="Center">Vẽ đồ thị</TextBlock>
+            </Border>
+            
+            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical">
+                <StackPanel Orientation="Horizontal" >
+                    <Label>
+                        Thêm Đỉnh
+                    </Label>
+                    <TextBox Margin="6 0 0 0" Width="40"/>
+                    <Button Width="36" Background="LightGreen" Foreground="White">+</Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

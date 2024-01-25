@@ -11,6 +11,7 @@
         Background="Transparent"
         AllowsTransparency="True"
         ResizeMode="NoResize">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -18,12 +19,38 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="130"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="White">
+        <Border Grid.Row="0" 
+                Grid.ColumnSpan="2" 
+                MouseDown="Border_MouseDown"
+                Style="{StaticResource NavBar}">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Border Background="LightBlue" Style="{StaticResource WindowButton}" 
+                        MouseDown="MinimizeToTaskbar"></Border>
+                <Border Background="Yellow" Style="{StaticResource WindowButton}" 
+                        MouseDown="MaximizeAndRestore"></Border>
+                <Border Background="red" Style="{StaticResource WindowButton}"
+                        MouseDown="Exit"></Border>
+            </StackPanel>
+        </Border>
+        <StackPanel Grid.Row="1" Grid.Column="0" Background="White">
+            <RadioButton  Style="{StaticResource MenuBtn}"
+                          Content="Vẽ Đồ Thị">
+            </RadioButton>          
+            <RadioButton  Style="{StaticResource MenuBtn}"
+                          Content="Bộ Phận Liên Thông">
+            </RadioButton>          
+            <RadioButton  Style="{StaticResource MenuBtn}"
+                          Content="Chu trình">
+            </RadioButton>
+        </StackPanel>
+
+        <ContentControl Grid.Row="1"
+                        Grid.Column="1">
             
-        </Border> 
+        </ContentControl>
     </Grid>
 </Window>

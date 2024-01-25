@@ -4,6 +4,15 @@
              xmlns:local="clr-namespace:HamiltonVisualizer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/MainBackground.xaml">
+                </ResourceDictionary>
+                <ResourceDictionary Source="/Themes/MenuButton.xaml">
+                </ResourceDictionary>
+                <ResourceDictionary Source="/Themes/NavBar.xaml">
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
