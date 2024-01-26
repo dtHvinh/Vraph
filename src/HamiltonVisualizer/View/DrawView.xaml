@@ -54,8 +54,7 @@
                     Grid.RowSpan="2"
                     MouseDown="Canvas_MouseDown"
                     Background="Beige"
-                    x:Name="Canvas">
-                
+                    x:Name="DrawingCanvas">
             </Canvas>
         </Grid>
     </Border>

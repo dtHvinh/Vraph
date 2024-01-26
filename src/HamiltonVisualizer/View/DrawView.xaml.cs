@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using HamiltonVisualizer.GraphUIComponents;
+using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace HamiltonVisualizer.View
 {
@@ -18,36 +18,22 @@ namespace HamiltonVisualizer.View
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                var p = e.GetPosition(this);
 
-                var clickPoint = e.GetPosition(this);
+                Node node = new(p);
 
-                GraphNode node = new();
-                Canvas.SetLeft(node, clickPoint.X - node.Width / 2);
-                Canvas.SetTop(node, clickPoint.Y - node.Height / 2);
-                Canvas.Children.Add(node);
+                AddToCanvas(node);
             }
         }
-    }
 
-
-    internal readonly struct Position(int X, int Y)
-    {
-        public int X { get; } = X;
-        public int Y { get; } = Y;
-    }
-
-    internal class GraphNode : Border
-    {
-        public Position Position { get; set; }
-
-        public GraphNode()
+        /// <summary>
+        /// Add Graph node to the view ui.
+        /// </summary>
+        /// <param name="node"></param>
+        private void AddToCanvas(Node node)
         {
-            Width = 30;
-            Height = 30;
-            Background = Brushes.White;
-            BorderBrush = new SolidColorBrush(Colors.Black);
-            BorderThickness = new(2);
-            CornerRadius = new(30);
+            // TODO: add logic to prevent collision
+            DrawingCanvas.Children.Add(node);
         }
     }
 }
