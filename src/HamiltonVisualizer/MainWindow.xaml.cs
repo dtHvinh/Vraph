@@ -15,8 +15,8 @@ public partial class MainWindow : Window
 
     private void Border_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        DragMove();
-
+        if (e.ChangedButton == MouseButton.Left)
+            DragMove();
     }
 
     private void Exit(object sender, MouseButtonEventArgs e)

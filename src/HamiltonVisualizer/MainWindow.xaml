@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HamiltonVisualizer"
+        xmlns:VM="clr-namespace:HamiltonVisualizer.ViewModels"
         mc:Ignorable="d"
         Title="Hamilton Visualizer" Height="750" Width="1200"
         WindowStartupLocation="CenterScreen"
@@ -12,6 +13,9 @@
         AllowsTransparency="True"
         ResizeMode="NoResize">
 
+    <Window.DataContext>
+        <VM:MainViewModel/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -38,18 +42,23 @@
         </Border>
         <StackPanel Grid.Row="1" Grid.Column="0" Background="White">
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Vẽ Đồ Thị">
+                          Content="Vẽ Đồ Thị"
+                          Command="{Binding DrawViewCmd}"
+                          IsChecked="True">
             </RadioButton>          
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Bộ Phận Liên Thông">
+                          Content="Bộ Phận Liên Thông"
+                          Command="{Binding ConCompCmd}">
             </RadioButton>          
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Chu trình">
+                          Content="Chu trình"
+                          Command="{Binding HamiltonCCmd}">
             </RadioButton>
         </StackPanel>
 
         <ContentControl Grid.Row="1"
-                        Grid.Column="1">
+                        Grid.Column="1"
+                        Content="{Binding CurrentView}">
             
         </ContentControl>
     </Grid>

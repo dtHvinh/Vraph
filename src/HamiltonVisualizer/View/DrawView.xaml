@@ -9,21 +9,37 @@
     <Border Background="White">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"/>
                 <ColumnDefinition/>
+                <ColumnDefinition Width="150"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-                
-            <Border Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
-                <TextBlock  HorizontalAlignment="Center" 
-                            VerticalAlignment="Center">Vẽ đồ thị</TextBlock>
+
+            <Border Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1">
+                <StackPanel HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal"
+                            Grid.Column="1"
+                            Grid.Row="1">
+                    <TextBlock VerticalAlignment="Center">
+                        Vẽ đồ thị
+                    </TextBlock>
+                    <Button Content="?" 
+                            Background="White"
+                            Margin="10 0 0 0"
+                            BorderThickness="0"
+                            ToolTip="Hướng dẫn"
+                            Width="20"></Button>
+                </StackPanel>
+
             </Border>
-            
-            <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Vertical">
+
+            <StackPanel Grid.Column="1"
+                        Grid.Row="1" 
+                        Orientation="Vertical">
                 <StackPanel Orientation="Horizontal" >
                     <Label>
                         Thêm Đỉnh
@@ -32,6 +48,15 @@
                     <Button Width="36" Background="LightGreen" Foreground="White">+</Button>
                 </StackPanel>
             </StackPanel>
+
+            <Canvas Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.RowSpan="2"
+                    MouseDown="Canvas_MouseDown"
+                    Background="Beige"
+                    x:Name="Canvas">
+                
+            </Canvas>
         </Grid>
     </Border>
 </UserControl>
