@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using HamiltonVisualizer.GraphUIComponents.Interfaces;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -7,7 +8,7 @@ namespace HamiltonVisualizer.GraphUIComponents
     /// <summary>
     /// Graph node.
     /// </summary>
-    internal class Node : Border
+    public class Node : Border, IUIComponent
     {
         public Point Position { get; set; }
 
@@ -15,6 +16,14 @@ namespace HamiltonVisualizer.GraphUIComponents
         {
             Position = position;
 
+            StyleUIComponent();
+
+            Child = new NodeLabel();
+            ContextMenu = new NodeContextMenu(this);
+        }
+
+        public void StyleUIComponent()
+        {
             Width = 34;
             Height = 34;
             Background = Brushes.White;
@@ -24,8 +33,6 @@ namespace HamiltonVisualizer.GraphUIComponents
 
             Canvas.SetLeft(this, Position.X - Width / 2);
             Canvas.SetTop(this, Position.Y - Height / 2);
-
-            Child = new NodeLabel();
         }
     }
 }
