@@ -1,4 +1,5 @@
 ﻿using HamiltonVisualizer.GraphUIComponents;
+using Libraries.Geometry;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -38,11 +39,9 @@ namespace HamiltonVisualizer.View
 
             foreach (Node n in Nodes)
             {
-                if (Libraries.Geometry.CollisionHelper.IsCircleCollide(n.Position.X,
-                                                                       n.Position.Y,
-                                                                       node.Position.X,
-                                                                       node.Position.Y,
-                                                                       Node.NodeWidth / 2))
+                if (CollisionHelper.IsCircleCollide(Point.ConvertFrom(node.Position),
+                                                    Point.ConvertFrom(n.Position),
+                                                    Node.NodeWidth / 2))
                 {
                     return false;
                 }
