@@ -12,6 +12,8 @@ namespace HamiltonVisualizer.GraphUIComponents
     {
         public Point Position { get; set; }
 
+        public const int NodeWidth = 34;
+
         public Node(Point position)
         {
             Position = position;
@@ -24,8 +26,8 @@ namespace HamiltonVisualizer.GraphUIComponents
 
         public void StyleUIComponent()
         {
-            Width = 34;
-            Height = 34;
+            Width = NodeWidth;
+            Height = NodeWidth;
             Background = Brushes.White;
             BorderBrush = new SolidColorBrush(Colors.Black);
             BorderThickness = new(2);

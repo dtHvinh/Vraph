@@ -9,6 +9,8 @@ namespace HamiltonVisualizer.View
     /// </summary>
     public partial class DrawView : UserControl
     {
+        public List<Node> Nodes { get; set; } = [];
+
         public DrawView()
         {
             InitializeComponent();
@@ -22,8 +24,31 @@ namespace HamiltonVisualizer.View
 
                 Node node = new(p);
 
-                AddToCanvas(node);
+                if (EnsureNoCollision(node))
+                {
+                    AddToCanvas(node);
+                }
             }
+        }
+
+        private bool EnsureNoCollision(Node node)
+        {
+            if (Nodes.Count == 0)
+                return true;
+
+            foreach (Node n in Nodes)
+            {
+                if (Libraries.Geometry.CollisionHelper.IsCircleCollide(n.Position.X,
+                                                                       n.Position.Y,
+                                                                       node.Position.X,
+                                                                       node.Position.Y,
+                                                                       Node.NodeWidth / 2))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -34,6 +59,7 @@ namespace HamiltonVisualizer.View
         {
             // TODO: add logic to prevent collision
             DrawingCanvas.Children.Add(node);
+            Nodes.Add(node);
         }
     }
 }
