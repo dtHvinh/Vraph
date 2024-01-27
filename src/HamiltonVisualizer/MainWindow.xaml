@@ -43,23 +43,20 @@
         <StackPanel Grid.Row="1" Grid.Column="0" Background="White">
             <RadioButton  Style="{StaticResource MenuBtn}"
                           Content="Vẽ Đồ Thị"
-                          Command="{Binding DrawViewCmd}"
+                          Command="{Binding SetInitialView}"
                           IsChecked="True">
             </RadioButton>          
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Bộ Phận Liên Thông"
-                          Command="{Binding ConCompCmd}">
+                          Content="Bộ Phận Liên Thông">
             </RadioButton>          
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Chu trình"
-                          Command="{Binding HamiltonCCmd}">
+                          Content="Chu trình">
             </RadioButton>
         </StackPanel>
 
         <ContentControl Grid.Row="1"
                         Grid.Column="1"
                         Content="{Binding CurrentView}">
-            
         </ContentControl>
     </Grid>
 </Window>
