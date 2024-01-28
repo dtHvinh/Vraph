@@ -12,6 +12,7 @@ namespace HamiltonVisualizer.GraphUIComponents
         {
             StyleUIComponent();
             KeyDown += NodeLabel_KeyDown;
+            LostFocus += NodeLabel_LostFocus;
         }
 
         public void StyleUIComponent()
@@ -21,13 +22,30 @@ namespace HamiltonVisualizer.GraphUIComponents
             Margin = new Thickness(5);
         }
 
+        /// <summary>
+        /// If <strong>true</strong>, user is allow to set label text.
+        /// </summary>
+        public void SetValueDone()
+        {
+            IsEnabled = false;
+            ContextMenu = null;
+        }
+
+        #region Event listener handle
+
         private void NodeLabel_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                IsEnabled = false;
-                ContextMenu = null;
+                SetValueDone();
             }
         }
+
+        private void NodeLabel_LostFocus(object sender, RoutedEventArgs e)
+        {
+            SetValueDone();
+        }
+
+        #endregion
     }
 }

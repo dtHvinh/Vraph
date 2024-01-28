@@ -1,11 +1,11 @@
 ﻿using HamiltonVisualizer.GraphUIComponents.Interfaces;
 using System.Windows.Controls;
 
+#nullable disable
 namespace HamiltonVisualizer.GraphUIComponents
 {
     public class NodeContextMenu : ContextMenu, IUIComponent
     {
-#nullable disable
         private readonly Node _node;
 
         public MenuItem Connect { get; set; }
@@ -27,10 +27,6 @@ namespace HamiltonVisualizer.GraphUIComponents
             };
             Connect.Click += Connect_Click;
 
-            Modify = new()
-            {
-                Header = "Sửa"
-            };
             Modify.Click += Modify_Click;
 
             Delete = new()
@@ -42,7 +38,7 @@ namespace HamiltonVisualizer.GraphUIComponents
 
         private void Delete_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            _node.DeleteRequest();
         }
 
         private void Connect_Click(object sender, System.Windows.RoutedEventArgs e)

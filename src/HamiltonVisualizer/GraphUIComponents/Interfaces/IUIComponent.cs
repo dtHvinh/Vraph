@@ -2,6 +2,9 @@
 {
     public interface IUIComponent
     {
+        /// <summary>
+        /// Styling component appearance.
+        /// </summary>
         void StyleUIComponent();
     }
 }
