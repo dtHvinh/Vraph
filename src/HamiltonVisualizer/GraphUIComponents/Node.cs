@@ -1,4 +1,5 @@
-﻿using HamiltonVisualizer.Events;
+﻿using HamiltonVisualizer.Events.EventArgs;
+using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.GraphUIComponents.Interfaces;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,6 +32,8 @@ namespace HamiltonVisualizer.GraphUIComponents
         /// Event that execute when node delete.
         /// </summary>
         public event NodeDeleteEventHandler? OnNodeDelete;
+
+        public event NodeLabelSetCompleteEventHandler? OnNodeLabelSetComplete;
 
         #endregion Event Handler
 
@@ -74,7 +77,7 @@ namespace HamiltonVisualizer.GraphUIComponents
         public void DeleteRequest()
         {
             ContainCanvas.Children.Remove(this);
-            OnNodeDelete?.Invoke(this, new NodeEventArgs());
+            OnNodeDelete?.Invoke(this, new NodeDeleteEventArgs());
         }
     }
 }

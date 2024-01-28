@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.Events;
+﻿using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.GraphUIComponents;
 using HamiltonVisualizer.ViewModels;
 using Libraries.Geometry;
@@ -78,7 +78,7 @@ public partial class MainWindow : Window
 
     #region Events
 
-    private void Node_OnNodeDelete(object sender, NodeEventArgs e)
+    private void Node_OnNodeDelete(object sender, NodeDeleteEventArgs e)
     {
         var node = sender as Node;
         VM.RemoveNode(node!);
