@@ -1,45 +1,45 @@
 ﻿#nullable disable
 using HamiltonVisualizer.Core;
+using HamiltonVisualizer.GraphUIComponents;
+using Libraries.DataStructure.Graph.Component;
+using System.Collections.ObjectModel;
 
 namespace HamiltonVisualizer.ViewModels
 {
-    class MainViewModel : ObservableObject
+    public class MainViewModel : ObservableObject
     {
-        public DrawViewModel DrawVM { get; set; }
+        private ObservableCollection<Node> NodeCollection { get; } = [];
+        private ObservableCollection<Edge<string>> EdgeCollection { get; } = [];
 
-        public RelayCommand SetInitialView { get; set; }
-
-        private object _currentView;
-
-        public object CurrentView
-        {
-            get => _currentView;
-            set
-            {
-                _currentView = value;
-                OnPropertyChanged();
-            }
-        }
+        public int NoE { get => EdgeCollection.Count; }
+        public int NoV { get => NodeCollection.Count; }
 
         public MainViewModel()
         {
-            InitializeViewModels();
-            InitializeCommand();
-
-            CurrentView = DrawVM;
         }
 
-        private void InitializeViewModels()
+        public void AddNewNode(Node node)
         {
-            DrawVM = new();
+            NodeCollection.Add(node);
+            OnPropertyChanged(nameof(NoV));
         }
 
-        private void InitializeCommand()
+        public void RemoveNode(Node node)
         {
-            SetInitialView = new RelayCommand(o =>
-            {
-                CurrentView = DrawVM;
-            });
+            NodeCollection.Remove(node);
+            OnPropertyChanged(nameof(NoV));
+        }
+
+        public void AddNewEdge(Edge<string> edge)
+        {
+            EdgeCollection.Add(edge);
+            OnPropertyChanged(nameof(NoE));
+        }
+
+        public void RemoveEdge(Edge<string> edge)
+        {
+            EdgeCollection.Remove(edge);
+            OnPropertyChanged(nameof(NoE));
         }
     }
 }
