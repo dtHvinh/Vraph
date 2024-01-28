@@ -11,6 +11,7 @@ namespace HamiltonVisualizer.GraphUIComponents
         public NodeLabel()
         {
             StyleUIComponent();
+
             KeyDown += NodeLabel_KeyDown;
             LostFocus += NodeLabel_LostFocus;
         }

@@ -11,6 +11,8 @@ namespace HamiltonVisualizer.GraphUIComponents
     /// </summary>
     public class Node : Border, IUIComponent
     {
+        #region Public Properties
+
         /// <summary>
         /// The position of this node.
         /// </summary>
@@ -21,12 +23,24 @@ namespace HamiltonVisualizer.GraphUIComponents
         /// </summary>
         public Canvas ContainCanvas { get; set; }
 
+        #endregion Public Properties
+
+        #region Event Handler
+
         /// <summary>
         /// Event that execute when node delete.
         /// </summary>
         public event NodeDeleteEventHandler? OnNodeDelete;
 
+        #endregion Event Handler
+
+        #region Constants
+
         public const int NodeWidth = 34;
+
+        #endregion Constants
+
+        #region Constructors
 
         public Node(Point position, Canvas parent)
         {
@@ -38,6 +52,8 @@ namespace HamiltonVisualizer.GraphUIComponents
             ContextMenu = new NodeContextMenu(this);
             ContainCanvas = parent;
         }
+
+        #endregion Constructors
 
         public void StyleUIComponent()
         {

@@ -9,7 +9,6 @@ namespace HamiltonVisualizer.GraphUIComponents
         private readonly Node _node;
 
         public MenuItem Connect { get; set; }
-        public MenuItem Modify { get; set; }
         public MenuItem Delete { get; set; }
 
         public NodeContextMenu(Node node)
@@ -26,8 +25,6 @@ namespace HamiltonVisualizer.GraphUIComponents
                 Header = "Nối...",
             };
             Connect.Click += Connect_Click;
-
-            Modify.Click += Modify_Click;
 
             Delete = new()
             {
@@ -54,7 +51,6 @@ namespace HamiltonVisualizer.GraphUIComponents
         private void SetUp()
         {
             Items.Add(Connect);
-            Items.Add(Modify);
             Items.Add(Delete);
         }
 
