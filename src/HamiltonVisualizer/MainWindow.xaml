@@ -28,35 +28,107 @@
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" 
-                Grid.ColumnSpan="2" 
-                MouseDown="Border_MouseDown"
-                Style="{StaticResource NavBar}">
+                    Grid.ColumnSpan="2" 
+                    MouseDown="Border_MouseDown"
+                    Style="{StaticResource NavBar}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                 <Border Background="LightBlue" Style="{StaticResource WindowButton}" 
-                        MouseDown="MinimizeToTaskbar"></Border>
+                            MouseDown="MinimizeToTaskbar"></Border>
                 <Border Background="Yellow" Style="{StaticResource WindowButton}" 
-                        MouseDown="MaximizeAndRestore"></Border>
+                            MouseDown="MaximizeAndRestore"></Border>
                 <Border Background="red" Style="{StaticResource WindowButton}"
-                        MouseDown="Exit"></Border>
+                            MouseDown="Exit"></Border>
             </StackPanel>
         </Border>
         <StackPanel Grid.Row="1" Grid.Column="0" Background="White">
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Vẽ Đồ Thị"
-                          Command="{Binding SetInitialView}"
-                          IsChecked="True">
-            </RadioButton>          
+                              Content="Vẽ Đồ Thị"
+                              IsChecked="True">
+            </RadioButton>
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Bộ Phận Liên Thông">
-            </RadioButton>          
+                              Content="Bộ Phận Liên Thông">
+            </RadioButton>
             <RadioButton  Style="{StaticResource MenuBtn}"
-                          Content="Chu trình">
+                              Content="Chu trình">
             </RadioButton>
         </StackPanel>
 
-        <ContentControl Grid.Row="1"
-                        Grid.Column="1"
-                        Content="{Binding CurrentView}">
-        </ContentControl>
+        <Border Grid.Row="1"
+                    Grid.Column="1"
+                    Background="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="150"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Column="1" 
+                            Grid.Row="0" 
+                            BorderBrush="Black" BorderThickness="1">
+                    <StackPanel HorizontalAlignment="Center" 
+                                    VerticalAlignment="Center"
+                                    Orientation="Horizontal"
+                                    Grid.Column="1"
+                                    Grid.Row="1">
+                        <TextBlock VerticalAlignment="Center">
+                                Vẽ đồ thị
+                        </TextBlock>
+                        <Button Content="?" 
+                                    Background="White"
+                                    Margin="10 0 0 0"
+                                    BorderThickness="0"
+                                    ToolTip="Hướng dẫn"
+                                    Width="20"></Button>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            Grid.Row="1"
+                            Orientation="Vertical">
+                    
+                    <StackPanel Orientation="Horizontal">
+                        <Label>
+                            Thêm Đỉnh
+                        </Label>
+                        <TextBox Margin="6 0 0 0" Width="40"/>
+                        <Button Width="36" Background="LightGreen" Foreground="White">+</Button>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" 
+                                Height="30"
+                                Margin="0 600 0 3">
+                        <Label>
+                            Số Đỉnh
+                        </Label>
+                        <TextBox Margin="23 0 0 0" 
+                                 Width="40" 
+                                 Text="{Binding NoV, Mode=OneWay}"/>
+                    </StackPanel>    
+                    
+                    <StackPanel Orientation="Horizontal" 
+                                Height="30">
+                        <Label>
+                            Số Cạnh
+                        </Label>
+                        <TextBox Margin="21 1 0 0" 
+                                 Width="40"
+                                 Text="{Binding NoE, Mode=OneWay}"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Canvas Grid.Column="0"
+                            Grid.Row="0"
+                            Grid.RowSpan="2"
+                            MouseDown="Canvas_MouseDown"
+                            Background="Beige"
+                            x:Name="DrawingCanvas">
+                </Canvas>
+            </Grid>
+        </Border>
     </Grid>
 </Window>
