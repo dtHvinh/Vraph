@@ -54,8 +54,8 @@
         </StackPanel>
 
         <Border Grid.Row="1"
-                    Grid.Column="1"
-                    Background="White">
+                Grid.Column="1"
+                Background="White">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -68,8 +68,8 @@
                 </Grid.RowDefinitions>
 
                 <Border Grid.Column="1" 
-                            Grid.Row="0" 
-                            BorderBrush="Black" BorderThickness="1">
+                        Grid.Row="0" 
+                        BorderBrush="Black" BorderThickness="1">
                     <StackPanel HorizontalAlignment="Center" 
                                     VerticalAlignment="Center"
                                     Orientation="Horizontal"
@@ -90,7 +90,7 @@
                 <StackPanel Grid.Column="1"
                             Grid.Row="1"
                             Orientation="Vertical">
-                    
+
                     <StackPanel Orientation="Horizontal">
                         <Label>
                             Thêm Đỉnh
@@ -98,35 +98,50 @@
                         <TextBox Margin="6 0 0 0" Width="40"/>
                         <Button Width="36" Background="LightGreen" Foreground="White">+</Button>
                     </StackPanel>
-                    
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Chế độ</Label>
+                        <Border Margin="26 0 0 0" 
+                                Width="77"
+                                BorderBrush="Gray"
+                                BorderThickness="1">
+                            <Button Style="{StaticResource ModeButton}"
+                                    Click="ModeButton_Click" Margin="-37 0 0 0">
+
+                            </Button>
+                        </Border>
+                    </StackPanel>
+
                     <StackPanel Orientation="Horizontal" 
                                 Height="30"
-                                Margin="0 600 0 3">
+                                Margin="0 550 0 3">
                         <Label>
                             Số Đỉnh
                         </Label>
                         <TextBox Margin="23 0 0 0" 
                                  Width="40" 
+                                 IsReadOnly="True"
                                  Text="{Binding NoV, Mode=OneWay}"/>
-                    </StackPanel>    
-                    
+                    </StackPanel>
+
                     <StackPanel Orientation="Horizontal" 
                                 Height="30">
                         <Label>
                             Số Cạnh
                         </Label>
+
                         <TextBox Margin="21 1 0 0" 
                                  Width="40"
-                                 Text="{Binding NoE, Mode=OneWay}"/>
+                                 Text="{Binding NoE, Mode=OneWay}"
+                                 IsReadOnly="True"/>
                     </StackPanel>
                 </StackPanel>
 
                 <Canvas Grid.Column="0"
-                            Grid.Row="0"
-                            Grid.RowSpan="2"
-                            MouseDown="Canvas_MouseDown"
-                            Background="Beige"
-                            x:Name="DrawingCanvas">
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        MouseDown="Canvas_MouseDown"
+                        Background="Beige"
+                        x:Name="DrawingCanvas">
                 </Canvas>
             </Grid>
         </Border>

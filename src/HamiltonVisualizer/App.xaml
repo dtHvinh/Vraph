@@ -12,6 +12,8 @@
                 <ResourceDictionary Source="/Themes/MenuButton.xaml">
                 </ResourceDictionary>
                 <ResourceDictionary Source="/Themes/NavBar.xaml">
+                </ResourceDictionary>                
+                <ResourceDictionary Source="/Themes/ModeButton.xaml">
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
