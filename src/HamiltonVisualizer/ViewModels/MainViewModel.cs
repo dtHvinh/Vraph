@@ -11,6 +11,7 @@ namespace HamiltonVisualizer.ViewModels
         private ObservableCollection<Node> NodeCollection { get; } = [];
         private ObservableCollection<Edge<string>> EdgeCollection { get; } = [];
 
+        // Bind to view && Do not rename!
         public int NoE { get => EdgeCollection.Count; }
         public int NoV { get => NodeCollection.Count; }
 
