@@ -1,6 +1,6 @@
 ﻿using HamiltonVisualizer.GraphUIComponents.Interfaces;
 using System.Windows.Controls;
-
+// TODO: Add instructment window
 #nullable disable
 namespace HamiltonVisualizer.GraphUIComponents
 {
@@ -35,17 +35,12 @@ namespace HamiltonVisualizer.GraphUIComponents
 
         private void Delete_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            _node.DeleteRequest();
+            _node.DeleteNode();
         }
 
         private void Connect_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            throw new NotImplementedException();
-        }
-
-        private void Modify_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
+            _node.ConnectNode();
         }
 
         private void SetUp()

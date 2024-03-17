@@ -6,45 +6,73 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.GraphUIComponents
 {
+    /// <summary>
+    /// The label of the <see cref="GraphUIComponents.Node"/>
+    /// </summary>
     public class NodeLabel : TextBox, IUIComponent
     {
-        public NodeLabel()
+        /// <summary>
+        /// Nodes to which this label attach.
+        /// </summary>
+        public Node Node { get; set; }
+
+        public NodeLabel(Node node)
         {
             StyleUIComponent();
 
             KeyDown += NodeLabel_KeyDown;
             LostFocus += NodeLabel_LostFocus;
+            Background = Brushes.Transparent;
+
+            Node = node;
         }
 
         public void StyleUIComponent()
         {
+            ContextMenu = null;
+
             Background = Brushes.White;
             BorderThickness = new(0);
             Margin = new Thickness(5);
         }
 
         /// <summary>
-        /// If <strong>true</strong>, user is allow to set label text.
+        /// If <strong>true</strong>, user is NOT allow to set label text.
         /// </summary>
-        public void SetValueDone()
+        public bool IsReadonly
         {
-            IsEnabled = false;
-            ContextMenu = null;
+            set
+            {
+                if (value && IsEnabled)
+                {
+                    IsEnabled = false;
+                    Node.ChangeNodeLabel(Text);
+                }
+                else
+                {
+                    IsEnabled = true;
+                }
+            }
         }
 
         #region Event listener handle
 
         private void NodeLabel_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            // if user press enter and fill the text before hand, REMOVE modifiability.
+            if (e.Key == Key.Enter && !string.IsNullOrEmpty(Text))
             {
-                SetValueDone();
+                IsReadonly = true;
             }
+
+            // TODO: remove this
+            MessageBox.Show("Node TopLeftPoint: \n" + Node.TopLeftPoint.ToString() + "\n" + $"{Canvas.GetLeft(Node)},{Canvas.GetTop(Node)}");
         }
 
         private void NodeLabel_LostFocus(object sender, RoutedEventArgs e)
         {
-            SetValueDone();
+            if (!string.IsNullOrEmpty(Text))
+                IsReadonly = true;
         }
 
         #endregion

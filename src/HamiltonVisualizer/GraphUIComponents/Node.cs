@@ -10,53 +10,48 @@ namespace HamiltonVisualizer.GraphUIComponents
     /// <summary>
     /// Graph node.
     /// </summary>
+    /// <remarks>
+    /// This node single child is <see cref="NodeLabel"/>.
+    /// </remarks>
     public class Node : Border, IUIComponent
     {
-        #region Public Properties
-
-        /// <summary>
-        /// The position of this node.
-        /// </summary>
-        public Point Position { get; set; }
-
-        /// <summary>
-        /// The canvas that contain this node.
-        /// </summary>
-        public Canvas ContainCanvas { get; set; }
-
-        #endregion Public Properties
-
-        #region Event Handler
-
-        /// <summary>
-        /// Event that execute when node delete.
-        /// </summary>
-        public event NodeDeleteEventHandler? OnNodeDelete;
-
-        public event NodeLabelSetCompleteEventHandler? OnNodeLabelSetComplete;
-
-        #endregion Event Handler
-
-        #region Constants
+        public Point TopLeftPoint { get; set; }
+        public NodeLabel NodeLabel => (NodeLabel)Child;
+        public Canvas ParentCanvas { get; set; }
 
         public const int NodeWidth = 34;
 
-        #endregion Constants
-
-        #region Constructors
+        public event NodeDeleteEventHandler? RequestNodeDelete;
+        public event NodeLabelSetCompleteEventHandler? OnNodeLabelChanged;
+        public event OnNodeSelectedEventHandler? OnNodeSelected;
 
         public Node(Point position, Canvas parent)
         {
-            Position = position;
+            TopLeftPoint = position;
 
             StyleUIComponent();
 
-            Child = new NodeLabel();
+            Child = new NodeLabel(this);
             ContextMenu = new NodeContextMenu(this);
-            ContainCanvas = parent;
+            ParentCanvas = parent;
+
+            SubscribeEvents();
         }
 
-        #endregion Constructors
+        private void SubscribeEvents()
+        {
+            RequestNodeDelete += async (sender, e) =>
+            {
+                Background = Brushes.Red;
+                await Task.Delay(500);
+                ParentCanvas.Children.Remove(this);
+            };
+
+            OnNodeSelected += (sender, e) =>
+            {
+                Background = Brushes.LightGreen;
+            };
+        }
 
         public void StyleUIComponent()
         {
@@ -67,17 +62,35 @@ namespace HamiltonVisualizer.GraphUIComponents
             BorderThickness = new(2);
             CornerRadius = new(30);
 
-            Canvas.SetLeft(this, Position.X - Width / 2);
-            Canvas.SetTop(this, Position.Y - Height / 2);
+            Canvas.SetLeft(this, TopLeftPoint.X - Width / 2);
+            Canvas.SetTop(this, TopLeftPoint.Y - Height / 2);
         }
 
-        /// <summary>
-        /// Delete the node.
-        /// </summary>
-        public void DeleteRequest()
+        public void DeleteNode()
         {
-            ContainCanvas.Children.Remove(this);
-            OnNodeDelete?.Invoke(this, new NodeDeleteEventArgs());
+            RequestNodeDelete?.Invoke(this, new NodeDeleteEventArgs(this));
+        }
+
+        public void ChangeNodeLabel(string text)
+        {
+            OnNodeLabelChanged?.Invoke(this, new NodeSetLabelEventArgs(this, text));
+        }
+
+        public void ConnectNode()
+        {
+            SelectNode();
+
+            // TODO: Finished Nodes.ConnectNode()
+        }
+
+        public void ReleaseSelectMode()
+        {
+            Background = Brushes.White;
+        }
+
+        public void SelectNode()
+        {
+            OnNodeSelected?.Invoke(this, new NodeSelectedEventArgs());
         }
     }
 }
