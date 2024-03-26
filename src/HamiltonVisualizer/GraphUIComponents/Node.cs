@@ -1,4 +1,5 @@
-﻿using HamiltonVisualizer.Events.EventArgs;
+﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.GraphUIComponents.Interfaces;
 using System.Windows;
@@ -15,7 +16,7 @@ namespace HamiltonVisualizer.GraphUIComponents
     /// </remarks>
     public class Node : Border, IUIComponent
     {
-        public Point TopLeftPoint { get; set; }
+        public Point Origin { get; set; }
         public NodeLabel NodeLabel => (NodeLabel)Child;
         public Canvas ParentCanvas { get; set; }
 
@@ -27,7 +28,7 @@ namespace HamiltonVisualizer.GraphUIComponents
 
         public Node(Point position, Canvas parent)
         {
-            TopLeftPoint = position;
+            Origin = position;
 
             StyleUIComponent();
 
@@ -62,8 +63,9 @@ namespace HamiltonVisualizer.GraphUIComponents
             BorderThickness = new(2);
             CornerRadius = new(30);
 
-            Canvas.SetLeft(this, TopLeftPoint.X - Width / 2);
-            Canvas.SetTop(this, TopLeftPoint.Y - Height / 2);
+            Canvas.SetLeft(this, Origin.X - Width / 2);
+            Canvas.SetTop(this, Origin.Y - Height / 2);
+            Panel.SetZIndex(this, (int)ZIndexConstants.Node);
         }
 
         public void DeleteNode()

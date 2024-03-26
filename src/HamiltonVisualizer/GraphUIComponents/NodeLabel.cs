@@ -64,9 +64,6 @@ namespace HamiltonVisualizer.GraphUIComponents
             {
                 IsReadonly = true;
             }
-
-            // TODO: remove this
-            MessageBox.Show("Node TopLeftPoint: \n" + Node.TopLeftPoint.ToString() + "\n" + $"{Canvas.GetLeft(Node)},{Canvas.GetTop(Node)}");
         }
 
         private void NodeLabel_LostFocus(object sender, RoutedEventArgs e)

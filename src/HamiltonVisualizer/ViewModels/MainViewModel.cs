@@ -1,45 +1,40 @@
 ﻿#nullable disable
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.GraphUIComponents;
-using Libraries.DataStructure.Graph.Component;
-using System.Collections.ObjectModel;
+using System.Windows.Shapes;
 
 namespace HamiltonVisualizer.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private ObservableCollection<Node> NodeCollection { get; } = [];
-        private ObservableCollection<Edge<string>> EdgeCollection { get; } = [];
+        public List<Node> Nodes { get; } = [];
+        public List<Line> Edges { get; } = [];
 
         // Bind to view && Do not rename!
-        public int NoE { get => EdgeCollection.Count; }
-        public int NoV { get => NodeCollection.Count; }
+        public int NoE { get => Edges.Count; }
+        public int NoV { get => Nodes.Count; }
 
-        public MainViewModel()
+        public void VM_AddNewNode(Node node)
         {
-        }
-
-        public void AddNewNode(Node node)
-        {
-            NodeCollection.Add(node);
+            Nodes.Add(node);
             OnPropertyChanged(nameof(NoV));
         }
 
-        public void RemoveNode(Node node)
+        public void VM_RemoveNode(Node node)
         {
-            NodeCollection.Remove(node);
+            Nodes.Remove(node);
             OnPropertyChanged(nameof(NoV));
         }
 
-        public void AddNewEdge(Edge<string> edge)
+        public void VM_AddNewEdge(Line edge)
         {
-            EdgeCollection.Add(edge);
+            Edges.Add(edge);
             OnPropertyChanged(nameof(NoE));
         }
 
-        public void RemoveEdge(Edge<string> edge)
+        public void VM_RemoveEdge(Line edge)
         {
-            EdgeCollection.Remove(edge);
+            Edges.Remove(edge);
             OnPropertyChanged(nameof(NoE));
         }
     }

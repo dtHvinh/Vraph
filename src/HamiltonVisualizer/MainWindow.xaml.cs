@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace HamiltonVisualizer;
 
@@ -16,10 +17,12 @@ namespace HamiltonVisualizer;
 public partial class MainWindow : Window
 {
     public MainViewModel VM { get; set; }
-    public List<Node> Nodes { get; set; } = [];
     public AnimationManager AnimationManager { get; set; }
-    public SelectNodeCollection SelectNodeCollection { get; set; } = new();
+    public SelectNodeCollection SelectedNodeCollection { get; set; } = new();
     public DrawManager DrawManager { get; set; }
+
+    public List<Node> Nodes { get; set; } = [];
+    public List<Line> Edges { get; set; } = [];
 
     public bool IsSelectMode { get; set; } = false;
 
@@ -33,7 +36,7 @@ public partial class MainWindow : Window
 
         AnimationManager = AnimationManager.Instance;
 
-        DrawManager = new(DrawingCanvas);
+        DrawManager = new(DrawingCanvas, Edges);
     }
 
     #region Navbar behaviors
@@ -101,7 +104,7 @@ public partial class MainWindow : Window
             if (EnsureNoCollision(node))
             {
                 AddToCanvas(node);
-                VM.AddNewNode(node);
+                VM.VM_AddNewNode(node);
             }
         }
     }
@@ -135,39 +138,40 @@ public partial class MainWindow : Window
     /// </summary>
     private void SubscribeNodeEvents(Node node)
     {
+        // when node deleted
         node.RequestNodeDelete += (object sender, NodeDeleteEventArgs e) =>
         {
-            VM.RemoveNode(e.Node);
+            VM.VM_RemoveNode(e.Node);
             Nodes.Remove(e.Node);
         };
 
+        // delete duplicate node with identical label
         node.OnNodeLabelChanged += (object sender, NodeSetLabelEventArgs e) =>
         {
-            // Check if the node label is distinct.
             var text = e.Text;
 
-            // Nodes is added before the label is set so the duplicate only happen after it.
             if (Nodes.Count(e => e.NodeLabel.Text!.Equals(text)) == 2)
             {
                 e.Node.DeleteNode();
             }
         };
 
+        // when at select mode
         node.OnNodeSelected += (object sender, NodeSelectedEventArgs e) =>
         {
-            SelectNodeCollection.Add((Node)sender);
+            SelectedNodeCollection.Add((Node)sender);
         };
 
-        SelectNodeCollection.PropertyChanged += (sender, e) =>
+        SelectedNodeCollection.PropertyChanged += (sender, e) =>
         {
-            if (SelectNodeCollection.Count == 2)
+            if (SelectedNodeCollection.Count == 2)
             {
-                var nodes = SelectNodeCollection.GetFirst2();
+                var nodes = SelectedNodeCollection.GetFirst2();
                 var node1 = nodes.Item1;
                 var node2 = nodes.Item2;
 
-                // TODO: Fix this mf.
-                DrawManager.Draw(node1, node2);
+                DrawManager.Draw(node1, node2, out var edge);
+                VM.VM_AddNewEdge(edge);
             }
         };
     }
@@ -187,8 +191,8 @@ public partial class MainWindow : Window
 
         foreach (Node n in Nodes)
         {
-            if (CollisionHelper.IsCircleCollide(Libraries.Geometry.Point.ConvertFrom(node.TopLeftPoint),
-                                                Libraries.Geometry.Point.ConvertFrom(n.TopLeftPoint),
+            if (CollisionHelper.IsCircleCollide(Libraries.Geometry.Point.ConvertFrom(node.Origin),
+                                                Libraries.Geometry.Point.ConvertFrom(n.Origin),
                                                 Node.NodeWidth / 2))
             {
                 return false;
