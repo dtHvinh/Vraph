@@ -18,15 +18,14 @@ namespace HamiltonVisualizer.GraphUIComponents
     {
         public Point Origin { get; set; }
         public NodeLabel NodeLabel => (NodeLabel)Child;
-        public Canvas ParentCanvas { get; set; }
 
         public const int NodeWidth = 34;
 
-        public event NodeDeleteEventHandler? RequestNodeDelete;
+        public event NodeDeleteEventHandler? OnNodeDelete;
         public event NodeLabelSetCompleteEventHandler? OnNodeLabelChanged;
         public event OnNodeSelectedEventHandler? OnNodeSelected;
 
-        public Node(Point position, Canvas parent)
+        public Node(Point position)
         {
             Origin = position;
 
@@ -34,18 +33,15 @@ namespace HamiltonVisualizer.GraphUIComponents
 
             Child = new NodeLabel(this);
             ContextMenu = new NodeContextMenu(this);
-            ParentCanvas = parent;
 
             SubscribeEvents();
         }
 
         private void SubscribeEvents()
         {
-            RequestNodeDelete += async (sender, e) =>
+            OnNodeDelete += (sender, e) =>
             {
                 Background = Brushes.Red;
-                await Task.Delay(500);
-                ParentCanvas.Children.Remove(this);
             };
 
             OnNodeSelected += (sender, e) =>
@@ -70,21 +66,13 @@ namespace HamiltonVisualizer.GraphUIComponents
 
         public void DeleteNode()
         {
-            RequestNodeDelete?.Invoke(this, new NodeDeleteEventArgs(this));
+            OnNodeDelete?.Invoke(this, new NodeDeleteEventArgs(this));
         }
 
         public void ChangeNodeLabel(string text)
         {
             OnNodeLabelChanged?.Invoke(this, new NodeSetLabelEventArgs(this, text));
         }
-
-        public void ConnectNode()
-        {
-            SelectNode();
-
-            // TODO: Finished Nodes.ConnectNode()
-        }
-
         public void ReleaseSelectMode()
         {
             Background = Brushes.White;
