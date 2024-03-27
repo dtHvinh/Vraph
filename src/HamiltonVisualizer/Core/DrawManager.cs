@@ -1,5 +1,6 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.GraphUIComponents;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -10,13 +11,12 @@ namespace HamiltonVisualizer.Core
     /// Drawing manager.
     /// </summary>
     /// <param name="Canvas">The canvas on which this class draws.</param>
-    /// <param name="Edges">Collection of edges represented by a <see cref="Line"/>.</param>
-    public class DrawManager(Canvas Canvas, List<Line> Edges)
+    public class DrawManager(Canvas Canvas)
     {
         /// <summary>
         /// Draw a <see cref="Line"/> and add to the collection.
         /// </summary>
-        public bool Draw(Node src, Node dst, out Line? line)
+        public bool Draw(Node src, Node dst, [NotNullWhen(true)] out Line? line)
         {
             // TODO: this method may return false if something happen
 
@@ -35,13 +35,8 @@ namespace HamiltonVisualizer.Core
             myLine.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
             Canvas.Children.Add(myLine);
 
-
-            Canvas.GetTop(src);
-
             src.ReleaseSelectMode();
             dst.ReleaseSelectMode();
-
-            Edges.Add(myLine);
 
             line = myLine;
 
