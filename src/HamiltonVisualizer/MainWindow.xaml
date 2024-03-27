@@ -106,7 +106,6 @@
                                 BorderThickness="1">
                             <Button Style="{StaticResource ModeButton}"
                                     Click="ModeButton_Click" Margin="-37 0 0 0">
-
                             </Button>
                         </Border>
                     </StackPanel>

@@ -16,13 +16,15 @@ namespace HamiltonVisualizer.GraphUIComponents
             Initialize();
             SetUp();
             _node = node;
+
+            StyleUIComponent();
         }
 
         private void Initialize()
         {
             Connect = new()
             {
-                Header = "Nối...",
+                Header = "Chọn...",
             };
             Connect.Click += Connect_Click;
 
@@ -40,7 +42,7 @@ namespace HamiltonVisualizer.GraphUIComponents
 
         private void Connect_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            _node.ConnectNode();
+            _node.SelectNode();
         }
 
         private void SetUp()

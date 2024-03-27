@@ -9,7 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Libraries" Version="1.0.0-preview5.2" />
+    <PackageReference Include="CSLibraries.DataStructure" Version="1.0.0-preview1.2.0" />
+    <PackageReference Include="CSLibraries.Mathematic" Version="1.0.0-preview1.1.0" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,6 @@
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.GraphUIComponents;
 using HamiltonVisualizer.ViewModels;
-using Libraries.Geometry;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -36,7 +35,24 @@ public partial class MainWindow : Window
 
         AnimationManager = AnimationManager.Instance;
 
-        DrawManager = new(DrawingCanvas, Edges);
+        DrawManager = new(DrawingCanvas);
+
+        SelectedNodeCollection.PropertyChanged += (sender, e) =>
+        {
+            // whenever 2 node selected, connect them.
+            if (SelectedNodeCollection.Count == 2)
+            {
+                var nodes = SelectedNodeCollection.GetFirst2();
+                var node1 = nodes.Item1;
+                var node2 = nodes.Item2;
+
+                if (DrawManager.Draw(node1, node2, out var edge))
+                {
+                    Edges.Add(edge);
+                }
+                VM.VM_AddNewEdge(node1, node2);
+            }
+        };
     }
 
     #region Navbar behaviors
@@ -97,11 +113,11 @@ public partial class MainWindow : Window
         {
             var mPos = e.GetPosition(DrawingCanvas);
 
-            Node node = new(mPos, DrawingCanvas);
+            Node node = new(mPos);
 
             SubscribeNodeEvents(node);
 
-            if (EnsureNoCollision(node))
+            if (this.EnsureNoCollision(node))
             {
                 AddToCanvas(node);
                 VM.VM_AddNewNode(node);
@@ -139,10 +155,16 @@ public partial class MainWindow : Window
     private void SubscribeNodeEvents(Node node)
     {
         // when node deleted
-        node.RequestNodeDelete += (object sender, NodeDeleteEventArgs e) =>
+        node.OnNodeDelete += async (object sender, NodeDeleteEventArgs e) =>
         {
             VM.VM_RemoveNode(e.Node);
             Nodes.Remove(e.Node);
+
+            // invoke delete animation 
+            await Task.Delay(500);
+            DrawingCanvas.Children.Remove(e.Node);
+
+            // remove associate edge.
         };
 
         // delete duplicate node with identical label
@@ -161,46 +183,11 @@ public partial class MainWindow : Window
         {
             SelectedNodeCollection.Add((Node)sender);
         };
-
-        SelectedNodeCollection.PropertyChanged += (sender, e) =>
-        {
-            if (SelectedNodeCollection.Count == 2)
-            {
-                var nodes = SelectedNodeCollection.GetFirst2();
-                var node1 = nodes.Item1;
-                var node2 = nodes.Item2;
-
-                DrawManager.Draw(node1, node2, out var edge);
-                VM.VM_AddNewEdge(edge);
-            }
-        };
     }
 
     #endregion Subcribe Event
 
     #region Helper class
-
-    /// <summary>
-    /// Make sure there no collision happen between nodes.
-    /// </summary>
-    /// <param name="node">The node to check.</param>
-    private bool EnsureNoCollision(Node node)
-    {
-        if (Nodes.Count == 0)
-            return true;
-
-        foreach (Node n in Nodes)
-        {
-            if (CollisionHelper.IsCircleCollide(Libraries.Geometry.Point.ConvertFrom(node.Origin),
-                                                Libraries.Geometry.Point.ConvertFrom(n.Origin),
-                                                Node.NodeWidth / 2))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     /// <summary>
     /// Add Graph node to the view ui.
@@ -213,4 +200,30 @@ public partial class MainWindow : Window
     }
 
     #endregion Helper class
+}
+
+public static class Utilities
+{
+    /// <summary>
+    /// Make sure there no collision happen between nodes.
+    /// </summary>
+    /// <param name="node">The node to check.</param>
+    public static bool EnsureNoCollision(this MainWindow window, Node node)
+    {
+        if (window.Nodes.Count == 0)
+            return true;
+
+        foreach (Node n in window.Nodes)
+        {
+            if (CSLibraries.Mathematic.Geometry.CollisionHelper.IsCircleCollide(
+                                                CSLibraries.Mathematic.Geometry.MathPoint.ConvertFrom(node.Origin),
+                                                CSLibraries.Mathematic.Geometry.MathPoint.ConvertFrom(n.Origin),
+                                                Node.NodeWidth / 2))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
