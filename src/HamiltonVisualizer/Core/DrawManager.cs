@@ -29,8 +29,8 @@ namespace HamiltonVisualizer.Core
                 Y2 = dst.Origin.Y,
                 StrokeThickness = 2,
             };
-            // Line is sealed so :(((((((( have to inline in here
-            Panel.SetZIndex(myLine, (int)ZIndexConstants.Line);
+            // Line is sealed so :(((((((( have to inline.
+            Panel.SetZIndex(myLine, ConstantValues.ZIndex.Line);
 
             myLine.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
             Canvas.Children.Add(myLine);

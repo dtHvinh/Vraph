@@ -66,16 +66,16 @@ namespace HamiltonVisualizer.Core
         private void InitializeThicknessObjects()
         {
             ModeButtonOff = new Thickness(
-                ControlConstants.ModeButtonMarginDefault.Item1,
-                ControlConstants.ModeButtonMarginDefault.Item2,
-                ControlConstants.ModeButtonMarginDefault.Item3,
-                ControlConstants.ModeButtonMarginDefault.Item4);
+                ConstantValues.Control.ModeButtonMarginDefault.Item1,
+                ConstantValues.Control.ModeButtonMarginDefault.Item2,
+                ConstantValues.Control.ModeButtonMarginDefault.Item3,
+                ConstantValues.Control.ModeButtonMarginDefault.Item4);
 
             ModeButtonOn = new Thickness(
-                ControlConstants.ModeButtonOn.Item1,
-                ControlConstants.ModeButtonOn.Item2,
-                ControlConstants.ModeButtonOn.Item3,
-                ControlConstants.ModeButtonOn.Item4);
+                ConstantValues.Control.ModeButtonOn.Item1,
+                ConstantValues.Control.ModeButtonOn.Item2,
+                ConstantValues.Control.ModeButtonOn.Item3,
+                ConstantValues.Control.ModeButtonOn.Item4);
         }
 
         #endregion Initialize methods

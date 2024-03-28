@@ -1,7 +1,7 @@
-﻿#nullable disable
-using CSLibraries.DataStructure.Graph.Implements;
+﻿using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.GraphUIComponents;
+using System.Windows.Shapes;
 
 namespace HamiltonVisualizer.ViewModels
 {
@@ -9,16 +9,33 @@ namespace HamiltonVisualizer.ViewModels
     {
         private readonly DirectedGraph<string> _graph = new();
 
-        public List<Node> Nodes { get; } = []; // nodes in the list are guaranteed to be unique due to the duplicate check in view
+        private List<Node> _nodes = []; // nodes in the list are guaranteed to be unique due to the duplicate check in view
+        private List<Line> _edges = [];
 
-
-        // Bind to view && Do not rename!
-        public int NoE { get => _graph.EdgeCount; }
-        public int NoV { get => Nodes.Count; }
-
-        public void VM_AddNewNode(Node node)
+        public void ProvideRef(List<Node> nodes, List<Line> edges)
         {
-            Nodes.Add(node);
+            _nodes = nodes;
+            _edges = edges;
+        }
+
+        public int NoE // for view binding do not rename!
+        {
+            get
+            {
+                return _edges.Count;
+            }
+        }
+
+        public int NoV // for view binding do not rename!
+        {
+            get
+            {
+                return _nodes.Count;
+            }
+        }
+
+        public void VM_AddNewNode()
+        {
             OnPropertyChanged(nameof(NoV));
         }
 
@@ -32,9 +49,8 @@ namespace HamiltonVisualizer.ViewModels
         /// <item>Decrease NoV counter => Update UI.</item>
         /// </list>
         /// </remarks>
-        public void VM_RemoveNode(Node node)
+        public void VM_RemoveNode()
         {
-            Nodes.Remove(node);
             OnPropertyChanged(nameof(NoV));
         }
 

@@ -15,13 +15,13 @@ namespace HamiltonVisualizer;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainViewModel VM { get; set; }
-    public AnimationManager AnimationManager { get; set; }
-    public SelectNodeCollection SelectedNodeCollection { get; set; } = new();
-    public DrawManager DrawManager { get; set; }
+    private readonly MainViewModel _viewModel = null!;
+    private readonly AnimationManager _animationManager;
+    private readonly SelectNodeCollection _selectedCollection = new();
+    private readonly DrawManager _drawManager;
 
     public List<Node> Nodes { get; set; } = [];
-    public List<Line> Edges { get; set; } = [];
+    private List<Line> Edges { get; set; } = [];
 
     public bool IsSelectMode { get; set; } = false;
 
@@ -29,30 +29,14 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        VM = (MainViewModel)DataContext;
+        _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
+        _viewModel.ProvideRef(Nodes, Edges);
 
-        ArgumentNullException.ThrowIfNull(VM);
+        _animationManager = AnimationManager.Instance;
 
-        AnimationManager = AnimationManager.Instance;
+        _drawManager = new(DrawingCanvas);
 
-        DrawManager = new(DrawingCanvas);
-
-        SelectedNodeCollection.PropertyChanged += (sender, e) =>
-        {
-            // whenever 2 node selected, connect them.
-            if (SelectedNodeCollection.Count == 2)
-            {
-                var nodes = SelectedNodeCollection.GetFirst2();
-                var node1 = nodes.Item1;
-                var node2 = nodes.Item2;
-
-                if (DrawManager.Draw(node1, node2, out var edge))
-                {
-                    Edges.Add(edge);
-                }
-                VM.VM_AddNewEdge(node1, node2);
-            }
-        };
+        SubscribeCollectionEvents();
     }
 
     #region Navbar behaviors
@@ -95,15 +79,15 @@ public partial class MainWindow : Window
 
         if (IsSelectMode)
         {
-            btn.BeginStoryboard(AnimationManager.StoryboardWhenOn);
+            btn.BeginStoryboard(_animationManager.StoryboardWhenOn);
             btn.Background = Brushes.LightGreen;
-            btn.Margin = AnimationManager.ModeButtonOn;
+            btn.Margin = _animationManager.ModeButtonOn;
         }
         else
         {
-            btn.BeginStoryboard(AnimationManager.StoryboardWhenOff);
+            btn.BeginStoryboard(_animationManager.StoryboardWhenOff);
             btn.Background = Brushes.Gray;
-            btn.Margin = AnimationManager.ModeButtonOff;
+            btn.Margin = _animationManager.ModeButtonOff;
         }
     }
 
@@ -120,28 +104,8 @@ public partial class MainWindow : Window
             if (this.EnsureNoCollision(node))
             {
                 AddToCanvas(node);
-                VM.VM_AddNewNode(node);
+                _viewModel.VM_AddNewNode();
             }
-        }
-    }
-
-    // TODO: Test this method
-    private void SelectNodes(params string[] nodeLabel)
-    {
-        var selectNode = Nodes.IntersectBy(nodeLabel, n => n.NodeLabel.Text);
-
-        foreach (var node in selectNode)
-        {
-            node.SelectNode();
-        }
-    }
-
-    // TODO: Test this method
-    private void SelectAll()
-    {
-        foreach (var node in Nodes)
-        {
-            node.SelectNode();
         }
     }
 
@@ -157,8 +121,8 @@ public partial class MainWindow : Window
         // when node deleted
         node.OnNodeDelete += async (object sender, NodeDeleteEventArgs e) =>
         {
-            VM.VM_RemoveNode(e.Node);
             Nodes.Remove(e.Node);
+            _viewModel.VM_RemoveNode();
 
             // invoke delete animation 
             await Task.Delay(500);
@@ -181,7 +145,36 @@ public partial class MainWindow : Window
         // when at select mode
         node.OnNodeSelected += (object sender, NodeSelectedEventArgs e) =>
         {
-            SelectedNodeCollection.Add((Node)sender);
+            _selectedCollection.Add((Node)sender);
+        };
+
+        node.NodeLabel.OnLabelMouseDown += (object sender, MouseEventArgs e) =>
+        {
+            if (IsSelectMode)
+            {
+                var nodeLabel = (NodeLabel)sender;
+                nodeLabel.Node.SelectNode();
+            }
+        };
+    }
+
+    private void SubscribeCollectionEvents()
+    {
+        _selectedCollection.PropertyChanged += (sender, e) =>
+        {
+            // whenever 2 node selected, connect them.
+            if (_selectedCollection.Count == 2)
+            {
+                var nodes = _selectedCollection.GetFirst2();
+                var node1 = nodes.Item1;
+                var node2 = nodes.Item2;
+
+                if (_drawManager.Draw(node1, node2, out var edge))
+                {
+                    Edges.Add(edge);
+                }
+                _viewModel.VM_AddNewEdge(node1, node2);
+            }
         };
     }
 
@@ -199,21 +192,12 @@ public partial class MainWindow : Window
         Nodes.Add(node);
     }
 
-    #endregion Helper class
-}
-
-public static class Utilities
-{
-    /// <summary>
-    /// Make sure there no collision happen between nodes.
-    /// </summary>
-    /// <param name="node">The node to check.</param>
-    public static bool EnsureNoCollision(this MainWindow window, Node node)
+    private bool EnsureNoCollision(Node node)
     {
-        if (window.Nodes.Count == 0)
+        if (Nodes.Count == 0)
             return true;
 
-        foreach (Node n in window.Nodes)
+        foreach (Node n in Nodes)
         {
             if (CSLibraries.Mathematic.Geometry.CollisionHelper.IsCircleCollide(
                                                 CSLibraries.Mathematic.Geometry.MathPoint.ConvertFrom(node.Origin),
@@ -226,4 +210,6 @@ public static class Utilities
 
         return true;
     }
+
+    #endregion Helper class
 }

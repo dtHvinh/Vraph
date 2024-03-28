@@ -61,7 +61,7 @@ namespace HamiltonVisualizer.GraphUIComponents
 
             Canvas.SetLeft(this, Origin.X - Width / 2);
             Canvas.SetTop(this, Origin.Y - Height / 2);
-            Panel.SetZIndex(this, (int)ZIndexConstants.Node);
+            Panel.SetZIndex(this, ConstantValues.ZIndex.Node);
         }
 
         public void DeleteNode()
@@ -73,6 +73,7 @@ namespace HamiltonVisualizer.GraphUIComponents
         {
             OnNodeLabelChanged?.Invoke(this, new NodeSetLabelEventArgs(this, text));
         }
+
         public void ReleaseSelectMode()
         {
             Background = Brushes.White;
