@@ -2,6 +2,7 @@
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.GraphUIComponents.Interfaces;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -14,6 +15,8 @@ namespace HamiltonVisualizer.GraphUIComponents
     /// <remarks>
     /// This node single child is <see cref="NodeLabel"/>.
     /// </remarks>
+    /// 
+    [DebuggerDisplay("[X:{Origin.X};Y:{Origin.Y}]")]
     public class Node : Border, IUIComponent
     {
         public Point Origin { get; set; }
@@ -24,6 +27,7 @@ namespace HamiltonVisualizer.GraphUIComponents
         public event NodeDeleteEventHandler? OnNodeDelete;
         public event NodeLabelSetCompleteEventHandler? OnNodeLabelChanged;
         public event OnNodeSelectedEventHandler? OnNodeSelected;
+
 
         public Node(Point position)
         {
