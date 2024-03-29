@@ -21,7 +21,7 @@ public partial class MainWindow : Window
     private readonly DrawManager _drawManager;
 
     public List<Node> Nodes { get; set; } = [];
-    private List<Line> Edges { get; set; } = [];
+    private List<LinePolygonWrapper> Edges { get; set; } = [];
 
     public bool IsSelectMode { get; set; } = false;
 
@@ -101,10 +101,11 @@ public partial class MainWindow : Window
 
             SubscribeNodeEvents(node);
 
-            if (this.EnsureNoCollision(node))
+            if (EnsureNoCollision(node))
             {
-                AddToCanvas(node);
-                _viewModel.VM_AddNewNode();
+                DrawingCanvas.Children.Add(node);
+                Nodes.Add(node);
+                _viewModel.VM_NodeAdded();
             }
         }
     }
@@ -113,22 +114,25 @@ public partial class MainWindow : Window
 
     #region Subcribe Event
 
-    /// <summary>
-    /// Subscribe all events for <see cref="Node"/> instance.
-    /// </summary>
     private void SubscribeNodeEvents(Node node)
     {
         // when node deleted
         node.OnNodeDelete += async (object sender, NodeDeleteEventArgs e) =>
         {
-            Nodes.Remove(e.Node);
-            _viewModel.VM_RemoveNode();
-
             // invoke delete animation 
             await Task.Delay(500);
+            Nodes.Remove(e.Node);
             DrawingCanvas.Children.Remove(e.Node);
+            _viewModel.VM_NodeRemoved(e.Node, out var pendingRemoveEdge);
 
             // remove associate edge.
+            pendingRemoveEdge.ForEach(e =>
+            {
+                Edges.Remove(e);
+                DrawingCanvas.Children.Remove(e.Head);
+                DrawingCanvas.Children.Remove(e.Body);
+                _viewModel.VM_EdgeRemoved();
+            });
         };
 
         // delete duplicate node with identical label
@@ -147,19 +151,28 @@ public partial class MainWindow : Window
         {
             _selectedCollection.Add((Node)sender);
         };
-
-        node.NodeLabel.OnLabelMouseDown += (object sender, MouseEventArgs e) =>
-        {
-            if (IsSelectMode)
-            {
-                var nodeLabel = (NodeLabel)sender;
-                nodeLabel.Node.SelectNode();
-            }
-        };
     }
 
     private void SubscribeCollectionEvents()
     {
+        static bool AreTheSameLine(Line line, Node node1, Node node2, bool ignoreDirection = true)
+        {
+            bool sameDirCompare = line.X1 == node1.Origin.X
+                    && line.Y1 == node1.Origin.Y
+                    && line.X2 == node2.Origin.X
+                    && line.Y2 == node2.Origin.Y;
+
+            if (!ignoreDirection)
+                return sameDirCompare;
+
+            bool opositeDirCompare = line.X1 == node2.Origin.X
+                    && line.Y1 == node2.Origin.Y
+                    && line.X2 == node1.Origin.X
+                    && line.Y2 == node1.Origin.Y;
+
+            return sameDirCompare || opositeDirCompare;
+        }
+
         _selectedCollection.PropertyChanged += (sender, e) =>
         {
             // whenever 2 node selected, connect them.
@@ -169,11 +182,14 @@ public partial class MainWindow : Window
                 var node1 = nodes.Item1;
                 var node2 = nodes.Item2;
 
-                if (_drawManager.Draw(node1, node2, out var edge))
+                if (_drawManager.Draw(node1, node2, out var edge)
+                    && !Edges.Any(e => AreTheSameLine(e.Body, node1, node2)))
                 {
                     Edges.Add(edge);
+                    _viewModel.VM_EdgeAdded();
                 }
-                _viewModel.VM_AddNewEdge(node1, node2);
+                node1.ReleaseSelectMode();
+                node2.ReleaseSelectMode();
             }
         };
     }
@@ -181,16 +197,6 @@ public partial class MainWindow : Window
     #endregion Subcribe Event
 
     #region Helper class
-
-    /// <summary>
-    /// Add Graph node to the view ui.
-    /// </summary>
-    /// <param name="node"></param>
-    private void AddToCanvas(Node node)
-    {
-        DrawingCanvas.Children.Add(node);
-        Nodes.Add(node);
-    }
 
     private bool EnsureNoCollision(Node node)
     {

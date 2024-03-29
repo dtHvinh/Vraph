@@ -16,15 +16,12 @@ namespace HamiltonVisualizer.GraphUIComponents
         /// </summary>
         public Node Node { get; set; }
 
-        public event MouseEventHandler? OnLabelMouseDown;
-
         public NodeLabel(Node node)
         {
             StyleUIComponent();
 
             KeyDown += NodeLabel_KeyDown;
             LostFocus += NodeLabel_LostFocus;
-            MouseDown += NodeLabel_MouseDown;
             Background = Brushes.Transparent;
 
             Node = node;
@@ -73,13 +70,6 @@ namespace HamiltonVisualizer.GraphUIComponents
         {
             if (!string.IsNullOrEmpty(Text))
                 IsReadonly = true;
-        }
-
-        // The node is derived from Border class which do not have MouseDown event, so this label 
-        // will do on behalf of the node.
-        private void NodeLabel_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            OnLabelMouseDown?.Invoke(this, e);
         }
 
         #endregion
