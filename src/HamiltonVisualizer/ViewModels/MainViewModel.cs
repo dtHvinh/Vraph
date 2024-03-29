@@ -8,7 +8,7 @@ namespace HamiltonVisualizer.ViewModels
     public class MainViewModel : ObservableObject
     {
         private readonly DirectedGraph<int> _graph = new();
-        private readonly NodeMaps _map = new();
+        private readonly PointMap _map = new();
 
         private List<Node> _nodes = []; // nodes in the list are guaranteed to be unique due to the duplicate check in view
         private List<LinePolygonWrapper> _edges = [];
@@ -58,9 +58,14 @@ namespace HamiltonVisualizer.ViewModels
             pendingRemove = _edges.Where(e => e.From.TolerantEquals(node.Origin) || e.To.TolerantEquals(node.Origin)).ToList();
         }
 
-        public void VM_EdgeAdded()
+        public void VM_EdgeAdded(LinePolygonWrapper line)
         {
             OnPropertyChanged(nameof(NoE));
+
+            var u = _map.LookUp(line.From);
+            var v = _map.LookUp(line.To);
+
+            _graph.AddEdge(u, v);
         }
 
         public void VM_EdgeRemoved()

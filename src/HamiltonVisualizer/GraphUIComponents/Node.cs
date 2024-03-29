@@ -28,7 +28,6 @@ namespace HamiltonVisualizer.GraphUIComponents
         public event NodeLabelSetCompleteEventHandler? OnNodeLabelChanged;
         public event OnNodeSelectedEventHandler? OnNodeSelected;
 
-
         public Node(Point position)
         {
             Origin = position;

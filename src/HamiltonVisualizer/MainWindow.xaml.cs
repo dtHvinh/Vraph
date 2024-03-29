@@ -16,7 +16,6 @@ namespace HamiltonVisualizer;
 public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel = null!;
-    private readonly AnimationManager _animationManager;
     private readonly SelectNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
 
@@ -31,9 +30,6 @@ public partial class MainWindow : Window
 
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
         _viewModel.ProvideRef(Nodes, Edges);
-
-        _animationManager = AnimationManager.Instance;
-
         _drawManager = new(DrawingCanvas);
 
         SubscribeCollectionEvents();
@@ -186,7 +182,7 @@ public partial class MainWindow : Window
                     && !Edges.Any(e => AreTheSameLine(e.Body, node1, node2)))
                 {
                     Edges.Add(edge);
-                    _viewModel.VM_EdgeAdded();
+                    _viewModel.VM_EdgeAdded(edge);
                 }
                 node1.ReleaseSelectMode();
                 node2.ReleaseSelectMode();
