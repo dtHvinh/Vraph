@@ -1,3 +1,3 @@
 clear TODO
 
-remove node => remove edge.
+remove ModeButton.xaml and ModeButton in main window

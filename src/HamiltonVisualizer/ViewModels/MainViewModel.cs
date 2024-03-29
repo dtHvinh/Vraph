@@ -1,19 +1,18 @@
 ﻿using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
-using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.GraphUIComponents;
+using System.Windows.Shapes;
 
 namespace HamiltonVisualizer.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
-        private readonly DirectedGraph<int> _graph = new();
-        private readonly NodeMaps _map = new();
+        private readonly DirectedGraph<string> _graph = new();
 
         private List<Node> _nodes = []; // nodes in the list are guaranteed to be unique due to the duplicate check in view
-        private List<LinePolygonWrapper> _edges = [];
+        private List<Line> _edges = [];
 
-        public void ProvideRef(List<Node> nodes, List<LinePolygonWrapper> edges)
+        public void ProvideRef(List<Node> nodes, List<Line> edges)
         {
             _nodes = nodes;
             _edges = edges;
@@ -35,13 +34,13 @@ namespace HamiltonVisualizer.ViewModels
             }
         }
 
-        public void VM_NodeAdded()
+        public void VM_AddNewNode()
         {
             OnPropertyChanged(nameof(NoV));
         }
 
         /// <summary>
-        /// Update counter. Return a collection of <see cref="LinePolygonWrapper"> objects need to be remove.
+        /// Update counter.
         /// </summary>
         /// 
         /// <remarks>
@@ -50,21 +49,20 @@ namespace HamiltonVisualizer.ViewModels
         /// <item>Decrease NoV counter => Update UI.</item>
         /// </list>
         /// </remarks>
-        /// 
-        ///  <param name="pendingRemove">The <see cref="LinePolygonWrapper"/> objects that related to this object.</param>
-        public void VM_NodeRemoved(Node node, out List<LinePolygonWrapper> pendingRemove)
+        public void VM_RemoveNode()
         {
             OnPropertyChanged(nameof(NoV));
-            pendingRemove = _edges.Where(e => e.From.TolerantEquals(node.Origin) || e.To.TolerantEquals(node.Origin)).ToList();
         }
 
-        public void VM_EdgeAdded()
+        public void VM_AddNewEdge(Node u, Node v)
         {
+            _graph.AddEdge(u.NodeLabel.Text, v.NodeLabel.Text);
             OnPropertyChanged(nameof(NoE));
         }
 
-        public void VM_EdgeRemoved()
+        public void VM_RemoveEdge(Node u, Node v)
         {
+            _graph.RemoveEdge(u.NodeLabel.Text, v.NodeLabel.Text);
             OnPropertyChanged(nameof(NoE));
         }
     }

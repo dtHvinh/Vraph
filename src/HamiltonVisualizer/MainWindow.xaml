@@ -96,16 +96,23 @@
                             Thêm Đỉnh
                         </Label>
                         <TextBox Margin="6 0 0 0" Width="40"/>
-                        <Button Width="36" 
-                                Background="LightGreen" 
-                                Foreground="White"
-                                >+</Button>
+                        <Button Width="36" Background="LightGreen" Foreground="White">+</Button>
                     </StackPanel>
-
+                    <StackPanel Orientation="Horizontal">
+                        <Label>Chế độ</Label>
+                        <Border Margin="26 0 0 0" 
+                                Width="77"
+                                BorderBrush="Gray"
+                                BorderThickness="1">
+                            <Button Style="{StaticResource ModeButton}"
+                                    Click="ModeButton_Click" Margin="-37 0 0 0">
+                            </Button>
+                        </Border>
+                    </StackPanel>
 
                     <StackPanel Orientation="Horizontal" 
                                 Height="30"
-                                Margin="0 580 0 3">
+                                Margin="0 550 0 3">
                         <Label>
                             Số Đỉnh
                         </Label>
