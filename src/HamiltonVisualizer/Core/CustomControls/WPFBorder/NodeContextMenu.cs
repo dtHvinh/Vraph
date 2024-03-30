@@ -1,58 +1,76 @@
-﻿using HamiltonVisualizer.GraphUIComponents.Interfaces;
+﻿using HamiltonVisualizer.Core.CustomControls.Contracts;
+using HamiltonVisualizer.GraphUIComponents.Interfaces;
+using System.Windows;
 using System.Windows.Controls;
-// TODO: Add instructment window
+
 #nullable disable
 namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 {
-    public class NodeContextMenu : ContextMenu, IUIComponent
+    public class NodeContextMenu : ContextMenu, IUIComponent, IAppContextMenu
     {
         private readonly Node _node;
 
-        public MenuItem Connect { get; set; }
+        public MenuItem SelectOrReleaseSelect { get; set; }
         public MenuItem Delete { get; set; }
 
         public NodeContextMenu(Node node)
         {
-            Initialize();
-            SetUp();
             _node = node;
-
+            Initialize();
             StyleUIComponent();
         }
 
-        private void Initialize()
+        public void Initialize()
         {
-            Connect = new()
-            {
-                Header = "Chọn...",
-            };
-            Connect.Click += Connect_Click;
+            SelectOrReleaseSelect = new();
+            SelectOrReleaseSelect.Click += SelectOrReleaseSelect_Click;
 
             Delete = new()
             {
                 Header = "Xóa"
             };
             Delete.Click += Delete_Click;
+
+            AddItems(
+                SelectOrReleaseSelect,
+                Delete);
         }
 
-        private void Delete_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void Delete_Click(object sender, RoutedEventArgs e)
         {
             _node.DeleteNode();
         }
 
-        private void Connect_Click(object sender, System.Windows.RoutedEventArgs e)
+        private void SelectOrReleaseSelect_Click(object sender, RoutedEventArgs e)
         {
-            _node.SelectNode();
-        }
-
-        private void SetUp()
-        {
-            Items.Add(Connect);
-            Items.Add(Delete);
+            if (_node.IsSelected)
+                _node.ReleaseSelectMode();
+            else
+                _node.SelectNode();
         }
 
         public void StyleUIComponent()
         {
+        }
+
+        public void AddItems(params MenuItem[] items)
+        {
+            foreach (var item in items)
+            {
+                Items.Add(item);
+            }
+        }
+
+        protected override void OnOpened(RoutedEventArgs e)
+        {
+            if (_node.IsSelected)
+            {
+                SelectOrReleaseSelect.Header = "Huỷ chọn";
+            }
+            else
+                SelectOrReleaseSelect.Header = "Chọn";
+
+            base.OnOpened(e);
         }
     }
 }

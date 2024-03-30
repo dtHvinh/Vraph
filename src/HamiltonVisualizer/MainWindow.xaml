@@ -77,11 +77,12 @@
                                 Vẽ đồ thị
                         </TextBlock>
                         <Button Content="?" 
-                                    Background="White"
-                                    Margin="10 0 0 0"
-                                    BorderThickness="0"
-                                    ToolTip="Hướng dẫn"
-                                    Width="20"></Button>
+                                Background="White"
+                                Margin="10 0 0 0"
+                                BorderThickness="0"
+                                ToolTip="Hướng dẫn"
+                                Width="20"
+                                Click="InstructionButton_Click"></Button>
                     </StackPanel>
                 </Border>
 

@@ -14,12 +14,18 @@ namespace HamiltonVisualizer.Core
 
         public void OnPropertyChanged([CallerMemberName] string? name = null)
         {
-            PropertyChanged?.Invoke(this, new(name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         public void Add(Node node)
         {
             Nodes.Add(node);
+            OnPropertyChanged();
+        }
+
+        public void Remove(Node node)
+        {
+            Nodes.Remove(node);
             OnPropertyChanged();
         }
 

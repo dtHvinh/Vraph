@@ -66,6 +66,23 @@ public partial class MainWindow : Window
 
     #endregion Navbar behaviors
 
+    #region Events
+
+    private void InstructionButton_Click(object sender, RoutedEventArgs e)
+    {
+        MessageBox.Show(
+            """
+            Nhấn chuột trái vào vùng có màu đậm hơn để vẽ
+
+            Sau khi nhập giá trị của nhãn nhấn Enter để hoàn thành
+
+            Thực hiện các thuật toán bằng chuột phải lên các Node hoặc khoảng trống
+            trong vùng vẽ.
+            """, "Hướng dẫn", button: MessageBoxButton.OK);
+    }
+
+    #endregion Events
+
     #region Drawing
 
     private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -100,6 +117,7 @@ public partial class MainWindow : Window
             await Task.Delay(500);
             Nodes.Remove(e.Node);
             DrawingCanvas.Children.Remove(e.Node);
+            _selectedCollection.Remove(e.Node);
             _viewModel.VM_NodeRemoved(e.Node, out var pendingRemoveEdge);
 
             // remove associate edge.
@@ -127,18 +145,24 @@ public partial class MainWindow : Window
         {
             _selectedCollection.Add((Node)sender);
         };
+
+        // when release select on a mode
+        node.OnNodeReleaseSelect += (object sender, NodeReleaseSelectEventArgs e) =>
+        {
+            _selectedCollection.Remove((Node)sender);
+        };
     }
 
     private void SubscribeCollectionEvents()
     {
-        static bool AreTheSameLine(Line line, Node node1, Node node2, bool ignoreDirection = true)
+        static bool AreTheSameLine(Line line, Node node1, Node node2, bool directed = false)
         {
             bool sameDirCompare = line.X1 == node1.Origin.X
                     && line.Y1 == node1.Origin.Y
                     && line.X2 == node2.Origin.X
                     && line.Y2 == node2.Origin.Y;
 
-            if (!ignoreDirection)
+            if (directed)
                 return sameDirCompare;
 
             bool opositeDirCompare = line.X1 == node2.Origin.X
@@ -158,8 +182,8 @@ public partial class MainWindow : Window
                 var node1 = nodes.Item1;
                 var node2 = nodes.Item2;
 
-                if (_drawManager.Draw(node1, node2, out var edge)
-                    && !Edges.Any(e => AreTheSameLine(e.Body, node1, node2)))
+                if (!Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
+                    && _drawManager.Draw(node1, node2, out var edge))
                 {
                     Edges.Add(edge);
                     _viewModel.VM_EdgeAdded(edge);

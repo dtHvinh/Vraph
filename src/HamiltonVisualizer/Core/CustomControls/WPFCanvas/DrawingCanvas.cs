@@ -6,6 +6,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
     {
         public DrawingCanvas()
         {
+            ContextMenu = DCContextMenu.Instance;
         }
     }
 }

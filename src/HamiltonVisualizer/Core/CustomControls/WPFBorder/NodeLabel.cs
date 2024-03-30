@@ -24,13 +24,12 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             LostFocus += NodeLabel_LostFocus;
             Background = Brushes.Transparent;
 
+            ContextMenu = null; // set this to null => right click will use ContextMenu from the Node class
             Node = node;
         }
 
         public void StyleUIComponent()
         {
-            ContextMenu = null;
-
             Background = Brushes.White;
             BorderThickness = new(0);
             Margin = new Thickness(5);
@@ -50,7 +49,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
                 }
                 else
                 {
-                    IsEnabled = true;
+                    IsEnabled = value;
                 }
             }
         }

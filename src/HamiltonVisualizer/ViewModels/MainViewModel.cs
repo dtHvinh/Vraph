@@ -3,6 +3,7 @@ using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Extensions;
+using System.Collections.ObjectModel;
 
 namespace HamiltonVisualizer.ViewModels
 {
@@ -11,20 +12,20 @@ namespace HamiltonVisualizer.ViewModels
         private readonly DirectedGraph<int> _graph = new();
         private readonly PointMap _map = new();
 
-        private List<Node> _nodes = []; // nodes in the list are guaranteed to be unique due to the duplicate check in view
-        private List<LinePolygonWrapper> _edges = [];
+        private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
+        private ReadOnlyCollection<LinePolygonWrapper> _edges = null!;
 
         public void ProvideRef(List<Node> nodes, List<LinePolygonWrapper> edges)
         {
-            _nodes = nodes;
-            _edges = edges;
+            _nodes = nodes.AsReadOnly();
+            _edges = edges.AsReadOnly();
         }
 
         public int NoE // for view binding do not rename!
         {
             get
             {
-                return _edges.Count;
+                return _edges is null ? 0 : _edges.Count;
             }
         }
 
@@ -32,7 +33,7 @@ namespace HamiltonVisualizer.ViewModels
         {
             get
             {
-                return _nodes.Count;
+                return _nodes is null ? 0 : _nodes.Count;
             }
         }
 

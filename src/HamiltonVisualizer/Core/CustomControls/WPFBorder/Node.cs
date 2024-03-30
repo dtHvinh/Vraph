@@ -23,10 +23,12 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         public NodeLabel NodeLabel => (NodeLabel)Child;
 
         public const int NodeWidth = 34;
+        public bool IsSelected { get; private set; } = false;
 
         public event NodeDeleteEventHandler? OnNodeDelete;
         public event NodeLabelSetCompleteEventHandler? OnNodeLabelChanged;
         public event OnNodeSelectedEventHandler? OnNodeSelected;
+        public event OnNodeReleaseSelectEventHandler? OnNodeReleaseSelect;
 
         public Node(Point position)
         {
@@ -50,6 +52,13 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             OnNodeSelected += (sender, e) =>
             {
                 Background = Brushes.LightGreen;
+                IsSelected = true;
+            };
+
+            OnNodeReleaseSelect += (sender, e) =>
+            {
+                Background = Brushes.White;
+                IsSelected = false;
             };
         }
 
@@ -79,7 +88,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 
         public void ReleaseSelectMode()
         {
-            Background = Brushes.White;
+            OnNodeReleaseSelect?.Invoke(this, new NodeReleaseSelectEventArgs());
         }
 
         public void SelectNode()

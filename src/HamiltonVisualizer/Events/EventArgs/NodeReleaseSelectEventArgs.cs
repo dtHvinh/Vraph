@@ -1,4 +1,4 @@
 ﻿namespace HamiltonVisualizer.Events.EventArgs
 {
-    public class NodeSelectedEventArgs;
+    public class NodeReleaseSelectEventArgs;
 }

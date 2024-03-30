@@ -1,6 +1,7 @@
 ﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Exceptions;
 using HamiltonVisualizer.Extensions;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
@@ -31,11 +32,12 @@ namespace HamiltonVisualizer.Core
         }
     }
 
+    [DebuggerDisplay("Count={_map.Count}")]
     public class PointMap
     {
         private const int MAX_CAP = 1000;
 
-        private readonly Dictionary<Point, int> _map = new(PointComparer.Instance);
+        private readonly Dictionary<Point, int> _map = [];
         private readonly List<Point> _reverseMap = [new()]; // add a place holder point so that the first element will be add at 1 index
         private static int _i = 1;
 
