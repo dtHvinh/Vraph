@@ -1,6 +1,6 @@
-﻿using HamiltonVisualizer.Exceptions;
+﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+using HamiltonVisualizer.Exceptions;
 using HamiltonVisualizer.Extensions;
-using HamiltonVisualizer.GraphUIComponents;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 

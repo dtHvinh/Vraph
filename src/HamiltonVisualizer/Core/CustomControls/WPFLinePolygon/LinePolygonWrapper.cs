@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace HamiltonVisualizer.GraphUIComponents
+namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 {
     public class LinePolygonWrapper(Line body, Polygon head)
     {

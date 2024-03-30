@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace HamiltonVisualizer.GraphUIComponents
+namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 {
     /// <summary>
     /// Graph node.

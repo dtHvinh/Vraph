@@ -1,7 +1,9 @@
 ﻿using HamiltonVisualizer.Core;
+using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
+using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Extensions;
-using HamiltonVisualizer.GraphUIComponents;
 using HamiltonVisualizer.ViewModels;
 using System.Windows;
 using System.Windows.Input;

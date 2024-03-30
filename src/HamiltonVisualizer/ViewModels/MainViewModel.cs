@@ -1,7 +1,8 @@
 ﻿using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
+using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Extensions;
-using HamiltonVisualizer.GraphUIComponents;
 
 namespace HamiltonVisualizer.ViewModels
 {

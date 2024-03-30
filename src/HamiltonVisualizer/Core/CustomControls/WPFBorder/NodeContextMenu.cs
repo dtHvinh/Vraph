@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 // TODO: Add instructment window
 #nullable disable
-namespace HamiltonVisualizer.GraphUIComponents
+namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 {
     public class NodeContextMenu : ContextMenu, IUIComponent
     {

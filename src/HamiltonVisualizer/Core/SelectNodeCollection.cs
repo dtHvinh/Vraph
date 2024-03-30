@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.GraphUIComponents;
+﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 

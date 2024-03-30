@@ -1,5 +1,6 @@
-﻿using HamiltonVisualizer.Extensions;
-using HamiltonVisualizer.GraphUIComponents;
+﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Controls;
 using System.Windows.Shapes;

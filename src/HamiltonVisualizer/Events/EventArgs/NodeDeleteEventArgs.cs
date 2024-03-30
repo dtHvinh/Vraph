@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.GraphUIComponents;
+﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 
 namespace HamiltonVisualizer.Events.EventArgs
 {

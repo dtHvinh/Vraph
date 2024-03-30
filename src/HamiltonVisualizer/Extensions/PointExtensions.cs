@@ -8,7 +8,7 @@ namespace HamiltonVisualizer.Extensions
         /// Compare two <see cref="Point"/> with tolerant
         /// </summary>
         /// <remarks>
-        /// Because two <see cref="GraphUIComponents.Node"/> are at least 2 time <see cref="GraphUIComponents.Node.NodeWidth"/> distance so as long
+        /// Because two <see cref="Core.CustomControls.Node.Node"/> are at least 2 time <see cref="Node.NodeWidth"/> distance so as long
         /// as the integer part are equal then they're equal.
         /// </remarks>
         /// <param name="obj"></param>

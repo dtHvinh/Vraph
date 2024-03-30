@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.GraphUIComponents;
+﻿using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using System.Windows.Controls;
 
 namespace HamiltonVisualizer.Extensions

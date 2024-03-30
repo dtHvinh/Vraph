@@ -4,10 +4,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace HamiltonVisualizer.GraphUIComponents
+namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 {
     /// <summary>
-    /// The label of the <see cref="GraphUIComponents.Node"/>
+    /// The label of the <see cref="Node.Node"/>
     /// </summary>
     public class NodeLabel : TextBox, IUIComponent
     {

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HamiltonVisualizer"
+        xmlns:customCanvas="clr-namespace:HamiltonVisualizer.Core.CustomControls.WPFCanvas"
         xmlns:VM="clr-namespace:HamiltonVisualizer.ViewModels"
         mc:Ignorable="d"
         Title="Hamilton Visualizer" Height="750" Width="1200"
@@ -23,8 +24,8 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="130"/>
             <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" 
@@ -40,18 +41,15 @@
                             MouseDown="Exit"></Border>
             </StackPanel>
         </Border>
-        <StackPanel Grid.Row="1" Grid.Column="0" Background="White">
-            <RadioButton  Style="{StaticResource MenuBtn}"
-                              Content="Vẽ Đồ Thị"
-                              IsChecked="True">
-            </RadioButton>
-            <RadioButton  Style="{StaticResource MenuBtn}"
-                              Content="Bộ Phận Liên Thông">
-            </RadioButton>
-            <RadioButton  Style="{StaticResource MenuBtn}"
-                              Content="Chu trình">
-            </RadioButton>
-        </StackPanel>
+
+        <customCanvas:DrawingCanvas  Grid.Column="0"
+                Grid.Row="1"
+                Grid.ColumnSpan="2"
+                Grid.RowSpan="2"
+                MouseDown="Canvas_MouseDown"
+                Background="Beige"
+                x:Name="DrawingCanvas">
+        </customCanvas:DrawingCanvas>
 
         <Border Grid.Row="1"
                 Grid.Column="1"
@@ -89,52 +87,35 @@
 
                 <StackPanel Grid.Column="1"
                             Grid.Row="1"
-                            Orientation="Vertical">
-
-                    <StackPanel Orientation="Horizontal">
-                        <Label>
-                            Thêm Đỉnh
-                        </Label>
-                        <TextBox Margin="6 0 0 0" Width="40"/>
-                        <Button Width="36" 
-                                Background="LightGreen" 
-                                Foreground="White"
-                                >+</Button>
-                    </StackPanel>
-
-
-                    <StackPanel Orientation="Horizontal" 
+                            Orientation="Vertical"> 
+                    
+                    <StackPanel Margin="0 600 0 0"
+                                x:Name="GraphInfoWrapper"> <!--Wrap graph info-->
+                        <StackPanel Orientation="Horizontal" 
                                 Height="30"
-                                Margin="0 580 0 3">
-                        <Label>
-                            Số Đỉnh
-                        </Label>
-                        <TextBox Margin="23 0 0 0" 
+                                Margin="0 0 0 3">
+                            <Label>
+                                Số Đỉnh
+                            </Label>
+                            <TextBox Margin="23 0 0 0" 
                                  Width="40" 
                                  IsReadOnly="True"
                                  Text="{Binding NoV, Mode=OneWay}"/>
-                    </StackPanel>
+                        </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" 
+                        <StackPanel Orientation="Horizontal" 
                                 Height="30">
-                        <Label>
-                            Số Cạnh
-                        </Label>
+                            <Label>
+                                Số Cạnh
+                            </Label>
 
-                        <TextBox Margin="21 1 0 0" 
+                            <TextBox Margin="21 1 0 0" 
                                  Width="40"
                                  Text="{Binding NoE, Mode=OneWay}"
                                  IsReadOnly="True"/>
+                        </StackPanel>
                     </StackPanel>
                 </StackPanel>
-
-                <Canvas Grid.Column="0"
-                        Grid.Row="0"
-                        Grid.RowSpan="2"
-                        MouseDown="Canvas_MouseDown"
-                        Background="Beige"
-                        x:Name="DrawingCanvas">
-                </Canvas>
             </Grid>
         </Border>
     </Grid>
