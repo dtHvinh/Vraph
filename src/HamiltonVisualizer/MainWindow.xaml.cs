@@ -1,11 +1,10 @@
 ﻿using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Events.EventArgs;
+using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.GraphUIComponents;
 using HamiltonVisualizer.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace HamiltonVisualizer;
@@ -67,26 +66,6 @@ public partial class MainWindow : Window
 
     #region Drawing
 
-    private void ModeButton_Click(object sender, RoutedEventArgs e)
-    {
-        IsSelectMode = !IsSelectMode;
-
-        var btn = (Button)sender;
-
-        if (IsSelectMode)
-        {
-            btn.BeginStoryboard(_animationManager.StoryboardWhenOn);
-            btn.Background = Brushes.LightGreen;
-            btn.Margin = _animationManager.ModeButtonOn;
-        }
-        else
-        {
-            btn.BeginStoryboard(_animationManager.StoryboardWhenOff);
-            btn.Background = Brushes.Gray;
-            btn.Margin = _animationManager.ModeButtonOff;
-        }
-    }
-
     private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed)
@@ -125,8 +104,7 @@ public partial class MainWindow : Window
             pendingRemoveEdge.ForEach(e =>
             {
                 Edges.Remove(e);
-                DrawingCanvas.Children.Remove(e.Head);
-                DrawingCanvas.Children.Remove(e.Body);
+                DrawingCanvas.Children.Remove(e);
                 _viewModel.VM_EdgeRemoved();
             });
         };
@@ -136,7 +114,7 @@ public partial class MainWindow : Window
         {
             var text = e.Text;
 
-            if (Nodes.Count(e => e.NodeLabel.Text!.Equals(text)) == 2)
+            if (IsNodeAlreadyExist(text))
             {
                 e.Node.DeleteNode();
             }
@@ -193,6 +171,11 @@ public partial class MainWindow : Window
     #endregion Subcribe Event
 
     #region Helper class
+
+    private bool IsNodeAlreadyExist(string? nodeLabelContent)
+    {
+        return Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
+    }
 
     private bool EnsureNoCollision(Node node)
     {

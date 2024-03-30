@@ -10,5 +10,11 @@ namespace HamiltonVisualizer.Extensions
         {
             return (collection.Add(obj.Head), collection.Add(obj.Body));
         }
+
+        public static void Remove(this UIElementCollection collection, LinePolygonWrapper obj)
+        {
+            collection.Remove(obj.Head);
+            collection.Remove(obj.Body);
+        }
     }
 }
