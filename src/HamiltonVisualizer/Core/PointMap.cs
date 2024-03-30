@@ -1,4 +1,6 @@
-﻿using HamiltonVisualizer.Extensions;
+﻿using HamiltonVisualizer.Exceptions;
+using HamiltonVisualizer.Extensions;
+using HamiltonVisualizer.GraphUIComponents;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
@@ -31,7 +33,10 @@ namespace HamiltonVisualizer.Core
 
     public class PointMap
     {
+        private const int MAX_CAP = 1000;
+
         private readonly Dictionary<Point, int> _map = new(PointComparer.Instance);
+        private readonly List<Point> _reverseMap = [new()]; // add a place holder point so that the first element will be add at 1 index
         private static int _i = 1;
 
         /// <summary>
@@ -45,9 +50,22 @@ namespace HamiltonVisualizer.Core
                 return res;
             }
             else
-                _map.Add(key, _i++);
+            {
+                _map.Add(key, _i);
+                _reverseMap.Add(key);
+            }
+            return _i++;
+        }
 
-            return _i;
+        public Point LookUp(int value)
+        {
+            Ensure.ThrowIf(
+                condition: value >= _reverseMap.Count,
+                name: typeof(IndexOutOfRangeException),
+                errorMessage: EM.No_Map_At_Index,
+                args: [nameof(Node), value]);
+
+            return _reverseMap[value];
         }
 
         public bool Remove(Point key)
