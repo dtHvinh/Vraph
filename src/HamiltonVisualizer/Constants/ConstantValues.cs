@@ -1,4 +1,6 @@
-﻿namespace HamiltonVisualizer.Constants
+﻿using System.Windows.Media;
+
+namespace HamiltonVisualizer.Constants
 {
     public class ConstantValues
     {
@@ -15,6 +17,14 @@
         {
             public const int Line = 1;
             public const int Node = 2;
+        }
+
+        public static class ControlColors
+        {
+            public static readonly SolidColorBrush NodeDefaultBackground = Brushes.White;
+            public static readonly SolidColorBrush NodeTraversalBackground = Brushes.Aquamarine;
+            public static readonly SolidColorBrush NodeDeleteBackground = Brushes.Red;
+            public static readonly SolidColorBrush NodeSelectBackground = Brushes.LightGreen;
         }
     }
 }
