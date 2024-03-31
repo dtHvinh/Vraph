@@ -37,8 +37,8 @@ namespace HamiltonVisualizer.ViewModels
 
         public void ProvideRef(RefBag refBag)
         {
-            _nodes = refBag.Nodes.AsReadOnly();
-            _edges = refBag.Edges.AsReadOnly();
+            _nodes = refBag.Nodes;
+            _edges = refBag.Edges;
             _selectedNode = refBag.SelectedNodeCollection;
         }
 
@@ -114,38 +114,46 @@ namespace HamiltonVisualizer.ViewModels
 
         public void DFS(Node node)
         {
-            int intNum = _map.LookUp(node.Origin);
-
-            IEnumerable<int> result = _graph.Algorithm.DFS(intNum);
-
-            IEnumerable<Point> points = result.Select(_map.LookUp);
-
-            List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
-
-            OnFinishedExecuteAlgorithm?.Invoke(this, new Events.EventArgs.FinishedExecuteEventArgs()
+            try
             {
-                Name = nameof(DFS),
-                Data = nodes,
-                SkipAnimation = SkipAnimation,
-            });
+                int intNum = _map.LookUp(node.Origin);
+
+                IEnumerable<int> result = _graph.Algorithm.DFS(intNum);
+
+                IEnumerable<Point> points = result.Select(_map.LookUp);
+
+                List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
+
+                OnFinishedExecuteAlgorithm?.Invoke(this, new Events.EventArgs.FinishedExecuteEventArgs()
+                {
+                    Name = nameof(DFS),
+                    Data = nodes,
+                    SkipAnimation = SkipAnimation,
+                });
+            }
+            catch (Exception) { }
         }
 
         public void BFS(Node node)
         {
-            int intNum = _map.LookUp(node.Origin);
-
-            IEnumerable<int> result = _graph.Algorithm.BFS(intNum);
-
-            IEnumerable<Point> points = result.Select(_map.LookUp);
-
-            List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
-
-            OnFinishedExecuteAlgorithm?.Invoke(this, new()
+            try
             {
-                Name = nameof(BFS),
-                Data = nodes,
-                SkipAnimation = SkipAnimation,
-            });
+                int intNum = _map.LookUp(node.Origin);
+
+                IEnumerable<int> result = _graph.Algorithm.BFS(intNum);
+
+                IEnumerable<Point> points = result.Select(_map.LookUp);
+
+                List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
+
+                OnFinishedExecuteAlgorithm?.Invoke(this, new()
+                {
+                    Name = nameof(BFS),
+                    Data = nodes,
+                    SkipAnimation = SkipAnimation,
+                });
+            }
+            catch (Exception) { }
         }
 
         public void Refresh()

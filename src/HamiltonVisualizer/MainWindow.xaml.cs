@@ -20,6 +20,7 @@ public partial class MainWindow : Window
     private readonly MainViewModel _viewModel = null!;
     private readonly SelectedNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
+    private readonly VisualAppearanceManager _visualAppearanceManager;
 
     public List<Node> Nodes { get; set; } = [];
     private List<LinePolygonWrapper> Edges { get; set; } = [];
@@ -30,9 +31,13 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        var roNodes = Nodes.AsReadOnly();
+        var roEdges = Edges.AsReadOnly();
+
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
-        _viewModel.ProvideRef(new RefBag(Nodes, Edges, _selectedCollection));
+        _viewModel.ProvideRef(new RefBag(roNodes, roEdges, _selectedCollection));
         _drawManager = new DrawManager(DrawingCanvas);
+        _visualAppearanceManager = new(roNodes, roEdges);
 
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();
@@ -108,6 +113,9 @@ public partial class MainWindow : Window
 
             Thực hiện các thuật toán bằng chuột phải lên các Node hoặc khoảng trống
             trong vùng vẽ.
+
+            Để vẽ các cạnh trong đồ thì chuột phải vào nút để bắt đầu chọn
+            Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ. 
             """, "Hướng dẫn", button: MessageBoxButton.OK);
     }
 
@@ -206,11 +214,11 @@ public partial class MainWindow : Window
         _viewModel.OnFinishedExecuteAlgorithm += (sender, e) =>
         {
             if (e.SkipAnimation)
-                DrawManager.ColorizeNodes(
+                VisualAppearanceManager.ColorizeNodes(
                     (IEnumerable<Node>)e.Data!,
                     ConstantValues.ControlColors.NodeTraversalBackground);
             else
-                DrawManager.ColorizeNodes(
+                VisualAppearanceManager.ColorizeNodes(
                     (IEnumerable<Node>)e.Data!,
                     ConstantValues.ControlColors.NodeTraversalBackground, 500);
         };
