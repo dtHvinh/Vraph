@@ -41,6 +41,9 @@ public partial class MainWindow : Window
 
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();
+        SubscribeCanvasEvents();
+
+        _viewModel.IsSelectMode = false; // raise the event for the first time!
     }
 
     #region Navbar behaviors
@@ -74,6 +77,11 @@ public partial class MainWindow : Window
     #endregion Navbar behaviors
 
     #region Events
+
+    private void ModeButton_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.IsSelectMode = !_viewModel.IsSelectMode;
+    }
 
     private void DeleteAll_Click(object sender, RoutedEventArgs e)
     {
@@ -121,7 +129,7 @@ public partial class MainWindow : Window
 
     #endregion Events
 
-    #region Drawing
+    #region Canvas interaction
 
     private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
     {
@@ -143,9 +151,25 @@ public partial class MainWindow : Window
         }
     }
 
-    #endregion Drawing
+    #endregion Canvas interaction
 
     #region Subcribe Event
+
+    private void SubscribeCanvasEvents()
+    {
+        _viewModel.OnCanvasStateChanged += (sender, e) =>
+        {
+            switch (e.State)
+            {
+                case CanvasState.Select:
+                    DrawingCanvas.MouseDown -= Canvas_MouseDown;
+                    break;
+                case CanvasState.Draw:
+                    DrawingCanvas.MouseDown += Canvas_MouseDown;
+                    break;
+            }
+        };
+    }
 
     private void SubscribeNodeEvents(Node node)
     {
@@ -191,6 +215,12 @@ public partial class MainWindow : Window
         {
             _selectedCollection.Remove((Node)sender);
             _viewModel.VM_NodeSelectedOrRelease();
+        };
+
+        node.MouseDown += (sender, e) =>
+        {
+            if (_viewModel.IsSelectMode)
+                node.SelectNode();
         };
     }
 

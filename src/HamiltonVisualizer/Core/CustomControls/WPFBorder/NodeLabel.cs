@@ -49,7 +49,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
                 }
                 else
                 {
-                    IsEnabled = value;
+                    IsEnabled = !value;
                 }
             }
         }

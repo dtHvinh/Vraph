@@ -18,6 +18,7 @@ namespace HamiltonVisualizer.Core
             }
         }
 
+        //TODO: unused
         public void ColorizeLinePolygonWrapper(SolidColorBrush color)
         {
             foreach (LinePolygonWrapper line in linePolygons)

@@ -2,6 +2,7 @@
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.Extensions;
 using System.Collections.ObjectModel;
@@ -19,8 +20,10 @@ namespace HamiltonVisualizer.ViewModels
         private SelectedNodeCollection _selectedNode = null!;
 
         public event FinishedExecuteAlgorithmEventHandler? OnFinishedExecuteAlgorithm;
+        public event CanvasStateChangeEventHandler? OnCanvasStateChanged;
 
         private bool _skipAnimation = false;
+        private bool _selectMode = false;
 
         public bool SkipAnimation
         {
@@ -31,9 +34,22 @@ namespace HamiltonVisualizer.ViewModels
             set
             {
                 _skipAnimation = value;
-                OnPropertyChanged(nameof(SkipAnimation));
+                OnPropertyChanged();
             }
         }
+        public bool IsSelectMode
+        {
+            get
+            {
+                return _selectMode;
+            }
+            set
+            {
+                _selectMode = value;
+                OnPropertyChanged();
+                OnCanvasStateChanged?.Invoke(this, new() { State = value ? CanvasState.Select : CanvasState.Draw });
+            }
+        } // for view binding do not rename!
 
         public void ProvideRef(RefBag refBag)
         {
@@ -65,6 +81,7 @@ namespace HamiltonVisualizer.ViewModels
                 return _selectedNode is null ? 0 : _selectedNode.Count;
             }
         }
+
 
         public void VM_NodeAdded()
         {
