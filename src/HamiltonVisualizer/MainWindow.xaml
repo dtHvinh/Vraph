@@ -94,11 +94,11 @@
                                 x:Name="GraphInfoWrapper"> <!--Wrap graph info-->
                         <StackPanel Orientation="Horizontal" 
                                 Height="30"
-                                Margin="0 0 0 3">
+                                Margin="0 0 0 0">
                             <Label>
                                 Số Đỉnh
                             </Label>
-                            <TextBox Margin="23 0 0 0" 
+                            <TextBox Margin="46 1 0 0" 
                                  Width="40" 
                                  IsReadOnly="True"
                                  Text="{Binding NoV, Mode=OneWay}"/>
@@ -110,9 +110,21 @@
                                 Số Cạnh
                             </Label>
 
-                            <TextBox Margin="21 1 0 0" 
+                            <TextBox Margin="43 0 0 0" 
                                  Width="40"
                                  Text="{Binding NoE, Mode=OneWay}"
+                                 IsReadOnly="True"/>
+                        </StackPanel>     
+                        
+                        <StackPanel Orientation="Horizontal" 
+                                Height="30">
+                            <Label>
+                                Số Đỉnh đã chọn
+                            </Label>
+
+                            <TextBox Margin="0 0 0 0" 
+                                 Width="40"
+                                 Text="{Binding NoSN, Mode=OneWay}"
                                  IsReadOnly="True"/>
                         </StackPanel>
                     </StackPanel>

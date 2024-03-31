@@ -1,3 +1,2 @@
 clear TODO
 
-remove node => remove edge.

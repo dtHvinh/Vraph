@@ -17,7 +17,7 @@ namespace HamiltonVisualizer;
 public partial class MainWindow : Window
 {
     private readonly MainViewModel _viewModel = null!;
-    private readonly SelectNodeCollection _selectedCollection = new();
+    private readonly SelectedNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
 
     public List<Node> Nodes { get; set; } = [];
@@ -30,8 +30,8 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
-        _viewModel.ProvideRef(Nodes, Edges);
-        _drawManager = new(DrawingCanvas);
+        _viewModel.ProvideRef(new RefBag(Nodes, Edges, _selectedCollection));
+        _drawManager = new DrawManager(DrawingCanvas);
 
         SubscribeCollectionEvents();
     }
@@ -144,12 +144,14 @@ public partial class MainWindow : Window
         node.OnNodeSelected += (object sender, NodeSelectedEventArgs e) =>
         {
             _selectedCollection.Add((Node)sender);
+            _viewModel.VM_NodeSelectedOrRelease();
         };
 
         // when release select on a mode
         node.OnNodeReleaseSelect += (object sender, NodeReleaseSelectEventArgs e) =>
         {
             _selectedCollection.Remove((Node)sender);
+            _viewModel.VM_NodeSelectedOrRelease();
         };
     }
 

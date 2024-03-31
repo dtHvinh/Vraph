@@ -14,11 +14,13 @@ namespace HamiltonVisualizer.ViewModels
 
         private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
         private ReadOnlyCollection<LinePolygonWrapper> _edges = null!;
+        private SelectedNodeCollection _selectedNode = null!;
 
-        public void ProvideRef(List<Node> nodes, List<LinePolygonWrapper> edges)
+        public void ProvideRef(RefBag refBag)
         {
-            _nodes = nodes.AsReadOnly();
-            _edges = edges.AsReadOnly();
+            _nodes = refBag.Nodes.AsReadOnly();
+            _edges = refBag.Edges.AsReadOnly();
+            _selectedNode = refBag.SelectedNodeCollection;
         }
 
         public int NoE // for view binding do not rename!
@@ -34,6 +36,14 @@ namespace HamiltonVisualizer.ViewModels
             get
             {
                 return _nodes is null ? 0 : _nodes.Count;
+            }
+        }
+
+        public int NoSN // for view binding do not rename!
+        {
+            get
+            {
+                return _selectedNode is null ? 0 : _selectedNode.Count;
             }
         }
 
@@ -73,6 +83,14 @@ namespace HamiltonVisualizer.ViewModels
         public void VM_EdgeRemoved()
         {
             OnPropertyChanged(nameof(NoE));
+        }
+
+        /// <summary>
+        /// Tell the client to update the view data.
+        /// </summary>
+        public void VM_NodeSelectedOrRelease()
+        {
+            OnPropertyChanged(nameof(NoSN));
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace HamiltonVisualizer.Core
 {
-    public class SelectNodeCollection : INotifyPropertyChanged
+    public class SelectedNodeCollection : INotifyPropertyChanged
     {
         public List<Node> Nodes { get; } = [];
 
@@ -20,13 +20,15 @@ namespace HamiltonVisualizer.Core
         public void Add(Node node)
         {
             Nodes.Add(node);
-            OnPropertyChanged();
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged(nameof(Nodes));
         }
 
         public void Remove(Node node)
         {
             Nodes.Remove(node);
-            OnPropertyChanged();
+            OnPropertyChanged(nameof(Count));
+            OnPropertyChanged(nameof(Nodes));
         }
 
         public (Node, Node) GetFirst2()
