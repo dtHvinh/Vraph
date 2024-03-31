@@ -19,7 +19,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     [DebuggerDisplay("[X:{Origin.X};Y:{Origin.Y}]")]
     public class Node : Border, IUIComponent
     {
-        public bool _canChangeBackground = true; // prevent accidentally recolorize selected node
+        public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
 
         public new Brush Background
         {
@@ -60,6 +60,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         {
             OnNodeDelete += (sender, e) =>
             {
+                _canChangeBackground = true;
                 Background = ConstantValues.ControlColors.NodeDeleteBackground;
             };
 

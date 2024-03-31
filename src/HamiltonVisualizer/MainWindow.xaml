@@ -106,7 +106,7 @@
                             </Button>
                             <Button Padding="0 10 0 10"
                                     BorderThickness="0"
-                                    Click="SkipAnimation_Click">
+                                    Click="SkipTransition_Click">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Style.Triggers>

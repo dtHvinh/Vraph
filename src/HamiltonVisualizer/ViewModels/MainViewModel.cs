@@ -19,21 +19,21 @@ namespace HamiltonVisualizer.ViewModels
         private ReadOnlyCollection<LinePolygonWrapper> _edges = null!;
         private SelectedNodeCollection _selectedNode = null!;
 
-        public event FinishedExecuteAlgorithmEventHandler? OnFinishedExecuteAlgorithm;
+        public event PresentingAlgorithmEventHandler? OnPresentingAlgorithm;
         public event CanvasStateChangeEventHandler? OnCanvasStateChanged;
 
-        private bool _skipAnimation = false;
+        private bool _skipTransition = false;
         private bool _selectMode = false;
 
-        public bool SkipAnimation
+        public bool SkipTransition
         {
             get
             {
-                return _skipAnimation;
+                return _skipTransition;
             }
             set
             {
-                _skipAnimation = value;
+                _skipTransition = value;
                 OnPropertyChanged();
             }
         }
@@ -103,6 +103,7 @@ namespace HamiltonVisualizer.ViewModels
         public void VM_NodeRemoved(Node node, out List<LinePolygonWrapper> pendingRemove)
         {
             OnPropertyChanged(nameof(NoV));
+            OnPropertyChanged(nameof(NoSN)); // a node while selecting may be deleted
             pendingRemove = _edges.Where(e => e.From.TolerantEquals(node.Origin) || e.To.TolerantEquals(node.Origin)).ToList();
         }
 
@@ -141,11 +142,11 @@ namespace HamiltonVisualizer.ViewModels
 
                 List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
 
-                OnFinishedExecuteAlgorithm?.Invoke(this, new Events.EventArgs.FinishedExecuteEventArgs()
+                OnPresentingAlgorithm?.Invoke(this, new Events.EventArgs.PresentingAlgorithmEventArgs()
                 {
                     Name = nameof(DFS),
                     Data = nodes,
-                    SkipAnimation = SkipAnimation,
+                    SkipTransition = SkipTransition,
                 });
             }
             catch (Exception) { }
@@ -163,11 +164,11 @@ namespace HamiltonVisualizer.ViewModels
 
                 List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
 
-                OnFinishedExecuteAlgorithm?.Invoke(this, new()
+                OnPresentingAlgorithm?.Invoke(this, new()
                 {
                     Name = nameof(BFS),
                     Data = nodes,
-                    SkipAnimation = SkipAnimation,
+                    SkipTransition = SkipTransition,
                 });
             }
             catch (Exception) { }

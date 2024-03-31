@@ -1,6 +1,6 @@
 ﻿namespace HamiltonVisualizer.Events.EventArgs
 {
-    public class FinishedExecuteEventArgs
+    public class PresentingAlgorithmEventArgs
     {
         /// <summary>
         /// The algorithm name.
@@ -13,8 +13,8 @@
         public object? Data { get; set; }
 
         /// <summary>
-        /// Tell client if it should skip the animation.
+        /// Tell client if it should skip the transition.
         /// </summary>
-        public bool SkipAnimation { get; set; } = false;
+        public bool SkipTransition { get; set; } = false;
     }
 }

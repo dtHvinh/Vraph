@@ -106,9 +106,9 @@ public partial class MainWindow : Window
         }
     }
 
-    private void SkipAnimation_Click(object sender, RoutedEventArgs e)
+    private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.SkipAnimation = !_viewModel.SkipAnimation;
+        _viewModel.SkipTransition = !_viewModel.SkipTransition;
     }
 
     private void InstructionButton_Click(object sender, RoutedEventArgs e)
@@ -241,9 +241,9 @@ public partial class MainWindow : Window
 
     private void SubscribeModelViewEvents()
     {
-        _viewModel.OnFinishedExecuteAlgorithm += (sender, e) =>
+        _viewModel.OnPresentingAlgorithm += (sender, e) =>
         {
-            if (e.SkipAnimation)
+            if (e.SkipTransition)
                 VisualAppearanceManager.ColorizeNodes(
                     (IEnumerable<Node>)e.Data!,
                     ConstantValues.ControlColors.NodeTraversalBackground);
