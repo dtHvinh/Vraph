@@ -17,7 +17,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     /// </remarks>
     /// 
     [DebuggerDisplay("[X:{Origin.X};Y:{Origin.Y}]")]
-    public class Node : Border, IUIComponent
+    public class Node : DraggableBorder, IUIComponent
     {
         public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
 
@@ -114,3 +114,5 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         }
     }
 }
+
+// TODO: add dragAble border
