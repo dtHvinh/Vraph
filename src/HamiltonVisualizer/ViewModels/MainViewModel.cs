@@ -2,8 +2,10 @@
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.Extensions;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace HamiltonVisualizer.ViewModels
 {
@@ -15,6 +17,23 @@ namespace HamiltonVisualizer.ViewModels
         private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
         private ReadOnlyCollection<LinePolygonWrapper> _edges = null!;
         private SelectedNodeCollection _selectedNode = null!;
+
+        public event FinishedExecuteAlgorithmEventHandler? OnFinishedExecuteAlgorithm;
+
+        private bool _skipAnimation = false;
+
+        public bool SkipAnimation
+        {
+            get
+            {
+                return _skipAnimation;
+            }
+            set
+            {
+                _skipAnimation = value;
+                OnPropertyChanged(nameof(SkipAnimation));
+            }
+        }
 
         public void ProvideRef(RefBag refBag)
         {
@@ -91,6 +110,49 @@ namespace HamiltonVisualizer.ViewModels
         public void VM_NodeSelectedOrRelease()
         {
             OnPropertyChanged(nameof(NoSN));
+        }
+
+        public void DFS(Node node)
+        {
+            int intNum = _map.LookUp(node.Origin);
+
+            IEnumerable<int> result = _graph.Algorithm.DFS(intNum);
+
+            IEnumerable<Point> points = result.Select(_map.LookUp);
+
+            List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
+
+            OnFinishedExecuteAlgorithm?.Invoke(this, new Events.EventArgs.FinishedExecuteEventArgs()
+            {
+                Name = nameof(DFS),
+                Data = nodes,
+                SkipAnimation = SkipAnimation,
+            });
+        }
+
+        public void BFS(Node node)
+        {
+            int intNum = _map.LookUp(node.Origin);
+
+            IEnumerable<int> result = _graph.Algorithm.BFS(intNum);
+
+            IEnumerable<Point> points = result.Select(_map.LookUp);
+
+            List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
+
+            OnFinishedExecuteAlgorithm?.Invoke(this, new()
+            {
+                Name = nameof(BFS),
+                Data = nodes,
+                SkipAnimation = SkipAnimation,
+            });
+        }
+
+        public void Refresh()
+        {
+            OnPropertyChanged(nameof(NoSN));
+            OnPropertyChanged(nameof(NoE));
+            OnPropertyChanged(nameof(NoV));
         }
     }
 }

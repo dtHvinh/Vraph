@@ -12,6 +12,8 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 
         public MenuItem SelectOrReleaseSelect { get; set; }
         public MenuItem Delete { get; set; }
+        public MenuItem DFS { get; set; }
+        public MenuItem BFS { get; set; }
 
         public NodeContextMenu(Node node)
         {
@@ -25,15 +27,20 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             SelectOrReleaseSelect = new();
             SelectOrReleaseSelect.Click += SelectOrReleaseSelect_Click;
 
-            Delete = new()
-            {
-                Header = "Xóa"
-            };
+            Delete = new() { Header = "Xóa" };
             Delete.Click += Delete_Click;
+
+            BFS = new() { Header = "Duyệt chiều rộng" };
+            // Click event is set by MainWindow
+
+            DFS = new() { Header = "Duyệt chiều sâu" };
+            // Click event is set by MainWindow
 
             AddItems(
                 SelectOrReleaseSelect,
-                Delete);
+                Delete,
+                DFS,
+                BFS);
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)

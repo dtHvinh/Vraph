@@ -1,2 +1,6 @@
 clear TODO
 
+add bi-direct graph
+add reset button
+add skip animation button
+add traversal animation

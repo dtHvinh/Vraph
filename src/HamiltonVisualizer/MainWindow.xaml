@@ -88,42 +88,80 @@
 
                 <StackPanel Grid.Column="1"
                             Grid.Row="1"
-                            Orientation="Vertical"> 
-                    
-                    <StackPanel Margin="0 600 0 0"
-                                x:Name="GraphInfoWrapper"> <!--Wrap graph info-->
+                            Orientation="Vertical">
+                    <StackPanel Margin="0 0 0 0"
+                                x:Name="GraphInfoWrapper">
+                        <TextBlock Padding="0 10 0 10">----------Chức năng----------</TextBlock>
+                        <StackPanel Orientation="Vertical">
+                            <Button Content="Xóa tất cả"
+                                    Padding="0 10 0 10"
+                                    BorderThickness="0"
+                                    Background="Red"
+                                    Click="DeleteAll_Click">
+                            </Button>     
+                            <Button Content="Đặt lại"
+                                    Padding="0 10 0 10"
+                                    BorderThickness="0"
+                                    Background="Yellow"
+                                    Click="ResetButton_Click">
+                            </Button>
+                            <Button Padding="0 10 0 10"
+                                    BorderThickness="0"
+                                    Click="SkipAnimation_Click">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding SkipAnimation, Mode=OneWay}" Value="True">
+                                                <Setter Property="Content" Value="Bật Chuyển động"/>
+                                                <Setter Property="Background" Value="Gray"/>
+                                                <Setter Property="ToolTip" Value="Nhấn để bật"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SkipAnimation, Mode=OneWay}" Value="False">
+                                                <Setter Property="Content" Value="Tắt chuyển động"/>
+                                                <Setter Property="Background" Value="LightGreen"/>
+                                                <Setter Property="ToolTip" Value="Nhấn để tắt"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                        <TextBlock Padding="0 10 0 10">-------Thông tin đồ thị-------</TextBlock>
                         <StackPanel Orientation="Horizontal" 
                                 Height="30"
                                 Margin="0 0 0 0">
                             <Label>
-                                Số Đỉnh
+                                Số Đỉnh:
                             </Label>
                             <TextBox Margin="46 1 0 0" 
                                  Width="40" 
                                  IsReadOnly="True"
+                                 BorderThickness="0"
                                  Text="{Binding NoV, Mode=OneWay}"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" 
                                 Height="30">
                             <Label>
-                                Số Cạnh
+                                Số Cạnh:
                             </Label>
 
                             <TextBox Margin="43 0 0 0" 
                                  Width="40"
+                                 BorderThickness="0"
                                  Text="{Binding NoE, Mode=OneWay}"
                                  IsReadOnly="True"/>
-                        </StackPanel>     
-                        
+                        </StackPanel>
+
                         <StackPanel Orientation="Horizontal" 
                                 Height="30">
                             <Label>
-                                Số Đỉnh đã chọn
+                                Số Đỉnh đã chọn:
                             </Label>
 
                             <TextBox Margin="0 0 0 0" 
                                  Width="40"
+                                 BorderThickness="0"
                                  Text="{Binding NoSN, Mode=OneWay}"
                                  IsReadOnly="True"/>
                         </StackPanel>

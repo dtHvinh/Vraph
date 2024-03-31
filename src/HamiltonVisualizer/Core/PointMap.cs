@@ -63,11 +63,11 @@ namespace HamiltonVisualizer.Core
         {
             Ensure.ThrowIf(
                 condition: value >= _reverseMap.Count,
-                name: typeof(IndexOutOfRangeException),
+                exception: typeof(IndexOutOfRangeException),
                 errorMessage: EM.No_Map_At_Index,
                 args: [nameof(Node), value]);
 
-            return _reverseMap[value];
+            return _reverseMap.ElementAt(value);
         }
 
         public bool Remove(Point key)

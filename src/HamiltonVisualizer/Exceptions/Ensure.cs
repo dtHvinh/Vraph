@@ -2,9 +2,9 @@
 {
     public static class Ensure
     {
-        public static void ThrowIf(bool condition, Type? name, string? errorMessage, params object[]? args)
+        public static void ThrowIf(bool condition, Type? exception, string? errorMessage, params object[]? args)
         {
-            if (condition)
+            if (!condition)
             {
                 return;
             }
@@ -17,17 +17,18 @@
                     msg = string.Format(errorMessage, args);
             }
 
-            if (name is null)
+            if (exception is null)
                 throw new ArgumentException(msg);
 
-            var exception = Activator.CreateInstance(name, args: errorMessage);
+            var exceptionInstance = Activator.CreateInstance(exception, args: errorMessage);
 
-            throw (Exception)exception!;
+            throw (Exception)exceptionInstance!;
         }
     }
 
     static class EM
     {
         public const string No_Map_At_Index = "No instance of {0} is mapped at index {1}";
+        public const string Not_Support_Negative_Number = "Negetive number is illegal in this context";
     }
 }

@@ -1,4 +1,5 @@
-﻿using HamiltonVisualizer.Core;
+﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
@@ -34,6 +35,7 @@ public partial class MainWindow : Window
         _drawManager = new DrawManager(DrawingCanvas);
 
         SubscribeCollectionEvents();
+        SubscribeModelViewEvents();
     }
 
     #region Navbar behaviors
@@ -68,6 +70,34 @@ public partial class MainWindow : Window
 
     #region Events
 
+    private void DeleteAll_Click(object sender, RoutedEventArgs e)
+    {
+        var result = MessageBox.Show("Xác nhận xóa tất cả", "Cảnh báo", MessageBoxButton.OKCancel);
+
+        if (result == MessageBoxResult.Cancel)
+            return;
+
+        Nodes.Clear();
+        Edges.Clear();
+        _selectedCollection.Nodes.Clear();
+        DrawingCanvas.Children.Clear();
+
+        _viewModel.Refresh();
+    }
+
+    private void ResetButton_Click(object sender, RoutedEventArgs e)
+    {
+        foreach (var node in Nodes)
+        {
+            node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
+        }
+    }
+
+    private void SkipAnimation_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.SkipAnimation = !_viewModel.SkipAnimation;
+    }
+
     private void InstructionButton_Click(object sender, RoutedEventArgs e)
     {
         MessageBox.Show(
@@ -94,6 +124,7 @@ public partial class MainWindow : Window
             Node node = new(mPos);
 
             SubscribeNodeEvents(node);
+            SubscribeNodeContextMenuEvents(node);
 
             if (EnsureNoCollision(node))
             {
@@ -152,6 +183,36 @@ public partial class MainWindow : Window
         {
             _selectedCollection.Remove((Node)sender);
             _viewModel.VM_NodeSelectedOrRelease();
+        };
+    }
+
+    private void SubscribeNodeContextMenuEvents(Node node)
+    {
+        var nodeContextMenu = (NodeContextMenu)node.ContextMenu;
+
+        nodeContextMenu.DFS.Click += (_, _) =>
+        {
+            _viewModel.DFS(node);
+        };
+
+        nodeContextMenu.BFS.Click += (_, _) =>
+        {
+            _viewModel.BFS(node);
+        };
+    }
+
+    private void SubscribeModelViewEvents()
+    {
+        _viewModel.OnFinishedExecuteAlgorithm += (sender, e) =>
+        {
+            if (e.SkipAnimation)
+                DrawManager.ColorizeNodes(
+                    (IEnumerable<Node>)e.Data!,
+                    ConstantValues.ControlColors.NodeTraversalBackground);
+            else
+                DrawManager.ColorizeNodes(
+                    (IEnumerable<Node>)e.Data!,
+                    ConstantValues.ControlColors.NodeTraversalBackground, 500);
         };
     }
 

@@ -19,9 +19,23 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     [DebuggerDisplay("[X:{Origin.X};Y:{Origin.Y}]")]
     public class Node : Border, IUIComponent
     {
+        public bool _canChangeBackground = true; // prevent accidentally recolorize selected node
+
+        public new Brush Background
+        {
+            get
+            {
+                return base.Background;
+            }
+            set
+            {
+                if (_canChangeBackground)
+                    base.Background = value;
+            }
+        }
+
         public Point Origin { get; set; }
         public NodeLabel NodeLabel => (NodeLabel)Child;
-
         public const int NodeWidth = 34;
         public bool IsSelected { get; private set; } = false;
 
@@ -46,17 +60,19 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         {
             OnNodeDelete += (sender, e) =>
             {
-                Background = Brushes.Red;
+                Background = ConstantValues.ControlColors.NodeDeleteBackground;
             };
 
             OnNodeSelected += (sender, e) =>
             {
-                Background = Brushes.LightGreen;
+                Background = ConstantValues.ControlColors.NodeSelectBackground;
                 IsSelected = true;
+                _canChangeBackground = false;
             };
 
             OnNodeReleaseSelect += (sender, e) =>
             {
+                _canChangeBackground = true;
                 Background = Brushes.White;
                 IsSelected = false;
             };
