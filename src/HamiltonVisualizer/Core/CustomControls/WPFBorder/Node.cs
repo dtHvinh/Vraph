@@ -1,4 +1,5 @@
 ﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.GraphUIComponents.Interfaces;
@@ -17,7 +18,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     /// </remarks>
     /// 
     [DebuggerDisplay("[X:{Origin.X};Y:{Origin.Y}]")]
-    public class Node : DraggableBorder, IUIComponent
+    public class Node : MovableNode, IUIComponent
     {
         public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
 
@@ -34,7 +35,6 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             }
         }
 
-        public Point Origin { get; set; }
         public NodeLabel NodeLabel => (NodeLabel)Child;
         public const int NodeWidth = 34;
         public bool IsSelected { get; private set; } = false;
@@ -44,10 +44,8 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         public event OnNodeSelectedEventHandler? OnNodeSelected;
         public event OnNodeReleaseSelectEventHandler? OnNodeReleaseSelect;
 
-        public Node(Point position)
+        public Node(DrawingCanvas parrent, Point position) : base(parrent, position)
         {
-            Origin = position;
-
             StyleUIComponent();
 
             Child = new NodeLabel(this);

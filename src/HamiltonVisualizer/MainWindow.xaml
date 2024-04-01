@@ -110,12 +110,12 @@
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding SkipAnimation, Mode=OneWay}" Value="True">
+                                            <DataTrigger Binding="{Binding SkipTransition, Mode=OneWay}" Value="True">
                                                 <Setter Property="Content" Value="Bật Chuyển động"/>
                                                 <Setter Property="Background" Value="Gray"/>
                                                 <Setter Property="ToolTip" Value="Nhấn để bật"></Setter>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding SkipAnimation, Mode=OneWay}" Value="False">
+                                            <DataTrigger Binding="{Binding SkipTransition, Mode=OneWay}" Value="False">
                                                 <Setter Property="Content" Value="Tắt chuyển động"/>
                                                 <Setter Property="Background" Value="LightGreen"/>
                                                 <Setter Property="ToolTip" Value="Nhấn để tắt"></Setter>
@@ -124,25 +124,6 @@
                                     </Style>
                                 </Button.Style>
                             </Button>   
-                            <Button Padding="0 10 0 10"
-                                    BorderThickness="0"
-                                    Click="ModeButton_Click"
-                                    Background="Chocolate">
-                                <Button.Style>
-                                    <Style TargetType="Button">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding IsSelectMode, Mode=OneWay}" Value="True">
-                                                <Setter Property="Content" Value="Đang chọn..."/>
-                                                <Setter Property="ToolTip" Value="Nhấn để tắt"></Setter>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding IsSelectMode, Mode=OneWay}" Value="False">
-                                                <Setter Property="Content" Value="Đang vẽ..."/>
-                                                <Setter Property="ToolTip" Value="Nhấn để tắt"></Setter>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Button.Style>
-                            </Button>
                         </StackPanel>
                         <TextBlock Padding="0 10 0 10">-------Thông tin đồ thị-------</TextBlock>
                         <StackPanel Orientation="Horizontal" 

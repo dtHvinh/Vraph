@@ -19,6 +19,10 @@ namespace HamiltonVisualizer.Core
         public bool Draw(Node src, Node dst, [NotNullWhen(true)] out LinePolygonWrapper? obj)
         {
             var edge = LinePolygonWrapper.Create(src.Origin, dst.Origin);
+
+            src.Attach(new LinePolygonWrapperAttachInfo(edge, src, AttachPosition.Head));
+            src.Attach(new LinePolygonWrapperAttachInfo(edge, dst, AttachPosition.Tail));
+
             Canvas.Children.Add(edge);
             obj = edge;
             return true;

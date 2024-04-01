@@ -21,6 +21,7 @@ public partial class MainWindow : Window
     private readonly SelectedNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
     private readonly VisualAppearanceManager _visualAppearanceManager;
+    private bool _isModified = false; // any change on how node visualize will set this to true
 
     public List<Node> Nodes { get; set; } = [];
     private List<LinePolygonWrapper> Edges { get; set; } = [];
@@ -42,6 +43,7 @@ public partial class MainWindow : Window
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();
         SubscribeCanvasEvents();
+        SubscribeWindowEvents();
 
         _viewModel.IsSelectMode = false; // raise the event for the first time!
     }
@@ -100,9 +102,13 @@ public partial class MainWindow : Window
 
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        foreach (var node in Nodes)
+        if (_isModified)
         {
-            node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
+            foreach (var node in Nodes)
+            {
+                node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
+            }
+            _isModified = false;
         }
     }
 
@@ -137,7 +143,7 @@ public partial class MainWindow : Window
         {
             var mPos = e.GetPosition(DrawingCanvas);
 
-            Node node = new(mPos);
+            var node = new Node(DrawingCanvas, mPos);
 
             SubscribeNodeEvents(node);
             SubscribeNodeContextMenuEvents(node);
@@ -157,17 +163,14 @@ public partial class MainWindow : Window
 
     private void SubscribeCanvasEvents()
     {
-        _viewModel.OnCanvasStateChanged += (sender, e) =>
+        DrawingCanvas.MouseDown += Canvas_MouseDown;
+    }
+
+    private void SubscribeWindowEvents()
+    {
+        _viewModel.OnPresentingAlgorithm += (sender, e) =>
         {
-            switch (e.State)
-            {
-                case CanvasState.Select:
-                    DrawingCanvas.MouseDown -= Canvas_MouseDown;
-                    break;
-                case CanvasState.Draw:
-                    DrawingCanvas.MouseDown += Canvas_MouseDown;
-                    break;
-            }
+            _isModified = true;
         };
     }
 
@@ -208,6 +211,7 @@ public partial class MainWindow : Window
         {
             _selectedCollection.Add((Node)sender);
             _viewModel.VM_NodeSelectedOrRelease();
+
         };
 
         // when release select on a mode
@@ -215,12 +219,6 @@ public partial class MainWindow : Window
         {
             _selectedCollection.Remove((Node)sender);
             _viewModel.VM_NodeSelectedOrRelease();
-        };
-
-        node.MouseDown += (sender, e) =>
-        {
-            if (_viewModel.IsSelectMode)
-                node.SelectNode();
         };
     }
 

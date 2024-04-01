@@ -20,7 +20,6 @@ namespace HamiltonVisualizer.ViewModels
         private SelectedNodeCollection _selectedNode = null!;
 
         public event PresentingAlgorithmEventHandler? OnPresentingAlgorithm;
-        public event CanvasStateChangeEventHandler? OnCanvasStateChanged;
 
         private bool _skipTransition = false;
         private bool _selectMode = false;
@@ -47,7 +46,6 @@ namespace HamiltonVisualizer.ViewModels
             {
                 _selectMode = value;
                 OnPropertyChanged();
-                OnCanvasStateChanged?.Invoke(this, new() { State = value ? CanvasState.Select : CanvasState.Draw });
             }
         } // for view binding do not rename!
 
@@ -142,7 +140,7 @@ namespace HamiltonVisualizer.ViewModels
 
                 List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
 
-                OnPresentingAlgorithm?.Invoke(this, new Events.EventArgs.PresentingAlgorithmEventArgs()
+                OnPresentingAlgorithm?.Invoke(this, new PresentingAlgorithmEventArgs()
                 {
                     Name = nameof(DFS),
                     Data = nodes,

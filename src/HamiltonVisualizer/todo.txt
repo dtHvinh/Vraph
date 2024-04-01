@@ -2,4 +2,7 @@ clear TODO
 
 add bi-direct graph
 
-add drag and drop
+
+reposition line attach node
+add interaction between touch nodes
+fix bfs
