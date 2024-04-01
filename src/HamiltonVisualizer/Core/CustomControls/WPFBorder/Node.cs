@@ -17,7 +17,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     /// </remarks>
     /// 
     [DebuggerDisplay("[X:{Origin.X};Y:{Origin.Y}]")]
-    public class Node : NodeBase
+    public sealed class Node : NodeBase
     {
         public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
 

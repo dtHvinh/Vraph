@@ -5,9 +5,9 @@ using HamiltonVisualizer.Exceptions;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
-namespace HamiltonVisualizer.Core
+namespace HamiltonVisualizer.Core.Functions
 {
-    public class VisualAppearanceManager(
+    public class ObjectVisualizationManager(
         ReadOnlyCollection<Node> nodes,
         ReadOnlyCollection<Edge> linePolygons)
     {

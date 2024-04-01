@@ -3,6 +3,7 @@ using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Utilities;
@@ -21,7 +22,7 @@ public partial class MainWindow : Window
     private readonly MainViewModel _viewModel = null!;
     private readonly SelectedNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
-    private readonly VisualAppearanceManager _visualAppearanceManager;
+    private readonly ObjectVisualizationManager _visualAppearanceManager;
 
     public List<Node> Nodes { get; set; } = [];
     private List<Edge> Edges { get; set; } = [];
@@ -32,13 +33,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        var roNodes = Nodes.AsReadOnly();
-        var roEdges = Edges.AsReadOnly();
 
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
-        _viewModel.ProvideRef(new RefBag(roNodes, roEdges, _selectedCollection));
+        _viewModel.ProvideRef(new RefBag(Nodes, Edges, _selectedCollection));
         _drawManager = new DrawManager(DrawingCanvas);
-        _visualAppearanceManager = new(roNodes, roEdges);
+        _visualAppearanceManager = new ObjectVisualizationManager(Nodes.AsReadOnly(), Edges.AsReadOnly());
 
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();

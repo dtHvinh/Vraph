@@ -1,6 +1,7 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
+using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.Helpers;
@@ -18,10 +19,10 @@ namespace HamiltonVisualizer.Core.Base
         private Point _origin;
 
         private readonly DrawingCanvas _attachCanvas; // the canvas to which this element attach.
-        private readonly List<EdgeAttachInfo> _adjacent; // when this element move its position, move other related movable obj
-        private readonly ObjectMovementManager _objectMovement; // manage the matter of movement of this element
+        private readonly List<EdgeConnectInfo> _adjacent; // when this element move its position, move other related movable obj
+        private readonly ObjectMovement _objectMovement; // manage the matter of movement of this element
 
-        public List<EdgeAttachInfo> Adjacent => _adjacent;
+        public List<EdgeConnectInfo> Adjacent => _adjacent;
         public event NodeStateChangedEventHandler? OnNodeStateChanged;
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace HamiltonVisualizer.Core.Base
             SubscribeEvents();
 
             _attachCanvas = parent;
-            _objectMovement = new ObjectMovementManager(this, _attachCanvas, OnNodeStateChanged);
+            _objectMovement = new ObjectMovement(this, _attachCanvas, OnNodeStateChanged);
             Origin = position;
             _adjacent = [];
         }
@@ -74,7 +75,7 @@ namespace HamiltonVisualizer.Core.Base
             };
         }
 
-        public void Attach(EdgeAttachInfo attachInfo)
+        public void Attach(EdgeConnectInfo attachInfo)
         {
             _adjacent.Add(attachInfo);
         }

@@ -1,11 +1,12 @@
-﻿using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
+﻿using HamiltonVisualizer.Core.Base;
+using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace HamiltonVisualizer.Core.Base;
+namespace HamiltonVisualizer.Core.Functions;
 
 /// <summary>
 /// Manage object movement. And raise <see cref="NodeStateChangedEventHandler"/> event.
@@ -13,7 +14,7 @@ namespace HamiltonVisualizer.Core.Base;
 /// <param name="node">The node to manage movement.</param>
 /// <param name="canvas">The canvas to which the <paramref name="node"/> attach.</param>
 /// <param name="eventHandler">The event handler to raise.</param>
-public class ObjectMovementManager
+public class ObjectMovement
 {
     private bool _isDragging;
 
@@ -22,7 +23,7 @@ public class ObjectMovementManager
 
     private readonly NodeStateChangedEventHandler? _nodeStateChanged;
 
-    public ObjectMovementManager(
+    public ObjectMovement(
         NodeBase node,
         DrawingCanvas canvas,
         NodeStateChangedEventHandler? eventHandler)

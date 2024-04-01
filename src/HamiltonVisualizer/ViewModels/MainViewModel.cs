@@ -83,7 +83,7 @@ namespace HamiltonVisualizer.ViewModels
         /// </remarks>
         /// 
         ///  <param name="pendingRemove">The <see cref="Edge"/> objects that related to this object.</param>
-        public void VM_NodeRemoved(Node node, out List<EdgeAttachInfo> pendingRemove)
+        public void VM_NodeRemoved(Node node, out List<EdgeConnectInfo> pendingRemove)
         {
             OnPropertyChanged(nameof(NoV));
             OnPropertyChanged(nameof(NoSN)); // a node while selecting may be deleted

@@ -6,12 +6,12 @@ using System.Collections.ObjectModel;
 namespace HamiltonVisualizer.Utilities
 {
     public class RefBag(
-        ReadOnlyCollection<Node> nodes,
-        ReadOnlyCollection<Edge> edges,
+        List<Node> nodes,
+        List<Edge> edges,
         SelectedNodeCollection selected)
     {
-        public ReadOnlyCollection<Node> Nodes { get; init; } = nodes;
-        public ReadOnlyCollection<Edge> Edges { get; init; } = edges;
+        public ReadOnlyCollection<Node> Nodes { get; init; } = nodes.AsReadOnly();
+        public ReadOnlyCollection<Edge> Edges { get; init; } = edges.AsReadOnly();
         public SelectedNodeCollection SelectedNodeCollection { get; init; } = selected;
     }
 }

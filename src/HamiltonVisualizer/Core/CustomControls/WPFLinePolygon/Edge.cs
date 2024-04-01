@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 {
-    public class Edge
+    public sealed class Edge
     {
         private readonly Line _body;
         private readonly Polygon _head;

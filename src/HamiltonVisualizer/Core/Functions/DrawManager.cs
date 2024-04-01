@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 
-namespace HamiltonVisualizer.Core
+namespace HamiltonVisualizer.Core.Functions
 {
     /// <summary>
     /// Drawing manager.
@@ -20,8 +20,8 @@ namespace HamiltonVisualizer.Core
         {
             var edge = new Edge(src, dst);
 
-            src.Attach(new EdgeAttachInfo(edge, src, AttachPosition.Head));
-            dst.Attach(new EdgeAttachInfo(edge, dst, AttachPosition.Tail));
+            src.Attach(new EdgeConnectInfo(edge, src, ConnectPosition.Head));
+            dst.Attach(new EdgeConnectInfo(edge, dst, ConnectPosition.Tail));
 
             Canvas.Children.Add(edge);
             obj = edge;
