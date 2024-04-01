@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.GraphUIComponents.Interfaces;
+﻿using HamiltonVisualizer.Core.Contracts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

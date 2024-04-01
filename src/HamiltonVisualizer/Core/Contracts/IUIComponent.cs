@@ -1,4 +1,4 @@
-﻿namespace HamiltonVisualizer.GraphUIComponents.Interfaces
+﻿namespace HamiltonVisualizer.Core.Contracts
 {
     public interface IUIComponent
     {

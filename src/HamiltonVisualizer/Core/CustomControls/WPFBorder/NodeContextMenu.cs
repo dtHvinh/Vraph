@@ -1,5 +1,5 @@
-﻿using HamiltonVisualizer.Core.CustomControls.Contracts;
-using HamiltonVisualizer.GraphUIComponents.Interfaces;
+﻿using HamiltonVisualizer.Core.Contracts;
+using HamiltonVisualizer.Core.CustomControls.Contracts;
 using System.Windows;
 using System.Windows.Controls;
 

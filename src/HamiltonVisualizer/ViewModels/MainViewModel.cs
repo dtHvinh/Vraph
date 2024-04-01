@@ -6,14 +6,13 @@ using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.Utilities;
 using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace HamiltonVisualizer.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
         private readonly DirectedGraph<int> _graph = new();
-        private readonly PointMap _map = new();
+        private readonly NodeMap _map = new();
 
         private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
         private ReadOnlyCollection<Edge> _edges = null!;
@@ -95,8 +94,8 @@ namespace HamiltonVisualizer.ViewModels
         {
             OnPropertyChanged(nameof(NoE));
 
-            var u = _map.LookUp(line.From.Origin);
-            var v = _map.LookUp(line.To.Origin);
+            var u = _map.LookUp(line.From);
+            var v = _map.LookUp(line.To);
 
             _graph.AddEdge(u, v);
         }
@@ -118,13 +117,11 @@ namespace HamiltonVisualizer.ViewModels
         {
             try
             {
-                int intNum = _map.LookUp(node.Origin);
+                int intNum = _map.LookUp(node);
 
                 IEnumerable<int> result = _graph.Algorithm.DFS(intNum);
 
-                IEnumerable<Point> points = result.Select(_map.LookUp);
-
-                List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
+                IEnumerable<Node> nodes = result.Select(_map.LookUp);
 
                 OnPresentingAlgorithm?.Invoke(this, new PresentingAlgorithmEventArgs()
                 {
@@ -140,13 +137,11 @@ namespace HamiltonVisualizer.ViewModels
         {
             try
             {
-                int intNum = _map.LookUp(node.Origin);
+                int intNum = _map.LookUp(node);
 
                 IEnumerable<int> result = _graph.Algorithm.BFS(intNum);
 
-                IEnumerable<Point> points = result.Select(_map.LookUp);
-
-                List<Node> nodes = _nodes.IntersectBy(points, e => e.Origin, PointComparer.Instance).ToList();
+                IEnumerable<Node> nodes = result.Select(_map.LookUp);
 
                 OnPresentingAlgorithm?.Invoke(this, new()
                 {

@@ -1,51 +1,49 @@
 ﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Exceptions;
-using HamiltonVisualizer.Extensions;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Windows;
 
 namespace HamiltonVisualizer.Utilities
 {
-    internal class PointComparer : IEqualityComparer<Point>
+    public class NodeComparer : IEqualityComparer<Node>
     {
-        private static PointComparer? _instance;
+        private static NodeComparer? _instance;
 
-        private PointComparer() { }
+        private NodeComparer() { }
 
-        public static PointComparer Instance
+        public static NodeComparer Instance
         {
             get
             {
-                return _instance ??= new PointComparer();
+                return _instance ??= new NodeComparer();
             }
         }
 
-        public bool Equals(Point x, Point y)
+        public bool Equals(Node? x, Node? y)
         {
-            return x.TolerantEquals(y);
+            return x is not null && y is not null && x.NodeLabel.Text.Equals(y.NodeLabel.Text);
         }
 
-        public int GetHashCode([DisallowNull] Point obj)
+        public int GetHashCode([DisallowNull] Node obj)
         {
             return obj.GetHashCode();
         }
     }
 
     [DebuggerDisplay("Count={_map.Count}")]
-    public class PointMap
+    public class NodeMap
     {
         private const int MAX_CAP = 1000;
 
-        private readonly Dictionary<Point, int> _map = [];
-        private readonly List<Point> _reverseMap = [new()]; // add a place holder point so that the first element will be add at 1 index
+        private readonly Dictionary<Node, int> _map = new(comparer: NodeComparer.Instance);
+        private readonly List<Node> _reverseMap = [null]; // add a place holder point so that the first element will be add at 1 index
         private static int _i = 1;
 
         /// <summary>
         /// If key exist => Return associate integer number <br/>
         /// Otherwise => Add new
         /// </summary>
-        public int LookUp(Point key)
+        public int LookUp(Node key)
         {
             if (_map.TryGetValue(key, out int res))
             {
@@ -59,7 +57,7 @@ namespace HamiltonVisualizer.Utilities
             return _i++;
         }
 
-        public Point LookUp(int value)
+        public Node LookUp(int value)
         {
             Ensure.ThrowIf(
                 condition: value >= _reverseMap.Count,
@@ -67,10 +65,10 @@ namespace HamiltonVisualizer.Utilities
                 errorMessage: EM.No_Map_At_Index,
                 args: [nameof(Node), value]);
 
-            return _reverseMap.ElementAt(value);
+            return _reverseMap[value];
         }
 
-        public bool Remove(Point key)
+        public bool Remove(Node key)
         {
             return _map.Remove(key);
         }

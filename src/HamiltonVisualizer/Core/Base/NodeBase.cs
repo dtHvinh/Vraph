@@ -3,7 +3,6 @@ using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
-using HamiltonVisualizer.GraphUIComponents.Interfaces;
 using HamiltonVisualizer.Helpers;
 using System.Windows;
 using System.Windows.Controls;
