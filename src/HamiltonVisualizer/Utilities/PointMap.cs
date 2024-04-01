@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 
-namespace HamiltonVisualizer.Core
+namespace HamiltonVisualizer.Utilities
 {
     internal class PointComparer : IEqualityComparer<Point>
     {

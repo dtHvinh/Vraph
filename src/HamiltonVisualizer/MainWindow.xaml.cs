@@ -44,8 +44,6 @@ public partial class MainWindow : Window
         SubscribeModelViewEvents();
         SubscribeCanvasEvents();
         SubscribeWindowEvents();
-
-        _viewModel.IsSelectMode = false; // raise the event for the first time!
     }
 
     #region Navbar behaviors
@@ -79,11 +77,6 @@ public partial class MainWindow : Window
     #endregion Navbar behaviors
 
     #region Events
-
-    private void ModeButton_Click(object sender, RoutedEventArgs e)
-    {
-        _viewModel.IsSelectMode = !_viewModel.IsSelectMode;
-    }
 
     private void DeleteAll_Click(object sender, RoutedEventArgs e)
     {
@@ -121,7 +114,7 @@ public partial class MainWindow : Window
     {
         MessageBox.Show(
             """
-            Nhấn chuột trái vào vùng có màu đậm hơn để vẽ
+            Nhấn chuột trái 2 lần vào vùng có màu đậm hơn để vẽ
 
             Sau khi nhập giá trị của nhãn nhấn Enter để hoàn thành
 
@@ -139,7 +132,7 @@ public partial class MainWindow : Window
 
     private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.LeftButton == MouseButtonState.Pressed)
+        if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
         {
             var mPos = e.GetPosition(DrawingCanvas);
 
@@ -176,11 +169,26 @@ public partial class MainWindow : Window
 
     private void SubscribeNodeEvents(Node node)
     {
+        // when node moving, prevent canvas to listen to click event
+        node.OnNodeStateChangedPosition += (sender, e) =>
+        {
+            switch (e.State)
+            {
+                case NodeState.Idle:
+                    DrawingCanvas.MouseDown += Canvas_MouseDown;
+                    break;
+
+                case NodeState.Moving:
+                    DrawingCanvas.MouseDown -= Canvas_MouseDown;
+                    break;
+            }
+        };
+
         // when node deleted
         node.OnNodeDelete += async (object sender, NodeDeleteEventArgs e) =>
         {
-            // invoke delete animation 
-            await Task.Delay(500);
+            if (!_viewModel.SkipTransition)
+                await Task.Delay(500);
             Nodes.Remove(e.Node);
             DrawingCanvas.Children.Remove(e.Node);
             _selectedCollection.Remove(e.Node);
@@ -189,8 +197,8 @@ public partial class MainWindow : Window
             // remove associate edge.
             pendingRemoveEdge.ForEach(e =>
             {
-                Edges.Remove(e);
-                DrawingCanvas.Children.Remove(e);
+                Edges.Remove(e.LinePolygonWrapper);
+                DrawingCanvas.Children.Remove(e.LinePolygonWrapper);
                 _viewModel.VM_EdgeRemoved();
             });
         };

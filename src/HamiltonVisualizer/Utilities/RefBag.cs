@@ -1,8 +1,9 @@
-﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+﻿using HamiltonVisualizer.Core;
+using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using System.Collections.ObjectModel;
 
-namespace HamiltonVisualizer.Core
+namespace HamiltonVisualizer.Utilities
 {
     public class RefBag(
         ReadOnlyCollection<Node> nodes,

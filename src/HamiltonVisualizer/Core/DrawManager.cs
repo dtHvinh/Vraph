@@ -21,7 +21,7 @@ namespace HamiltonVisualizer.Core
             var edge = LinePolygonWrapper.Create(src.Origin, dst.Origin);
 
             src.Attach(new LinePolygonWrapperAttachInfo(edge, src, AttachPosition.Head));
-            src.Attach(new LinePolygonWrapperAttachInfo(edge, dst, AttachPosition.Tail));
+            dst.Attach(new LinePolygonWrapperAttachInfo(edge, dst, AttachPosition.Tail));
 
             Canvas.Children.Add(edge);
             obj = edge;

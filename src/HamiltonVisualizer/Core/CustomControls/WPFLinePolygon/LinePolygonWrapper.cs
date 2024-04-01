@@ -11,6 +11,9 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         private readonly Line _body = body;
         private readonly Polygon _head = head;
 
+        private const double HeadLengthDefault = 25;
+        private const double HeadWidthDefault = 7.5;
+
         /// <summary>
         /// One of the line head.
         /// </summary>
@@ -36,7 +39,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _body.Fill = body;
         }
 
-        public static LinePolygonWrapper Create(Point from, Point to, double headLength = 25, double headWidth = 7.5)
+        public static LinePolygonWrapper Create(Point from, Point to, double headLength = HeadLengthDefault, double headWidth = HeadWidthDefault)
         {
             var body = CreateLine(from, to);
             var head = CreateArrowHead(from, to, headLength, headWidth);
@@ -60,6 +63,11 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             return line;
         }
 
+        private static Tuple<Point, Point, Point> CreateArrowHead(Point arrowHeadPos, double height = HeadLengthDefault, double sideWidth = HeadWidthDefault)
+        {
+            return Tuple.Create(arrowHeadPos, new Point(arrowHeadPos.X + sideWidth, arrowHeadPos.Y + height), new Point(arrowHeadPos.X - sideWidth, arrowHeadPos.Y + height));
+        }
+
         private static Polygon CreateArrowHead(Point from, Point to, double height, double sideWidth)
         {
             var ah = new Polygon()
@@ -74,6 +82,22 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             ah.RenderTransform = new RotateTransform(angle, to.X, to.Y);
 
             return ah;
+        }
+
+        public void UpdateArrowHead(Point newArrowHead)
+        {
+            var angle = 90 + Math.Atan2(To.Y - From.Y, To.X - From.X) * (180 / Math.PI);
+            var points = CreateArrowHead(newArrowHead);
+            _head.Points[0] = points.Item1; // the head of the arrow alway be the first element in the collection.
+            _head.Points[1] = points.Item2; // the head of the arrow alway be the first element in the collection.
+            _head.Points[2] = points.Item3; // the head of the arrow alway be the first element in the collection.
+            _head.RenderTransform = new RotateTransform(angle, To.X, To.Y);
+        }
+
+        public void UpdateArrowHeadRotation()
+        {
+            var angle = 90 + Math.Atan2(To.Y - From.Y, To.X - From.X) * (180 / Math.PI);
+            _head.RenderTransform = new RotateTransform(angle, To.X, To.Y);
         }
     }
 }

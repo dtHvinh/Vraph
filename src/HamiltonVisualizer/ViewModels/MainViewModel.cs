@@ -4,7 +4,7 @@ using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
-using HamiltonVisualizer.Extensions;
+using HamiltonVisualizer.Utilities;
 using System.Collections.ObjectModel;
 using System.Windows;
 
@@ -22,7 +22,6 @@ namespace HamiltonVisualizer.ViewModels
         public event PresentingAlgorithmEventHandler? OnPresentingAlgorithm;
 
         private bool _skipTransition = false;
-        private bool _selectMode = false;
 
         public bool SkipTransition
         {
@@ -36,18 +35,6 @@ namespace HamiltonVisualizer.ViewModels
                 OnPropertyChanged();
             }
         }
-        public bool IsSelectMode
-        {
-            get
-            {
-                return _selectMode;
-            }
-            set
-            {
-                _selectMode = value;
-                OnPropertyChanged();
-            }
-        } // for view binding do not rename!
 
         public void ProvideRef(RefBag refBag)
         {
@@ -80,7 +67,6 @@ namespace HamiltonVisualizer.ViewModels
             }
         }
 
-
         public void VM_NodeAdded()
         {
             OnPropertyChanged(nameof(NoV));
@@ -98,11 +84,11 @@ namespace HamiltonVisualizer.ViewModels
         /// </remarks>
         /// 
         ///  <param name="pendingRemove">The <see cref="LinePolygonWrapper"/> objects that related to this object.</param>
-        public void VM_NodeRemoved(Node node, out List<LinePolygonWrapper> pendingRemove)
+        public void VM_NodeRemoved(Node node, out List<LinePolygonWrapperAttachInfo> pendingRemove)
         {
             OnPropertyChanged(nameof(NoV));
             OnPropertyChanged(nameof(NoSN)); // a node while selecting may be deleted
-            pendingRemove = _edges.Where(e => e.From.TolerantEquals(node.Origin) || e.To.TolerantEquals(node.Origin)).ToList();
+            pendingRemove = node.Adjacent;
         }
 
         public void VM_EdgeAdded(LinePolygonWrapper line)
