@@ -1,4 +1,5 @@
-﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Exceptions;
 using System.Collections.ObjectModel;
@@ -8,10 +9,15 @@ namespace HamiltonVisualizer.Core
 {
     public class VisualAppearanceManager(
         ReadOnlyCollection<Node> nodes,
-        ReadOnlyCollection<LinePolygonWrapper> linePolygons)
+        ReadOnlyCollection<Edge> linePolygons)
     {
+        public bool IsModified { get; set; } = false; // value indicate if reset actually need to be perform
+
         public void ColorizeNodes(SolidColorBrush color)
         {
+            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+                IsModified = true;
+
             foreach (Node node in nodes)
             {
                 node.Background = color;
@@ -19,9 +25,12 @@ namespace HamiltonVisualizer.Core
         }
 
         //TODO: unused
-        public void ColorizeLinePolygonWrapper(SolidColorBrush color)
+        public void ColorizeEdge(SolidColorBrush color)
         {
-            foreach (LinePolygonWrapper line in linePolygons)
+            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+                IsModified = true;
+
+            foreach (Edge line in linePolygons)
             {
                 line.Head.Fill = color;
                 line.Head.Stroke = color;
@@ -30,8 +39,11 @@ namespace HamiltonVisualizer.Core
             }
         }
 
-        public static void ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color)
+        public void ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color)
         {
+            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+                IsModified = true;
+
             foreach (Node node in nodes)
             {
                 node.Background = color;
@@ -41,12 +53,15 @@ namespace HamiltonVisualizer.Core
         /// <summary>
         /// Sequency colorize node after <paramref name="millisecondsDelay"/>.
         /// </summary>
-        public static async void ColorizeNodes(
+        public async void ColorizeNodes(
             IEnumerable<Node> nodes,
             SolidColorBrush color,
             int millisecondsDelay,
             bool delayAtStart = false)
         {
+            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+                IsModified = true;
+
             Ensure.ThrowIf(
                 condition: millisecondsDelay < 0,
                 exception: typeof(ArgumentException),
@@ -79,6 +94,15 @@ namespace HamiltonVisualizer.Core
                     catch (Exception) { }
                 }
             }
+        }
+
+        public void ResetColor()
+        {
+            if (IsModified)
+                foreach (Node node in nodes)
+                {
+                    node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
+                }
         }
     }
 }

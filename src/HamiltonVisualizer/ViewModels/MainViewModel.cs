@@ -16,7 +16,7 @@ namespace HamiltonVisualizer.ViewModels
         private readonly PointMap _map = new();
 
         private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
-        private ReadOnlyCollection<LinePolygonWrapper> _edges = null!;
+        private ReadOnlyCollection<Edge> _edges = null!;
         private SelectedNodeCollection _selectedNode = null!;
 
         public event PresentingAlgorithmEventHandler? OnPresentingAlgorithm;
@@ -73,7 +73,7 @@ namespace HamiltonVisualizer.ViewModels
         }
 
         /// <summary>
-        /// Update counter. Return a collection of <see cref="LinePolygonWrapper"> objects need to be remove.
+        /// Update counter. Return a collection of <see cref="Edge"> objects need to be remove.
         /// </summary>
         /// 
         /// <remarks>
@@ -83,20 +83,20 @@ namespace HamiltonVisualizer.ViewModels
         /// </list>
         /// </remarks>
         /// 
-        ///  <param name="pendingRemove">The <see cref="LinePolygonWrapper"/> objects that related to this object.</param>
-        public void VM_NodeRemoved(Node node, out List<LinePolygonWrapperAttachInfo> pendingRemove)
+        ///  <param name="pendingRemove">The <see cref="Edge"/> objects that related to this object.</param>
+        public void VM_NodeRemoved(Node node, out List<EdgeAttachInfo> pendingRemove)
         {
             OnPropertyChanged(nameof(NoV));
             OnPropertyChanged(nameof(NoSN)); // a node while selecting may be deleted
             pendingRemove = node.Adjacent;
         }
 
-        public void VM_EdgeAdded(LinePolygonWrapper line)
+        public void VM_EdgeAdded(Edge line)
         {
             OnPropertyChanged(nameof(NoE));
 
-            var u = _map.LookUp(line.From);
-            var v = _map.LookUp(line.To);
+            var u = _map.LookUp(line.From.Origin);
+            var v = _map.LookUp(line.To.Origin);
 
             _graph.AddEdge(u, v);
         }

@@ -1,11 +1,10 @@
 ﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
-using HamiltonVisualizer.GraphUIComponents.Interfaces;
 using System.Diagnostics;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
@@ -18,7 +17,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     /// </remarks>
     /// 
     [DebuggerDisplay("[X:{Origin.X};Y:{Origin.Y}]")]
-    public class Node : NodeBase, IUIComponent
+    public class Node : NodeBase
     {
         public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
 
@@ -36,7 +35,6 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         }
 
         public NodeLabel NodeLabel => (NodeLabel)Child;
-        public const int NodeWidth = 34;
         public bool IsSelected { get; private set; } = false;
 
         public event NodeDeleteEventHandler? OnNodeDelete;
@@ -75,20 +73,6 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
                 Background = Brushes.White;
                 IsSelected = false;
             };
-        }
-
-        public void StyleUIComponent()
-        {
-            Width = NodeWidth;
-            Height = NodeWidth;
-            Background = Brushes.White;
-            BorderBrush = new SolidColorBrush(Colors.Black);
-            BorderThickness = new(2);
-            CornerRadius = new(30);
-
-            Canvas.SetLeft(this, Origin.X - Width / 2);
-            Canvas.SetTop(this, Origin.Y - Height / 2);
-            Panel.SetZIndex(this, ConstantValues.ZIndex.Node);
         }
 
         public void DeleteNode()

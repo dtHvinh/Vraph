@@ -7,11 +7,11 @@ namespace HamiltonVisualizer.Utilities
 {
     public class RefBag(
         ReadOnlyCollection<Node> nodes,
-        ReadOnlyCollection<LinePolygonWrapper> edges,
+        ReadOnlyCollection<Edge> edges,
         SelectedNodeCollection selected)
     {
         public ReadOnlyCollection<Node> Nodes { get; init; } = nodes;
-        public ReadOnlyCollection<LinePolygonWrapper> Edges { get; init; } = edges;
+        public ReadOnlyCollection<Edge> Edges { get; init; } = edges;
         public SelectedNodeCollection SelectedNodeCollection { get; init; } = selected;
     }
 }

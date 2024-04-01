@@ -5,6 +5,7 @@ using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Extensions;
+using HamiltonVisualizer.Utilities;
 using HamiltonVisualizer.ViewModels;
 using System.Windows;
 using System.Windows.Input;
@@ -21,10 +22,9 @@ public partial class MainWindow : Window
     private readonly SelectedNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
     private readonly VisualAppearanceManager _visualAppearanceManager;
-    private bool _isModified = false; // any change on how node visualize will set this to true
 
     public List<Node> Nodes { get; set; } = [];
-    private List<LinePolygonWrapper> Edges { get; set; } = [];
+    private List<Edge> Edges { get; set; } = [];
 
     public bool IsSelectMode { get; set; } = false;
 
@@ -95,14 +95,7 @@ public partial class MainWindow : Window
 
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        if (_isModified)
-        {
-            foreach (var node in Nodes)
-            {
-                node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
-            }
-            _isModified = false;
-        }
+        _visualAppearanceManager.ResetColor();
     }
 
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
@@ -163,14 +156,14 @@ public partial class MainWindow : Window
     {
         _viewModel.OnPresentingAlgorithm += (sender, e) =>
         {
-            _isModified = true;
+            _visualAppearanceManager.IsModified = true;
         };
     }
 
     private void SubscribeNodeEvents(Node node)
     {
         // when node moving, prevent canvas to listen to click event
-        node.OnNodeStateChangedPosition += (sender, e) =>
+        node.OnNodeStateChanged += (sender, e) =>
         {
             switch (e.State)
             {
@@ -194,11 +187,11 @@ public partial class MainWindow : Window
             _selectedCollection.Remove(e.Node);
             _viewModel.VM_NodeRemoved(e.Node, out var pendingRemoveEdge);
 
-            // remove associate edge.
+            // remove associate _edge.
             pendingRemoveEdge.ForEach(e =>
             {
-                Edges.Remove(e.LinePolygonWrapper);
-                DrawingCanvas.Children.Remove(e.LinePolygonWrapper);
+                Edges.Remove(e.Edge);
+                DrawingCanvas.Children.Remove(e.Edge);
                 _viewModel.VM_EdgeRemoved();
             });
         };
@@ -250,11 +243,11 @@ public partial class MainWindow : Window
         _viewModel.OnPresentingAlgorithm += (sender, e) =>
         {
             if (e.SkipTransition)
-                VisualAppearanceManager.ColorizeNodes(
+                _visualAppearanceManager.ColorizeNodes(
                     (IEnumerable<Node>)e.Data!,
                     ConstantValues.ControlColors.NodeTraversalBackground);
             else
-                VisualAppearanceManager.ColorizeNodes(
+                _visualAppearanceManager.ColorizeNodes(
                     (IEnumerable<Node>)e.Data!,
                     ConstantValues.ControlColors.NodeTraversalBackground, 500);
         };
@@ -320,7 +313,7 @@ public partial class MainWindow : Window
             if (CSLibraries.Mathematic.Geometry.CollisionHelper.IsCircleCollide(
                                                 CSLibraries.Mathematic.Geometry.MathPoint.ConvertFrom(node.Origin),
                                                 CSLibraries.Mathematic.Geometry.MathPoint.ConvertFrom(n.Origin),
-                                                Node.NodeWidth / 2))
+                                                ConstantValues.ControlSpecifications.NodeWidth / 2))
             {
                 return false;
             }

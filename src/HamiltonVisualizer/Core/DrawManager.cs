@@ -16,12 +16,12 @@ namespace HamiltonVisualizer.Core
         /// <summary>
         /// Draw a <see cref="Line"/> and add to the collection.
         /// </summary>
-        public bool Draw(Node src, Node dst, [NotNullWhen(true)] out LinePolygonWrapper? obj)
+        public bool Draw(Node src, Node dst, [NotNullWhen(true)] out Edge? obj)
         {
-            var edge = LinePolygonWrapper.Create(src.Origin, dst.Origin);
+            var edge = new Edge(src, dst);
 
-            src.Attach(new LinePolygonWrapperAttachInfo(edge, src, AttachPosition.Head));
-            dst.Attach(new LinePolygonWrapperAttachInfo(edge, dst, AttachPosition.Tail));
+            src.Attach(new EdgeAttachInfo(edge, src, AttachPosition.Head));
+            dst.Attach(new EdgeAttachInfo(edge, dst, AttachPosition.Tail));
 
             Canvas.Children.Add(edge);
             obj = edge;

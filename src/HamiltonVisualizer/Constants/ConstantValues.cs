@@ -26,5 +26,10 @@ namespace HamiltonVisualizer.Constants
             public static readonly SolidColorBrush NodeDeleteBackground = Brushes.Red;
             public static readonly SolidColorBrush NodeSelectBackground = Brushes.LightGreen;
         }
+
+        public static class ControlSpecifications
+        {
+            public const int NodeWidth = 34;
+        }
     }
 }
