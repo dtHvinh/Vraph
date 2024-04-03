@@ -42,22 +42,19 @@ public partial class MainWindow : Window
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();
         SubscribeCanvasEvents();
-        SubscribeWindowEvents();
+        SubscribeViewModelEvents();
     }
 
-    #region Navbar behaviors
-
+    //
     private void Border_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ChangedButton == MouseButton.Left)
             DragMove();
     }
-
     private void Exit(object sender, MouseButtonEventArgs e)
     {
         Application.Current.Shutdown();
     }
-
     private void MaximizeAndRestore(object sender, MouseButtonEventArgs e)
     {
         if (WindowState == WindowState.Maximized)
@@ -67,16 +64,12 @@ public partial class MainWindow : Window
         else
             WindowState = WindowState.Maximized;
     }
-
     private void MinimizeToTaskbar(object sender, MouseButtonEventArgs e)
     {
         WindowState = WindowState.Minimized;
     }
 
-    #endregion Navbar behaviors
-
-    #region Events
-
+    //
     private void DeleteAll_Click(object sender, RoutedEventArgs e)
     {
         var result = MessageBox.Show("Xác nhận xóa tất cả", "Cảnh báo", MessageBoxButton.OKCancel);
@@ -91,17 +84,14 @@ public partial class MainWindow : Window
 
         _viewModel.Refresh();
     }
-
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
         _visualAppearanceManager.ResetColor();
     }
-
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
         _viewModel.SkipTransition = !_viewModel.SkipTransition;
     }
-
     private void InstructionButton_Click(object sender, RoutedEventArgs e)
     {
         MessageBox.Show(
@@ -118,17 +108,13 @@ public partial class MainWindow : Window
             """, "Hướng dẫn", button: MessageBoxButton.OK);
     }
 
-    #endregion Events
-
-    #region Canvas interaction
-
-    private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
+    //
+    private void DrawingCanvas_MouseDown(object sender, MouseButtonEventArgs e)
     {
         if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
         {
             var mPos = e.GetPosition(DrawingCanvas);
-
-            var node = new Node(DrawingCanvas, mPos);
+            var node = new Node(DrawingCanvas, ObjectPosition.GetValidPosition(mPos));
 
             SubscribeNodeEvents(node);
             SubscribeNodeContextMenuEvents(node);
@@ -142,23 +128,18 @@ public partial class MainWindow : Window
         }
     }
 
-    #endregion Canvas interaction
-
-    #region Subcribe Event
-
+    //
     private void SubscribeCanvasEvents()
     {
-        DrawingCanvas.MouseDown += Canvas_MouseDown;
+        DrawingCanvas.MouseDown += DrawingCanvas_MouseDown;
     }
-
-    private void SubscribeWindowEvents()
+    private void SubscribeViewModelEvents()
     {
         _viewModel.OnPresentingAlgorithm += (sender, e) =>
         {
             _visualAppearanceManager.IsModified = true;
         };
     }
-
     private void SubscribeNodeEvents(Node node)
     {
         // when node moving, prevent canvas to listen to click event
@@ -167,11 +148,11 @@ public partial class MainWindow : Window
             switch (e.State)
             {
                 case NodeState.Idle:
-                    DrawingCanvas.MouseDown += Canvas_MouseDown;
+                    DrawingCanvas.MouseDown += DrawingCanvas_MouseDown;
                     break;
 
                 case NodeState.Moving:
-                    DrawingCanvas.MouseDown -= Canvas_MouseDown;
+                    DrawingCanvas.MouseDown -= DrawingCanvas_MouseDown;
                     break;
             }
         };
@@ -221,7 +202,6 @@ public partial class MainWindow : Window
             _viewModel.VM_NodeSelectedOrRelease();
         };
     }
-
     private void SubscribeNodeContextMenuEvents(Node node)
     {
         var nodeContextMenu = (NodeContextMenu)node.ContextMenu;
@@ -236,22 +216,20 @@ public partial class MainWindow : Window
             _viewModel.BFS(node);
         };
     }
-
     private void SubscribeModelViewEvents()
     {
-        _viewModel.OnPresentingAlgorithm += (sender, e) =>
+        _viewModel.OnPresentingAlgorithm += async (sender, e) =>
         {
             if (e.SkipTransition)
                 _visualAppearanceManager.ColorizeNodes(
                     (IEnumerable<Node>)e.Data!,
                     ConstantValues.ControlColors.NodeTraversalBackground);
             else
-                _visualAppearanceManager.ColorizeNodes(
+                await _visualAppearanceManager.ColorizeNodes(
                     (IEnumerable<Node>)e.Data!,
                     ConstantValues.ControlColors.NodeTraversalBackground, 500);
         };
     }
-
     private void SubscribeCollectionEvents()
     {
         static bool AreTheSameLine(Line line, Node node1, Node node2, bool directed = false)
@@ -293,15 +271,11 @@ public partial class MainWindow : Window
         };
     }
 
-    #endregion Subcribe Event
-
-    #region Helper class
-
+    //
     private bool IsNodeAlreadyExist(string? nodeLabelContent)
     {
         return Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
     }
-
     private bool EnsureNoCollision(Node node)
     {
         if (Nodes.Count == 0)
@@ -320,6 +294,4 @@ public partial class MainWindow : Window
 
         return true;
     }
-
-    #endregion Helper class
 }
