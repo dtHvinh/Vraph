@@ -20,8 +20,8 @@ namespace HamiltonVisualizer.Core.Functions
         {
             var edge = new GraphLine(src, dst);
 
-            src.Attach(new EdgeConnectInfo(edge, src, ConnectPosition.Head));
-            dst.Attach(new EdgeConnectInfo(edge, dst, ConnectPosition.Tail));
+            src.Attach(new GraphLineConnectInfo(edge, src, ConnectPosition.Head));
+            dst.Attach(new GraphLineConnectInfo(edge, dst, ConnectPosition.Tail));
 
             Canvas.Children.Add(edge);
             obj = edge;

@@ -84,7 +84,7 @@ namespace HamiltonVisualizer.ViewModels
         /// </remarks>
         /// 
         ///  <param name="pendingRemove">The <see cref="GraphLine"/> objects that related to this object.</param>
-        public void VM_NodeRemoved(Node node, out List<EdgeConnectInfo> pendingRemove)
+        public void VM_NodeRemoved(Node node, out List<GraphLineConnectInfo> pendingRemove)
         {
             OnPropertyChanged(nameof(NoV));
             OnPropertyChanged(nameof(NoSN)); // a node while selecting may be deleted

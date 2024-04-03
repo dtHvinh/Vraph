@@ -18,11 +18,11 @@ namespace HamiltonVisualizer.Core.Base
     {
         private Point _origin;
         private readonly DrawingCanvas _attachCanvas; // the canvas to which this element attach.
-        private readonly List<EdgeConnectInfo> _adjacent; // when this element move its position, move other related movable obj
+        private readonly List<GraphLineConnectInfo> _adjacent; // when this element move its position, move other related movable obj
         private readonly ObjectPosition _movement; // manage the matter of movement of this element
         private readonly ObjectPhysic _physic; // manage the matter of physic of this element
 
-        public List<EdgeConnectInfo> Adjacent => _adjacent;
+        public List<GraphLineConnectInfo> Adjacent => _adjacent;
         public event NodeStateChangedEventHandler? OnNodeStateChanged;
 
         /// <summary>
@@ -45,8 +45,9 @@ namespace HamiltonVisualizer.Core.Base
 
             _attachCanvas = parent;
             _movement = new ObjectPosition(this, _attachCanvas, OnNodeStateChanged);
-            Origin = position;
             _adjacent = [];
+
+            Origin = position;
         }
 
         public void StyleUIComponent()
@@ -70,12 +71,12 @@ namespace HamiltonVisualizer.Core.Base
                 if (e.NewPosition is not null && e.State == NodeState.Moving)
                     _adjacent.ForEach(line =>
                     {
-                        EdgeRepositionHelper.Move(e.NewPosition.Value, line);
+                        GraphLineRepositionHelper.Move(e.NewPosition.Value, line);
                     });
             };
         }
 
-        public void Attach(EdgeConnectInfo attachInfo)
+        public void Attach(GraphLineConnectInfo attachInfo)
         {
             _adjacent.Add(attachInfo);
         }

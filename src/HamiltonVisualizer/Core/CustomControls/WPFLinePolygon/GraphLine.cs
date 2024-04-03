@@ -7,7 +7,7 @@ using System.Windows.Shapes;
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 {
-    public sealed class Edge
+    public sealed class GraphLine
     {
         private readonly Line _body;
         private readonly Polygon _head;
@@ -21,13 +21,14 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         public Line Body => _body;
         public Polygon Head => _head;
 
-        public Edge(Node src, Node dst)
+        public GraphLine(Node src, Node dst)
         {
             From = src;
             To = dst;
 
             _body = InitLine();
             _head = CreateArrowHeadDefault();
+
         }
 
         public void ChangeColor(Brush color)

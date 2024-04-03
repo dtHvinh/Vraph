@@ -3,9 +3,9 @@ using System.Windows;
 
 namespace HamiltonVisualizer.Helpers
 {
-    public static class EdgeRepositionHelper
+    public static class GraphLineRepositionHelper
     {
-        public static void Move(Point newPosition, EdgeConnectInfo attachInfo)
+        public static void Move(Point newPosition, GraphLineConnectInfo attachInfo)
         {
             switch (attachInfo.AttachPosition)
             {

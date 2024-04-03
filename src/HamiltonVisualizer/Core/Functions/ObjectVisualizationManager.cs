@@ -25,7 +25,7 @@ namespace HamiltonVisualizer.Core.Functions
         }
 
         //TODO: unused
-        public void ColorizeEdge(SolidColorBrush color)
+        public void ColorizeGraphLine(SolidColorBrush color)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;

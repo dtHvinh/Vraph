@@ -7,7 +7,7 @@ namespace HamiltonVisualizer.Core
     /// Contain information about the connect between instance of <see cref="CustomControls.WPFLinePolygon.GraphLine"/> and 
     /// <see cref="Node"/>
     /// </summary>
-    public class EdgeConnectInfo(GraphLine edge, Node node, ConnectPosition pos)
+    public class GraphLineConnectInfo(GraphLine edge, Node node, ConnectPosition pos)
     {
         private readonly GraphLine _edge = edge;
         private readonly Node _node = node;
