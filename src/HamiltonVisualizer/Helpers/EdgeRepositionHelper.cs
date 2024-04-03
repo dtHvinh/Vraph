@@ -12,13 +12,13 @@ namespace HamiltonVisualizer.Helpers
                 case ConnectPosition.Head:
                     attachInfo.Edge.Body.X1 = newPosition.X;
                     attachInfo.Edge.Body.Y1 = newPosition.Y;
-                    attachInfo.Edge.UpdateArrowHeadRotation();
+                    attachInfo.Edge.OnHeadNodePositionChanged();
                     break;
 
                 case ConnectPosition.Tail:
                     attachInfo.Edge.Body.X2 = newPosition.X;
                     attachInfo.Edge.Body.Y2 = newPosition.Y;
-                    attachInfo.Edge.UpdateArrowHead();
+                    attachInfo.Edge.OnTailNodePositionChanged();
                     break;
             }
         }
