@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace HamiltonVisualizer.Core
+namespace HamiltonVisualizer.Core.Collections
 {
     public class SelectedNodeCollection : INotifyPropertyChanged
     {

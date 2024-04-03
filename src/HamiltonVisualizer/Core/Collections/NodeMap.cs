@@ -3,7 +3,7 @@ using HamiltonVisualizer.Exceptions;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace HamiltonVisualizer.Utilities
+namespace HamiltonVisualizer.Core.Collections
 {
     public class NodeComparer : IEqualityComparer<Node>
     {

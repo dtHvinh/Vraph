@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HamiltonVisualizer"
+        xmlns:elementVal="clr-namespace:HamiltonVisualizer.Constants"
         xmlns:customCanvas="clr-namespace:HamiltonVisualizer.Core.CustomControls.WPFCanvas"
         xmlns:VM="clr-namespace:HamiltonVisualizer.ViewModels"
         mc:Ignorable="d"
-        Title="Hamilton Visualizer" Height="750" Width="1200"
+        Title="Hamilton Visualizer" Height="850" Width="1400"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Background="Transparent"
@@ -41,15 +42,21 @@
                             MouseDown="Exit"></Border>
             </StackPanel>
         </Border>
-
-        <customCanvas:DrawingCanvas  Grid.Column="0"
-                Grid.Row="1"
-                Grid.ColumnSpan="2"
-                Grid.RowSpan="2"
+        <ScrollViewer
+            Grid.Column="0"
+            Grid.Row="1"
+            Grid.ColumnSpan="1"
+            Grid.RowSpan="2"
+            HorizontalScrollBarVisibility="Auto" 
+            VerticalScrollBarVisibility="Auto"
+            x:Name="DrawingCanvasWrapper">
+            <customCanvas:DrawingCanvas 
+                Width="1440"
+                Height="1440"
                 Background="Beige"
                 x:Name="DrawingCanvas">
-        </customCanvas:DrawingCanvas>
-
+            </customCanvas:DrawingCanvas>
+        </ScrollViewer>
         <Border Grid.Row="1"
                 Grid.Column="1"
                 Background="White">

@@ -1,5 +1,6 @@
 ﻿using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
+using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Events.EventArgs;
@@ -15,7 +16,7 @@ namespace HamiltonVisualizer.ViewModels
         private readonly NodeMap _map = new();
 
         private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
-        private ReadOnlyCollection<Edge> _edges = null!;
+        private ReadOnlyCollection<GraphLine> _edges = null!;
         private SelectedNodeCollection _selectedNode = null!;
 
         public event PresentingAlgorithmEventHandler? OnPresentingAlgorithm;
@@ -72,7 +73,7 @@ namespace HamiltonVisualizer.ViewModels
         }
 
         /// <summary>
-        /// Update counter. Return a collection of <see cref="Edge"> objects need to be remove.
+        /// Update counter. Return a collection of <see cref="GraphLine"> objects need to be remove.
         /// </summary>
         /// 
         /// <remarks>
@@ -82,7 +83,7 @@ namespace HamiltonVisualizer.ViewModels
         /// </list>
         /// </remarks>
         /// 
-        ///  <param name="pendingRemove">The <see cref="Edge"/> objects that related to this object.</param>
+        ///  <param name="pendingRemove">The <see cref="GraphLine"/> objects that related to this object.</param>
         public void VM_NodeRemoved(Node node, out List<EdgeConnectInfo> pendingRemove)
         {
             OnPropertyChanged(nameof(NoV));
@@ -90,7 +91,7 @@ namespace HamiltonVisualizer.ViewModels
             pendingRemove = node.Adjacent;
         }
 
-        public void VM_EdgeAdded(Edge line)
+        public void VM_EdgeAdded(GraphLine line)
         {
             OnPropertyChanged(nameof(NoE));
 

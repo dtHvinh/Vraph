@@ -1,8 +1,8 @@
-﻿using HamiltonVisualizer.Constants;
-using HamiltonVisualizer.Core;
+﻿using CSLibraries.Mathematic.Geometry;
+using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
-using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Extensions;
@@ -11,6 +11,7 @@ using HamiltonVisualizer.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shapes;
+using PointMethods = CSLibraries.Mathematic.Geometry.MathPoint;
 
 namespace HamiltonVisualizer;
 
@@ -23,9 +24,7 @@ public partial class MainWindow : Window
     private readonly SelectedNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
     private readonly ObjectVisualizationManager _visualAppearanceManager;
-
-    public List<Node> Nodes { get; set; } = [];
-    private List<Edge> Edges { get; set; } = [];
+    private readonly GraphElementsCollection _elementCollection;
 
     public bool IsSelectMode { get; set; } = false;
 
@@ -33,11 +32,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-
+        _elementCollection = new GraphElementsCollection();
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
-        _viewModel.ProvideRef(new RefBag(Nodes, Edges, _selectedCollection));
+        _viewModel.ProvideRef(new RefBag(_elementCollection.Nodes, _elementCollection.Edges, _selectedCollection));
         _drawManager = new DrawManager(DrawingCanvas);
-        _visualAppearanceManager = new ObjectVisualizationManager(Nodes.AsReadOnly(), Edges.AsReadOnly());
+        _visualAppearanceManager = new ObjectVisualizationManager(_elementCollection.Nodes.AsReadOnly(), _elementCollection.Edges.AsReadOnly());
 
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();
@@ -77,8 +76,8 @@ public partial class MainWindow : Window
         if (result == MessageBoxResult.Cancel)
             return;
 
-        Nodes.Clear();
-        Edges.Clear();
+        _elementCollection.Nodes.Clear();
+        _elementCollection.Edges.Clear();
         _selectedCollection.Nodes.Clear();
         DrawingCanvas.Children.Clear();
 
@@ -122,7 +121,7 @@ public partial class MainWindow : Window
             if (EnsureNoCollision(node))
             {
                 DrawingCanvas.Children.Add(node);
-                Nodes.Add(node);
+                _elementCollection.Nodes.Add(node);
                 _viewModel.VM_NodeAdded();
             }
         }
@@ -162,7 +161,7 @@ public partial class MainWindow : Window
         {
             if (!_viewModel.SkipTransition)
                 await Task.Delay(500);
-            Nodes.Remove(e.Node);
+            _elementCollection.Nodes.Remove(e.Node);
             DrawingCanvas.Children.Remove(e.Node);
             _selectedCollection.Remove(e.Node);
             _viewModel.VM_NodeRemoved(e.Node, out var pendingRemoveEdge);
@@ -170,7 +169,7 @@ public partial class MainWindow : Window
             // remove associate _edge.
             pendingRemoveEdge.ForEach(e =>
             {
-                Edges.Remove(e.Edge);
+                _elementCollection.Edges.Remove(e.Edge);
                 DrawingCanvas.Children.Remove(e.Edge);
                 _viewModel.VM_EdgeRemoved();
             });
@@ -259,10 +258,10 @@ public partial class MainWindow : Window
                 var node1 = nodes.Item1;
                 var node2 = nodes.Item2;
 
-                if (!Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
+                if (!_elementCollection.Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
                     && _drawManager.Draw(node1, node2, out var edge))
                 {
-                    Edges.Add(edge);
+                    _elementCollection.Edges.Add(edge);
                     _viewModel.VM_EdgeAdded(edge);
                 }
                 node1.ReleaseSelectMode();
@@ -274,18 +273,17 @@ public partial class MainWindow : Window
     //
     private bool IsNodeAlreadyExist(string? nodeLabelContent)
     {
-        return Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
+        return _elementCollection.Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
     }
     private bool EnsureNoCollision(Node node)
     {
-        if (Nodes.Count == 0)
+        if (_elementCollection.Nodes.Count == 0)
             return true;
 
-        foreach (Node n in Nodes)
+        foreach (Node n in _elementCollection.Nodes)
         {
-            if (CSLibraries.Mathematic.Geometry.CollisionHelper.IsCircleCollide(
-                                                CSLibraries.Mathematic.Geometry.MathPoint.ConvertFrom(node.Origin),
-                                                CSLibraries.Mathematic.Geometry.MathPoint.ConvertFrom(n.Origin),
+            if (CollisionHelper.IsCircleCollide(PointMethods.ConvertFrom(node.Origin),
+                                                PointMethods.ConvertFrom(n.Origin),
                                                 ConstantValues.ControlSpecifications.NodeWidth / 2))
             {
                 return false;

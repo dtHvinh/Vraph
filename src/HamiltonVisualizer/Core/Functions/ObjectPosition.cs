@@ -5,16 +5,18 @@ using HamiltonVisualizer.Events.EventHandlers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using ES = HamiltonVisualizer.Constants.ConstantValues.ControlSpecifications;
+
 
 namespace HamiltonVisualizer.Core.Functions;
 
 /// <summary>
-/// Manage object movement. And raise <see cref="NodeStateChangedEventHandler"/> event.
+/// Manage object poistion. And raise <see cref="NodeStateChangedEventHandler"/> event.
 /// </summary>
 /// <param name="node">The node to manage movement.</param>
 /// <param name="canvas">The canvas to which the <paramref name="node"/> attach.</param>
 /// <param name="eventHandler">The event handler to raise.</param>
-public class ObjectMovement
+public class ObjectPosition
 {
     private bool _isDragging;
 
@@ -23,7 +25,7 @@ public class ObjectMovement
 
     private readonly NodeStateChangedEventHandler? _nodeStateChanged;
 
-    public ObjectMovement(
+    public ObjectPosition(
         NodeBase node,
         DrawingCanvas canvas,
         NodeStateChangedEventHandler? eventHandler)
@@ -51,7 +53,7 @@ public class ObjectMovement
             if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
             {
                 Point curPos = e.GetPosition(_drawingCanvas);
-                _node.Origin = curPos;
+                _node.Origin = GetValidPosition(curPos);
                 _nodeStateChanged?.Invoke(_node, new NodeStateChangeEventArgs(_node.Origin, NodeState.Moving));
             }
         };
@@ -66,6 +68,43 @@ public class ObjectMovement
                 _nodeStateChanged?.Invoke(_node, new NodeStateChangeEventArgs(State: NodeState.Idle));
             }
         };
+    }
+
+    public static Point GetValidPosition(Point point)
+    {
+        double lowerBound = ES.NodeWidth / 2;
+        double upperBound = ES.DrawingCanvasSidesLength - ES.NodeWidth / 2;
+
+        double X;
+        double Y;
+
+        if (point.X < lowerBound)
+        {
+            X = lowerBound;
+        }
+        else if (point.X > upperBound)
+        {
+            X = upperBound;
+        }
+        else
+        {
+            X = point.X;
+        }
+
+        if (point.Y < lowerBound)
+        {
+            Y = lowerBound;
+        }
+        else if (point.Y > upperBound)
+        {
+            Y = upperBound;
+        }
+        else
+        {
+            Y = point.Y;
+        }
+
+        return new Point(X, Y);
     }
 
     /// <summary>

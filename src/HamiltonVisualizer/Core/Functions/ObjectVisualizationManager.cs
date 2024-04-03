@@ -9,7 +9,7 @@ namespace HamiltonVisualizer.Core.Functions
 {
     public class ObjectVisualizationManager(
         ReadOnlyCollection<Node> nodes,
-        ReadOnlyCollection<Edge> linePolygons)
+        ReadOnlyCollection<GraphLine> linePolygons)
     {
         public bool IsModified { get; set; } = false; // value indicate if reset actually need to be perform
 
@@ -30,7 +30,7 @@ namespace HamiltonVisualizer.Core.Functions
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
 
-            foreach (Edge line in linePolygons)
+            foreach (GraphLine line in linePolygons)
             {
                 line.Head.Fill = color;
                 line.Head.Stroke = color;
@@ -53,7 +53,7 @@ namespace HamiltonVisualizer.Core.Functions
         /// <summary>
         /// Sequency colorize node after <paramref name="millisecondsDelay"/>.
         /// </summary>
-        public async void ColorizeNodes(
+        public async Task ColorizeNodes(
             IEnumerable<Node> nodes,
             SolidColorBrush color,
             int millisecondsDelay,

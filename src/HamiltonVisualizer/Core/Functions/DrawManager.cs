@@ -16,9 +16,9 @@ namespace HamiltonVisualizer.Core.Functions
         /// <summary>
         /// Draw a <see cref="Line"/> and add to the collection.
         /// </summary>
-        public bool Draw(Node src, Node dst, [NotNullWhen(true)] out Edge? obj)
+        public bool Draw(Node src, Node dst, [NotNullWhen(true)] out GraphLine? obj)
         {
-            var edge = new Edge(src, dst);
+            var edge = new GraphLine(src, dst);
 
             src.Attach(new EdgeConnectInfo(edge, src, ConnectPosition.Head));
             dst.Attach(new EdgeConnectInfo(edge, dst, ConnectPosition.Tail));

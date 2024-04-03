@@ -3,3 +3,10 @@ clear TODO
 add bi-direct graph
 
 add interaction between touch nodes
+
+add multi threading => background worker
+zom in zom out, move around canvas
+wrap Nodes Edges in mainwindow]
+object physic
+
+add multi-lang
