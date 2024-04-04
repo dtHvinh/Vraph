@@ -1,5 +1,7 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+using HamiltonVisualizer.Events.EventArgs;
+using HamiltonVisualizer.Events.EventHandlers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -21,6 +23,12 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         public Line Body => _body;
         public Polygon Head => _head;
 
+        public event GraphLineDeleteEventHandler? OnGraphLineDeleted;
+
+        /// <summary>
+        /// Create new instance of <see cref="GraphLine"/> and do <see cref="Base.NodeBase.Attach(GraphLineConnectInfo)"/>
+        /// a new instance of <see cref="GraphLineConnectInfo"/> for each <see cref="Node"/>.
+        /// </summary>
         public GraphLine(Node src, Node dst)
         {
             From = src;
@@ -29,6 +37,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _body = InitLine();
             _head = CreateArrowHeadDefault();
 
+            _body.ContextMenu = new GraphLineContextMenu(this);
+
+            src.Attach(this, ConnectPosition.Head);
+            dst.Attach(this, ConnectPosition.Tail);
         }
 
         public void ChangeColor(Brush color)
@@ -95,6 +107,28 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         {
             var angle = 90 + Math.Atan2(To.Origin.Y - From.Origin.Y, To.Origin.X - From.Origin.X) * (180 / Math.PI);
             _head.RenderTransform = new RotateTransform(angle, To.Origin.X, To.Origin.Y);
+        }
+
+        /// <summary>
+        /// Delete this <see cref="GraphLine"/> and perform <see cref="Base.NodeBase.Detach(GraphLineConnectInfo)"/>.
+        /// </summary>
+        public void Delete()
+        {
+            From.Detach(this);
+            To.Detach(this);
+
+            OnGraphLineDeleted?.Invoke(this, new GraphLineDeleteEventArgs(this));
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is GraphLine other &&
+                other.GetHashCode().Equals(GetHashCode());
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_body.GetHashCode(), _head.GetHashCode, HeadLength, HeadWidth);
         }
     }
 }
