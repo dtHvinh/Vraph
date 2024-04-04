@@ -19,10 +19,6 @@ namespace HamiltonVisualizer.Core.Functions
         public bool Draw(Node src, Node dst, [NotNullWhen(true)] out GraphLine? obj)
         {
             var edge = new GraphLine(src, dst);
-
-            src.Attach(new GraphLineConnectInfo(edge, src, ConnectPosition.Head));
-            dst.Attach(new GraphLineConnectInfo(edge, dst, ConnectPosition.Tail));
-
             Canvas.Children.Add(edge);
             obj = edge;
             return true;
