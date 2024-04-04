@@ -1,5 +1,4 @@
-﻿using CSLibraries.Mathematic.Geometry;
-using HamiltonVisualizer.Constants;
+﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
@@ -12,7 +11,6 @@ using HamiltonVisualizer.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shapes;
-using PointMethods = CSLibraries.Mathematic.Geometry.MathPoint;
 
 namespace HamiltonVisualizer;
 
@@ -116,12 +114,15 @@ public partial class MainWindow : Window
         if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
         {
             var mPos = e.GetPosition(DrawingCanvas);
-            var node = new Node(DrawingCanvas, ObjectPosition.GetValidPosition(mPos));
+
+            var node = new Node(DrawingCanvas,
+                                ObjectPosition.GetValidPosition(mPos),
+                                _elementCollection.Nodes.AsReadOnly());
 
             SubscribeNodeEvents(node);
             SubscribeNodeContextMenuEvents(node);
 
-            if (EnsureNoCollision(node))
+            if (node.Physic.IsNoCollide())
             {
                 DrawingCanvas.Children.Add(node);
                 _elementCollection.Nodes.Add(node);
@@ -291,22 +292,5 @@ public partial class MainWindow : Window
     private bool IsNodeAlreadyExist(string? nodeLabelContent)
     {
         return _elementCollection.Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
-    }
-    private bool EnsureNoCollision(Node node)
-    {
-        if (_elementCollection.Nodes.Count == 0)
-            return true;
-
-        foreach (Node n in _elementCollection.Nodes)
-        {
-            if (CollisionHelper.IsCircleCollide(PointMethods.ConvertFrom(node.Origin),
-                                                PointMethods.ConvertFrom(n.Origin),
-                                                ConstantValues.ControlSpecifications.NodeWidth / 2))
-            {
-                return false;
-            }
-        }
-
-        return true;
     }
 }

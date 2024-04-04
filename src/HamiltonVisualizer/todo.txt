@@ -7,8 +7,8 @@ object physic
 
 add multi-lang use IMultiLangComponent
 
-add node info
-
 add redo func ??
 
 use dependency prop
+
+add pdf export

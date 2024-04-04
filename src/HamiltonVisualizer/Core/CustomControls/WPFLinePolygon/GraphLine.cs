@@ -93,7 +93,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             return ah;
         }
 
-        public void OnTailNodePositionChanged()
+        public void OnTailPositionChanged()
         {
             var angle = 90 + Math.Atan2(To.Origin.Y - From.Origin.Y, To.Origin.X - From.Origin.X) * (180 / Math.PI);
             var points = CreateArrowHead(To.Origin, HeadLength, HeadWidth);
@@ -103,7 +103,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _head.RenderTransform = new RotateTransform(angle, To.Origin.X, To.Origin.Y);
         }
 
-        public void OnHeadNodePositionChanged()
+        public void OnHeadPositionChanged()
         {
             var angle = 90 + Math.Atan2(To.Origin.Y - From.Origin.Y, To.Origin.X - From.Origin.X) * (180 / Math.PI);
             _head.RenderTransform = new RotateTransform(angle, To.Origin.X, To.Origin.Y);

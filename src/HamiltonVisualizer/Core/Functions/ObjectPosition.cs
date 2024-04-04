@@ -63,7 +63,6 @@ public class ObjectPosition
             if (_isDragging)
             {
                 _isDragging = false;
-                _node.Origin = e.GetPosition(_drawingCanvas);
                 Mouse.Capture(null);
                 _nodeStateChanged?.Invoke(_node, new NodeStateChangeEventArgs(State: NodeState.Idle));
             }

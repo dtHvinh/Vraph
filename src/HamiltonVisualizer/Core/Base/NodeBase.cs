@@ -1,11 +1,13 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Contracts;
+using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.Helpers;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,13 +17,13 @@ namespace HamiltonVisualizer.Core.Base
     /// <summary>
     /// A node that can move on a canvas
     /// </summary>
-    public abstract class NodeBase : Border, IUIComponent, INavigableElement, IMultiLanguageComponent
+    public abstract class NodeBase : Border, IUIComponent, INavigableElement, IMultiLanguageSupport
     {
         private Point _origin;
-        private readonly DrawingCanvas _attachCanvas; // the canvas to which this element attach.
         private readonly List<GraphLineConnectInfo> _adjacent; // when this element move its position, move other related movable obj
-        private readonly ObjectPosition _movement; // manage the matter of movement of this element
-        private readonly ObjectPhysic _physic; // manage the matter of physic of this element
+
+        public ObjectPosition Movement { get; } // manage the matter of movement of this element
+        public ObjectPhysic Physic { get; } // manage the matter of physic of this element
 
         public List<GraphLineConnectInfo> Adjacent => _adjacent;
         public event NodeStateChangedEventHandler? OnNodeStateChanged;
@@ -34,18 +36,21 @@ namespace HamiltonVisualizer.Core.Base
             get => _origin;
             set
             {
-                _movement.OnOriginChanged();
+                Movement.OnOriginChanged();
                 _origin = value;
             }
         }
 
-        protected NodeBase(DrawingCanvas parent, Point position)
+        protected NodeBase(
+            DrawingCanvas parent,
+            Point position,
+            ReadOnlyCollection<Node> others)
         {
             StyleUIComponent();
             SubscribeEvents();
 
-            _attachCanvas = parent;
-            _movement = new ObjectPosition(this, _attachCanvas, OnNodeStateChanged);
+            Movement = new ObjectPosition(this, parent, OnNodeStateChanged);
+            Physic = new ObjectPhysic(this, others);
             _adjacent = [];
 
             Origin = position;
@@ -94,8 +99,8 @@ namespace HamiltonVisualizer.Core.Base
             return lang switch
             {
                 "vi" => $"""
-                        Tọa Độ:             {(int)_origin.X}:{(int)_origin.Y}
-                        Số cạnh liền kề:    {_adjacent.Count}
+                        Tọa Độ:{new string(' ', 14)}{(int)_origin.X}:{(int)_origin.Y}
+                        Số cạnh liền kề:{new string(' ', 2)}{_adjacent.Count}
                         """,
                 _ => throw new Exception($"Invalid lang {lang}!"),// TODO: add to EM class
             };
