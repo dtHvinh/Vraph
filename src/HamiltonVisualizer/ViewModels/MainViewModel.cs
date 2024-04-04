@@ -1,6 +1,7 @@
 ﻿using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.Collections;
+using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Events.EventArgs;
@@ -10,7 +11,7 @@ using System.Collections.ObjectModel;
 
 namespace HamiltonVisualizer.ViewModels
 {
-    public class MainViewModel : ObservableObject
+    public class MainViewModel : ObservableObject, IRefSetter
     {
         private readonly DirectedGraph<int> _graph = new();
         private readonly NodeMap _map = new();
@@ -36,7 +37,7 @@ namespace HamiltonVisualizer.ViewModels
             }
         }
 
-        public void ProvideRef(RefBag refBag)
+        public void SetRefs(RefBag refBag)
         {
             _nodes = refBag.Nodes;
             _edges = refBag.Edges;

@@ -3,6 +3,7 @@ using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
+using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Extensions;
@@ -33,10 +34,13 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         _elementCollection = new GraphElementsCollection();
+
+        var refs = _elementCollection.GetReadOnlyRefs();
+
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
-        _viewModel.ProvideRef(new RefBag(_elementCollection.Nodes, _elementCollection.Edges, _selectedCollection));
+        _viewModel.SetRefs(new RefBag(refs.Item1, refs.Item2, _selectedCollection));
         _drawManager = new DrawManager(DrawingCanvas);
-        _visualAppearanceManager = new ObjectVisualizationManager(_elementCollection.Nodes.AsReadOnly(), _elementCollection.Edges.AsReadOnly());
+        _visualAppearanceManager = new ObjectVisualizationManager(refs.Item1, refs.Item2);
 
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();
@@ -76,8 +80,7 @@ public partial class MainWindow : Window
         if (result == MessageBoxResult.Cancel)
             return;
 
-        _elementCollection.Nodes.Clear();
-        _elementCollection.Edges.Clear();
+        _elementCollection.ClearAll();
         _selectedCollection.Nodes.Clear();
         DrawingCanvas.Children.Clear();
 
@@ -161,7 +164,7 @@ public partial class MainWindow : Window
         {
             if (!_viewModel.SkipTransition)
                 await Task.Delay(500);
-            _elementCollection.Nodes.Remove(e.Node);
+            _elementCollection.Remove(e.Node);
             DrawingCanvas.Children.Remove(e.Node);
             _selectedCollection.Remove(e.Node);
             _viewModel.VM_NodeRemoved(e.Node, out var pendingRemoveEdge);
@@ -169,7 +172,7 @@ public partial class MainWindow : Window
             // remove associate _edge.
             pendingRemoveEdge.ForEach(e =>
             {
-                _elementCollection.Edges.Remove(e.Edge);
+                _elementCollection.Remove(e.Edge);
                 DrawingCanvas.Children.Remove(e.Edge);
                 _viewModel.VM_EdgeRemoved();
             });
@@ -229,6 +232,19 @@ public partial class MainWindow : Window
                     ConstantValues.ControlColors.NodeTraversalBackground, 500);
         };
     }
+    private void SubscribeGraphLineEvents(GraphLine graphLine)
+    {
+        graphLine.OnGraphLineDeleted += (sender, e) =>
+        {
+            var deleteLine = e.GraphLine;
+
+            // TODO: line may have some kind of animation ???
+
+            _elementCollection.Remove(deleteLine);
+            DrawingCanvas.Children.Remove(deleteLine);
+            _viewModel.VM_EdgeRemoved();
+        };
+    }
     private void SubscribeCollectionEvents()
     {
         static bool AreTheSameLine(Line line, Node node1, Node node2, bool directed = false)
@@ -263,6 +279,7 @@ public partial class MainWindow : Window
                 {
                     _elementCollection.Edges.Add(edge);
                     _viewModel.VM_EdgeAdded(edge);
+                    SubscribeGraphLineEvents(edge);
                 }
                 node1.ReleaseSelectMode();
                 node2.ReleaseSelectMode();

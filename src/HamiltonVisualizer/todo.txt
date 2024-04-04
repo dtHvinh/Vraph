@@ -5,8 +5,10 @@ add bi-direct graph
 add multi threading => background worker
 object physic
 
-add multi-lang
+add multi-lang use IMultiLangComponent
 
 add node info
 
 add redo func ??
+
+use dependency prop

@@ -10,6 +10,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     {
         private readonly Node _node;
 
+        public MenuItem Information { get; set; }
         public MenuItem SelectOrReleaseSelect { get; set; }
         public MenuItem Delete { get; set; }
         public MenuItem DFS { get; set; }
@@ -36,7 +37,11 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             DFS = new() { Header = "Duyệt chiều sâu" };
             // Click event is set by MainWindow
 
+            Information = new() { Header = "Thông tin" };
+            Information.Click += (sender, e) => { MessageBox.Show(_node.ToString("vi")); };
+
             AddItems(
+                Information,
                 SelectOrReleaseSelect,
                 Delete,
                 DFS,

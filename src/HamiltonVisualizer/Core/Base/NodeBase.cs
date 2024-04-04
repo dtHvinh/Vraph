@@ -1,6 +1,7 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
+using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
@@ -14,7 +15,7 @@ namespace HamiltonVisualizer.Core.Base
     /// <summary>
     /// A node that can move on a canvas
     /// </summary>
-    public abstract class NodeBase : Border, IUIComponent, INavigableElement
+    public abstract class NodeBase : Border, IUIComponent, INavigableElement, IMultiLanguageComponent
     {
         private Point _origin;
         private readonly DrawingCanvas _attachCanvas; // the canvas to which this element attach.
@@ -76,9 +77,28 @@ namespace HamiltonVisualizer.Core.Base
             };
         }
 
-        public void Attach(GraphLineConnectInfo attachInfo)
+        public void Attach(GraphLine line, ConnectPosition pos)
         {
+            var attachInfo = new GraphLineConnectInfo(line, this, pos);
             _adjacent.Add(attachInfo);
+        }
+
+        public void Detach(GraphLine line)
+        {
+            var attachInfo = _adjacent.First(x => x.Edge.Equals(line));
+            _adjacent.Remove(attachInfo);
+        }
+
+        public string ToString(string lang)
+        {
+            return lang switch
+            {
+                "vi" => $"""
+                        Tọa Độ:             {(int)_origin.X}:{(int)_origin.Y}
+                        Số cạnh liền kề:    {_adjacent.Count}
+                        """,
+                _ => throw new Exception($"Invalid lang {lang}!"),// TODO: add to EM class
+            };
         }
     }
 }
