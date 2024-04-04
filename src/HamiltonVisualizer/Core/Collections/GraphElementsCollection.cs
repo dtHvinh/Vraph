@@ -1,26 +1,15 @@
-﻿using HamiltonVisualizer.Core.Contracts;
-using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
-using System.Collections.ObjectModel;
 
 namespace HamiltonVisualizer.Core.Collections
 {
-    public class GraphElementsCollection : IReadOnlyRefGetter<ReadOnlyCollection<Node>, ReadOnlyCollection<GraphLine>>
+    public class GraphElementsCollection
     {
-        private readonly List<Node> _nodes = [];
-        private readonly List<GraphLine> _edges = [];
+        private readonly GraphNodeCollection _nodes = [];
+        private readonly GraphLineCollection _edges = [];
 
-        public List<Node> Nodes { get => _nodes; }
-        public List<GraphLine> Edges { get => _edges; }
-
-        /// <summary>
-        /// Get readonly collection of <see cref="Node"/> and <see cref="GraphLine"/>.
-        /// </summary>
-        /// <returns></returns>
-        public (ReadOnlyCollection<Node>, ReadOnlyCollection<GraphLine>) GetReadOnlyRefs()
-        {
-            return (_nodes.AsReadOnly(), _edges.AsReadOnly());
-        }
+        public GraphNodeCollection Nodes { get => _nodes; }
+        public GraphLineCollection Edges { get => _edges; }
 
         public void Add(Node node)
         {

@@ -1,13 +1,12 @@
 ﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.Contracts;
-using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventHandlers;
 using HamiltonVisualizer.Helpers;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -44,7 +43,7 @@ namespace HamiltonVisualizer.Core.Base
         protected NodeBase(
             DrawingCanvas parent,
             Point position,
-            ReadOnlyCollection<Node> others)
+            GraphNodeCollection others)
         {
             StyleUIComponent();
             SubscribeEvents();

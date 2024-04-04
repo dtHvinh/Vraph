@@ -33,12 +33,13 @@ public partial class MainWindow : Window
 
         _elementCollection = new GraphElementsCollection();
 
-        var refs = _elementCollection.GetReadOnlyRefs();
+        var roNodes = _elementCollection.Nodes.AsReadOnly();
+        var roEdges = _elementCollection.Edges.AsReadOnly();
 
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
-        _viewModel.SetRefs(new RefBag(refs.Item1, refs.Item2, _selectedCollection));
+        _viewModel.SetRefs(new RefBag(roNodes, roEdges, _selectedCollection));
         _drawManager = new DrawManager(DrawingCanvas);
-        _visualAppearanceManager = new ObjectVisualizationManager(refs.Item1, refs.Item2);
+        _visualAppearanceManager = new ObjectVisualizationManager(roNodes, roEdges);
 
         SubscribeCollectionEvents();
         SubscribeModelViewEvents();
@@ -117,7 +118,7 @@ public partial class MainWindow : Window
 
             var node = new Node(DrawingCanvas,
                                 ObjectPosition.GetValidPosition(mPos),
-                                _elementCollection.Nodes.AsReadOnly());
+                                _elementCollection.Nodes);
 
             SubscribeNodeEvents(node);
             SubscribeNodeContextMenuEvents(node);
