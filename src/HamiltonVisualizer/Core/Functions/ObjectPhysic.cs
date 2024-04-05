@@ -11,12 +11,13 @@ namespace HamiltonVisualizer.Core.Functions
     /// </summary>
     /// <param name="node">The node.</param>
     /// <param name="nodes">The nodes on the canvas.</param>
-    public class ObjectPhysic(
-        NodeBase node,
-        GraphNodeCollection nodes)
+    public class ObjectPhysic(NodeBase node, GraphNodeCollection nodes)
     {
         private readonly NodeBase _node = node;
         private readonly GraphNodeCollection _nodes = nodes;
+        private readonly GraphNodeCollection _collideNodes = [];
+
+        private readonly double _radius = ConstantValues.ControlSpecifications.NodeWidth / 2;
 
         /// <summary>
         /// No collision detected on this element.
@@ -28,7 +29,7 @@ namespace HamiltonVisualizer.Core.Functions
             {
                 if (CollisionHelper.IsCircleCollide(_node.Origin.X, _node.Origin.Y,
                                                     n.Origin.X, n.Origin.Y,
-                                                    ConstantValues.ControlSpecifications.NodeWidth / 2))
+                                                    _radius))
                 {
                     return false;
                 }

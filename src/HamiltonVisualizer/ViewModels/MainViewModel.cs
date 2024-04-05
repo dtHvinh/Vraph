@@ -12,6 +12,7 @@ namespace HamiltonVisualizer.ViewModels
 {
     public class MainViewModel : ObservableObject
     {
+        private bool _skipTransition = false;
         private readonly DirectedGraph<int> _graph = new();
         private readonly NodeMap _map = new();
 
@@ -20,8 +21,6 @@ namespace HamiltonVisualizer.ViewModels
         private SelectedNodeCollection _selectedNode = null!;
 
         public event PresentingAlgorithmEventHandler? OnPresentingAlgorithm;
-
-        private bool _skipTransition = false;
 
         public bool SkipTransition
         {
@@ -50,7 +49,6 @@ namespace HamiltonVisualizer.ViewModels
                 return _edges is null ? 0 : _edges.Count;
             }
         }
-
         public int NoV // for view binding do not rename!
         {
             get
@@ -58,7 +56,6 @@ namespace HamiltonVisualizer.ViewModels
                 return _nodes is null ? 0 : _nodes.Count;
             }
         }
-
         public int NoSN // for view binding do not rename!
         {
             get
@@ -71,13 +68,11 @@ namespace HamiltonVisualizer.ViewModels
         {
             OnPropertyChanged(nameof(NoV));
         }
-
         public void VM_NodeRemoved(Node node, out List<GraphLineConnectInfo> pendingRemove)
         {
             Refresh();
             pendingRemove = node.Adjacent;
         }
-
         public void VM_EdgeAdded(GraphLine line)
         {
             Refresh();
@@ -87,12 +82,10 @@ namespace HamiltonVisualizer.ViewModels
 
             _graph.AddEdge(u, v);
         }
-
         public void VM_EdgeRemoved()
         {
             Refresh();
         }
-
         public void VM_NodeSelectedOrRelease()
         {
             Refresh();
@@ -117,7 +110,6 @@ namespace HamiltonVisualizer.ViewModels
             }
             catch (Exception) { }
         }
-
         public void BFS(Node node)
         {
             try
@@ -137,7 +129,6 @@ namespace HamiltonVisualizer.ViewModels
             }
             catch (Exception) { }
         }
-
         public void Refresh()
         {
             OnPropertyChanged(nameof(NoSN));

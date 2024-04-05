@@ -76,11 +76,14 @@ public partial class MainWindow : Window
 
             Sau khi nhập giá trị của nhãn nhấn Enter để hoàn thành
 
-            Thực hiện các thuật toán bằng chuột phải lên các Node hoặc khoảng trống
+            Thực hiện các thuật toán bằng chuột phải lên các đỉnh hoặc khoảng trống
             trong vùng vẽ.
 
-            Để vẽ các cạnh trong đồ thì chuột phải vào nút để bắt đầu chọn
-            Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ. 
+            Để vẽ các cạnh trong đồ thị:
+             Cách 1: Chuột phải vào nút để bắt đầu chọn
+             Cách 2: Nhấn chuột giữa
+
+            Lưu ý: Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ. 
             """, "Hướng dẫn", button: MessageBoxButton.OK);
     }
 
@@ -115,7 +118,7 @@ public partial class MainWindow : Window
             var mPos = e.GetPosition(DrawingCanvas);
 
             var node = new Node(DrawingCanvas,
-                                ObjectPosition.GetValidPosition(mPos),
+                                ObjectPosition.TryStayInBound(mPos),
                                 _elementCollection.Nodes);
 
             SubscribeNodeEvents(node);

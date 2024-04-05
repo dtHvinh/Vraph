@@ -23,16 +23,12 @@ public class ObjectPosition
     private readonly NodeBase _node;
     private readonly CustomCanvas _drawingCanvas;
 
-    private readonly NodeStateChangedEventHandler? _nodeStateChanged;
-
     public ObjectPosition(
         NodeBase node,
-        CustomCanvas canvas,
-        NodeStateChangedEventHandler? eventHandler)
+        CustomCanvas canvas)
     {
         _node = node;
         _drawingCanvas = canvas;
-        _nodeStateChanged = eventHandler;
 
         ImplementMoveCapability();
     }
@@ -53,8 +49,7 @@ public class ObjectPosition
             if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
             {
                 Point curPos = e.GetPosition(_drawingCanvas);
-                _node.Origin = GetValidPosition(curPos);
-                _nodeStateChanged?.Invoke(_node, new NodeStateChangeEventArgs(_node.Origin, NodeState.Moving));
+                _node.Origin = curPos;
             }
         };
 
@@ -64,12 +59,13 @@ public class ObjectPosition
             {
                 _isDragging = false;
                 Mouse.Capture(null);
-                _nodeStateChanged?.Invoke(_node, new NodeStateChangeEventArgs(State: NodeState.Idle));
+
+                _node.OnStateChanged(null, state: NodeState.Idle);
             }
         };
     }
 
-    public static Point GetValidPosition(Point point)
+    public static Point TryStayInBound(Point point)
     {
         double lowerBound = ES.NodeWidth / 2;
         double upperBound = ES.DrawingCanvasSidesLength - ES.NodeWidth / 2;
@@ -78,40 +74,31 @@ public class ObjectPosition
         double Y;
 
         if (point.X < lowerBound)
-        {
             X = lowerBound;
-        }
         else if (point.X > upperBound)
-        {
             X = upperBound;
-        }
         else
-        {
             X = point.X;
-        }
 
         if (point.Y < lowerBound)
-        {
             Y = lowerBound;
-        }
         else if (point.Y > upperBound)
-        {
             Y = upperBound;
-        }
         else
-        {
             Y = point.Y;
-        }
 
         return new Point(X, Y);
     }
 
-    /// <summary>
-    /// This method should be called when Origin is updated
-    /// </summary>
-    public void OnOriginChanged()
+    public bool RequestChangePosition(Point pos, out Point validPosition)
     {
-        Canvas.SetLeft(_node, _node.Origin.X - 34 / 2);
-        Canvas.SetTop(_node, _node.Origin.Y - 34 / 2);
+        var validPos = TryStayInBound(pos);
+
+        Canvas.SetLeft(_node, validPos.X - 34 / 2);
+        Canvas.SetTop(_node, validPos.Y - 34 / 2);
+
+        validPosition = validPos;
+
+        return true;
     }
 }

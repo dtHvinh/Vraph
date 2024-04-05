@@ -4,6 +4,7 @@ using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
+using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using HamiltonVisualizer.Extensions;
@@ -20,40 +21,51 @@ namespace HamiltonVisualizer.Core.Base
     public abstract class NodeBase : Border, IUIComponent, INavigableElement, IMultiLanguageSupport, IEquatable<NodeBase>
     {
         private Point _origin;
-        private readonly List<GraphLineConnectInfo> _adjacent; // when this element move its position, move other related movable obj
 
-        public ObjectPosition Movement { get; } // manage the matter of movement of this element
-        public ObjectPhysic Physic { get; } // manage the matter of physic of this element
+        private readonly List<GraphLineConnectInfo> _adjacent;
+
+        public ObjectPhysic Physic { get; }
+        public ObjectPosition Position { get; }
 
         public List<GraphLineConnectInfo> Adjacent => _adjacent;
-        public event NodeStateChangedEventHandler? OnNodeStateChanged;
 
-        /// <summary>
-        /// When this property is set, the canvas will be updated.
-        /// </summary>
+        public event NodeStateChangedEventHandler? OnNodeStateChanged;
+        public event NodePositionChangedEventHandler? OnNodePositionChanged;
+
         public Point Origin
         {
             get => _origin;
             set
             {
-                Movement.OnOriginChanged();
-                _origin = value;
+                if (Position.RequestChangePosition(value, out var validPos))
+                {
+                    _origin = value;
+                    OnStateChanged(validPos, NodeState.Moving);
+                    OnPositionChanged(validPos);
+                }
             }
         }
 
-        protected NodeBase(
-            CustomCanvas parent,
-            Point position,
-            GraphNodeCollection others)
+        protected NodeBase(CustomCanvas parent, Point position, GraphNodeCollection others)
         {
             StyleUIComponent();
             SubscribeEvents();
 
-            Movement = new ObjectPosition(this, parent, OnNodeStateChanged);
+            Position = new ObjectPosition(this, parent);
             Physic = new ObjectPhysic(this, others);
             _adjacent = [];
 
             Origin = position;
+        }
+
+        public void OnStateChanged(Point? newPosition, NodeState? state)
+        {
+            OnNodeStateChanged?.Invoke(this, new NodeStateChangeEventArgs(newPosition, state));
+        }
+
+        public void OnPositionChanged(Point newPosition)
+        {
+            OnNodePositionChanged?.Invoke(this, new NodePositionChangedEventArgs(newPosition));
         }
 
         public void StyleUIComponent()
@@ -69,16 +81,14 @@ namespace HamiltonVisualizer.Core.Base
             Canvas.SetTop(this, Origin.Y - Height / 2);
             Panel.SetZIndex(this, ConstantValues.ZIndex.Node);
         }
-
         private void SubscribeEvents()
         {
-            OnNodeStateChanged += (sender, e) =>
+            OnNodePositionChanged += (sender, e) =>
             {
-                if (e.NewPosition is not null && e.State == NodeState.Moving)
-                    _adjacent.ForEach(line =>
-                    {
-                        GraphLineRepositionHelper.Move(e.NewPosition.Value, line);
-                    });
+                _adjacent.ForEach(line =>
+                {
+                    GraphLineRepositionHelper.Move(e.NewPosition, line);
+                });
             };
         }
 
@@ -87,7 +97,6 @@ namespace HamiltonVisualizer.Core.Base
             var attachInfo = new GraphLineConnectInfo(line, this, pos);
             _adjacent.Add(attachInfo);
         }
-
         public void Detach(GraphLine line)
         {
             var attachInfo = _adjacent.First(x => x.Edge.Equals(line));
@@ -105,7 +114,6 @@ namespace HamiltonVisualizer.Core.Base
                 _ => throw new Exception($"Invalid lang {lang}!"),// TODO: add to EM class
             };
         }
-
         public bool Equals(NodeBase? other)
         {
             return other is not null && Origin.TolerantEquals(other.Origin);
