@@ -6,6 +6,7 @@ using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
+using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Helpers;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,7 +17,7 @@ namespace HamiltonVisualizer.Core.Base
     /// <summary>
     /// A node that can move on a canvas
     /// </summary>
-    public abstract class NodeBase : Border, IUIComponent, INavigableElement, IMultiLanguageSupport
+    public abstract class NodeBase : Border, IUIComponent, INavigableElement, IMultiLanguageSupport, IEquatable<NodeBase>
     {
         private Point _origin;
         private readonly List<GraphLineConnectInfo> _adjacent; // when this element move its position, move other related movable obj
@@ -103,6 +104,11 @@ namespace HamiltonVisualizer.Core.Base
                         """,
                 _ => throw new Exception($"Invalid lang {lang}!"),// TODO: add to EM class
             };
+        }
+
+        public bool Equals(NodeBase? other)
+        {
+            return other is not null && Origin.TolerantEquals(other.Origin);
         }
     }
 }

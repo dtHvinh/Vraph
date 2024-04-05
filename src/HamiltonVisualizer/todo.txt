@@ -2,7 +2,8 @@ clear TODO
 
 add bi-direct graph
 
-add multi threading => background worker
+add multi threading 
+
 object physic
 
 add multi-lang use IMultiLangComponent

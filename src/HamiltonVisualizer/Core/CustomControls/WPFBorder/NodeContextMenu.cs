@@ -13,6 +13,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         public MenuItem Information { get; set; }
         public MenuItem SelectOrReleaseSelect { get; set; }
         public MenuItem Delete { get; set; }
+        public MenuItem Algorithms { get; set; }
         public MenuItem DFS { get; set; }
         public MenuItem BFS { get; set; }
 
@@ -37,6 +38,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             DFS = new() { Header = "Duyệt chiều sâu" };
             // Click event is set by MainWindow
 
+            Algorithms = new() { Header = "Thuật toán" };
+            Algorithms.Items.Add(BFS);
+            Algorithms.Items.Add(DFS);
+
             Information = new() { Header = "Thông tin" };
             Information.Click += (sender, e) =>
             {
@@ -46,9 +51,8 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             AddItems(
                 Information,
                 SelectOrReleaseSelect,
-                Delete,
-                DFS,
-                BFS);
+                Algorithms,
+                Delete);
         }
 
         private void Delete_Click(object sender, RoutedEventArgs e)

@@ -1,7 +1,6 @@
 ﻿using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.Collections;
-using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Events.EventArgs;
@@ -11,7 +10,7 @@ using System.Collections.ObjectModel;
 
 namespace HamiltonVisualizer.ViewModels
 {
-    public class MainViewModel : ObservableObject, IRefSetter
+    public class MainViewModel : ObservableObject
     {
         private readonly DirectedGraph<int> _graph = new();
         private readonly NodeMap _map = new();
@@ -73,28 +72,15 @@ namespace HamiltonVisualizer.ViewModels
             OnPropertyChanged(nameof(NoV));
         }
 
-        /// <summary>
-        /// Update counter. Return a collection of <see cref="GraphLine"> objects need to be remove.
-        /// </summary>
-        /// 
-        /// <remarks>
-        /// Affect:
-        /// <list type="bullet">
-        /// <item>Decrease NoV counter => Update UI.</item>
-        /// </list>
-        /// </remarks>
-        /// 
-        ///  <param name="pendingRemove">The <see cref="GraphLine"/> objects that related to this object.</param>
         public void VM_NodeRemoved(Node node, out List<GraphLineConnectInfo> pendingRemove)
         {
-            OnPropertyChanged(nameof(NoV));
-            OnPropertyChanged(nameof(NoSN)); // a node while selecting may be deleted
+            Refresh();
             pendingRemove = node.Adjacent;
         }
 
         public void VM_EdgeAdded(GraphLine line)
         {
-            OnPropertyChanged(nameof(NoE));
+            Refresh();
 
             var u = _map.LookUp(line.From);
             var v = _map.LookUp(line.To);
@@ -104,15 +90,12 @@ namespace HamiltonVisualizer.ViewModels
 
         public void VM_EdgeRemoved()
         {
-            OnPropertyChanged(nameof(NoE));
+            Refresh();
         }
 
-        /// <summary>
-        /// Tell the client to update the view data.
-        /// </summary>
         public void VM_NodeSelectedOrRelease()
         {
-            OnPropertyChanged(nameof(NoSN));
+            Refresh();
         }
 
         public void DFS(Node node)

@@ -6,6 +6,7 @@ using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
@@ -43,8 +44,8 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         public event OnNodeSelectedEventHandler? OnNodeSelected;
         public event OnNodeReleaseSelectEventHandler? OnNodeReleaseSelect;
 
-        public Node(CustomCanvas parrent, Point position, GraphNodeCollection others)
-            : base(parrent, position, others)
+        public Node(CustomCanvas parent, Point position, GraphNodeCollection others)
+            : base(parent, position, others)
         {
             StyleUIComponent();
 
@@ -52,6 +53,14 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             ContextMenu = new NodeContextMenu(this);
 
             SubscribeEvents();
+
+            MouseDown += (sender, e) =>
+            {
+                if (e.MiddleButton == MouseButtonState.Pressed)
+                {
+                    SelectNode();
+                }
+            };
         }
 
         private void SubscribeEvents()

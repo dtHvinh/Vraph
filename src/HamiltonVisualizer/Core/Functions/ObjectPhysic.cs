@@ -26,8 +26,8 @@ namespace HamiltonVisualizer.Core.Functions
         {
             foreach (Node n in _nodes)
             {
-                if (CollisionHelper.IsCircleCollide(MathPoint.ConvertFrom(_node.Origin),
-                                                    MathPoint.ConvertFrom(n.Origin),
+                if (CollisionHelper.IsCircleCollide(_node.Origin.X, _node.Origin.Y,
+                                                    n.Origin.X, n.Origin.Y,
                                                     ConstantValues.ControlSpecifications.NodeWidth / 2))
                 {
                     return false;

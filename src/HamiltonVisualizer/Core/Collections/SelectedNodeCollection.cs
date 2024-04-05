@@ -6,7 +6,7 @@ namespace HamiltonVisualizer.Core.Collections
 {
     public class SelectedNodeCollection : INotifyPropertyChanged
     {
-        public List<Node> Nodes { get; } = [];
+        public HashSet<Node> Nodes { get; } = new(2);
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -31,11 +31,16 @@ namespace HamiltonVisualizer.Core.Collections
             OnPropertyChanged(nameof(Nodes));
         }
 
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public (Node, Node) GetFirst2()
         {
-            if (Nodes.Count < 2) throw new ArgumentException("Not enough element to retrieve");
-            var result = (Nodes.First(), Nodes.ElementAt(1));
-            Nodes.RemoveRange(0, 2);
+            if (Nodes.Count < 2)
+                throw new InvalidOperationException("Not enough element to retrieve");
+
+            var result = (Nodes.ElementAt(0), Nodes.ElementAt(1));
+
+            Nodes.Clear();
             return result;
         }
     }
