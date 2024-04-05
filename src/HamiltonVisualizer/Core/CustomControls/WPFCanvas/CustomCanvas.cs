@@ -2,9 +2,9 @@
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
 {
-    public class DrawingCanvas : Canvas
+    public class CustomCanvas : Canvas
     {
-        public DrawingCanvas()
+        public CustomCanvas()
         {
             ContextMenu = DCContextMenu.Instance;
         }

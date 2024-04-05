@@ -1,7 +1,7 @@
 ﻿using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
-using HamiltonVisualizer.Events.EventArgs;
-using HamiltonVisualizer.Events.EventHandlers;
+using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
+using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -21,13 +21,13 @@ public class ObjectPosition
     private bool _isDragging;
 
     private readonly NodeBase _node;
-    private readonly DrawingCanvas _drawingCanvas;
+    private readonly CustomCanvas _drawingCanvas;
 
     private readonly NodeStateChangedEventHandler? _nodeStateChanged;
 
     public ObjectPosition(
         NodeBase node,
-        DrawingCanvas canvas,
+        CustomCanvas canvas,
         NodeStateChangedEventHandler? eventHandler)
     {
         _node = node;

@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:HamiltonVisualizer"
-        xmlns:elementVal="clr-namespace:HamiltonVisualizer.Constants"
         xmlns:customCanvas="clr-namespace:HamiltonVisualizer.Core.CustomControls.WPFCanvas"
         xmlns:VM="clr-namespace:HamiltonVisualizer.ViewModels"
         mc:Ignorable="d"
@@ -30,10 +28,21 @@
         </Grid.ColumnDefinitions>
 
         <Border Grid.Row="0" 
-                    Grid.ColumnSpan="2" 
-                    MouseDown="Border_MouseDown"
-                    Style="{StaticResource NavBar}">
+                Grid.ColumnSpan="2" 
+                MouseDown="Border_MouseDown"
+                Style="{StaticResource NavBar}"
+                BorderBrush="Black"
+                BorderThickness="0 0 0 1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Border Background="White" Style="{StaticResource WindowButton}" 
+                        MouseDown="InstructionOnTaskbar"
+                        BorderBrush="Black"
+                        BorderThickness="1">
+                    <TextBlock HorizontalAlignment="Center">
+                        ?
+                    </TextBlock>
+                </Border>
+
                 <Border Background="LightBlue" Style="{StaticResource WindowButton}" 
                             MouseDown="MinimizeToTaskbar"></Border>
                 <Border Background="Yellow" Style="{StaticResource WindowButton}" 
@@ -47,19 +56,22 @@
             Grid.Row="1"
             Grid.ColumnSpan="1"
             Grid.RowSpan="2"
-            HorizontalScrollBarVisibility="Auto" 
-            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Hidden" 
+            VerticalScrollBarVisibility="Hidden"
+            FocusVisualStyle="{x:Null}"
             x:Name="DrawingCanvasWrapper">
-            <customCanvas:DrawingCanvas 
+            <customCanvas:CustomCanvas
                 Width="1440"
                 Height="1440"
-                Background="Beige"
+                Background="FloralWhite"
                 x:Name="DrawingCanvas">
-            </customCanvas:DrawingCanvas>
+            </customCanvas:CustomCanvas>
         </ScrollViewer>
         <Border Grid.Row="1"
                 Grid.Column="1"
-                Background="White">
+                Background="White"
+                BorderBrush="Black"
+                BorderThickness="1 0 0 0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
@@ -73,7 +85,8 @@
 
                 <Border Grid.Column="1" 
                         Grid.Row="0" 
-                        BorderBrush="Black" BorderThickness="1">
+                        BorderBrush="Black" BorderThickness="0 0 0 1"
+                        Background="AntiqueWhite">
                     <StackPanel HorizontalAlignment="Center" 
                                     VerticalAlignment="Center"
                                     Orientation="Horizontal"
@@ -82,49 +95,48 @@
                         <TextBlock VerticalAlignment="Center">
                                 Vẽ đồ thị
                         </TextBlock>
-                        <Button Content="?" 
-                                Background="White"
-                                Margin="10 0 0 0"
-                                BorderThickness="0"
-                                ToolTip="Hướng dẫn"
-                                Width="20"
-                                Click="InstructionButton_Click"></Button>
                     </StackPanel>
                 </Border>
 
                 <StackPanel Grid.Column="1"
                             Grid.Row="1"
-                            Orientation="Vertical">
+                            Orientation="Vertical"
+                            Background="White">
                     <StackPanel Margin="0 0 0 0"
                                 x:Name="GraphInfoWrapper">
                         <TextBlock Padding="0 10 0 10">----------Chức năng----------</TextBlock>
                         <StackPanel Orientation="Vertical">
                             <Button Content="Xóa tất cả"
                                     Padding="0 10 0 10"
-                                    BorderThickness="0"
-                                    Background="Red"
-                                    Click="DeleteAll_Click">
+                                    Background="White"
+                                    Click="DeleteAll_Click"
+                                    ToolTip="Xóa tất cả các đỉnh và cạnh"
+                                    BorderBrush="Black"
+                                    BorderThickness="0 1 0 1">
                             </Button>     
                             <Button Content="Đặt lại"
                                     Padding="0 10 0 10"
-                                    BorderThickness="0"
-                                    Background="Yellow"
-                                    Click="ResetButton_Click">
+                                    Background="White"
+                                    Click="ResetButton_Click"
+                                    ToolTip="Đặt lại màu sắc của các đỉnh"
+                                    BorderBrush="Black"
+                                    BorderThickness="0 0 0 1">
                             </Button>
                             <Button Padding="0 10 0 10"
-                                    BorderThickness="0"
-                                    Click="SkipTransition_Click">
+                                    Click="SkipTransition_Click"
+                                    BorderBrush="Black"
+                                    BorderThickness="0 0 0 1">
                                 <Button.Style>
                                     <Style TargetType="Button">
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding SkipTransition, Mode=OneWay}" Value="True">
-                                                <Setter Property="Content" Value="Bật Chuyển động"/>
-                                                <Setter Property="Background" Value="Gray"/>
+                                                <Setter Property="Content" Value="Bật hiệu ứng"/>
+                                                <Setter Property="Background" Value="Wheat"/>
                                                 <Setter Property="ToolTip" Value="Nhấn để bật"></Setter>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding SkipTransition, Mode=OneWay}" Value="False">
-                                                <Setter Property="Content" Value="Tắt chuyển động"/>
-                                                <Setter Property="Background" Value="LightGreen"/>
+                                                <Setter Property="Content" Value="Tắt hiệu ứng"/>
+                                                <Setter Property="Background" Value="White"/>
                                                 <Setter Property="ToolTip" Value="Nhấn để tắt"></Setter>
                                             </DataTrigger>
                                         </Style.Triggers>
@@ -140,10 +152,11 @@
                                 Số Đỉnh:
                             </Label>
                             <TextBox Margin="46 1 0 0" 
-                                 Width="40" 
-                                 IsReadOnly="True"
-                                 BorderThickness="0"
-                                 Text="{Binding NoV, Mode=OneWay}"/>
+                                     Width="40" 
+                                     IsReadOnly="True"
+                                     BorderThickness="0"
+                                     Text="{Binding NoV, Mode=OneWay}"
+                                     TextAlignment="Right"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" 
@@ -153,10 +166,11 @@
                             </Label>
 
                             <TextBox Margin="43 0 0 0" 
-                                 Width="40"
-                                 BorderThickness="0"
-                                 Text="{Binding NoE, Mode=OneWay}"
-                                 IsReadOnly="True"/>
+                                     Width="40"
+                                     BorderThickness="0"
+                                     Text="{Binding NoE, Mode=OneWay}"
+                                     IsReadOnly="True"
+                                     TextAlignment="Right"/>
                         </StackPanel>
 
                         <StackPanel Orientation="Horizontal" 
@@ -166,10 +180,11 @@
                             </Label>
 
                             <TextBox Margin="0 0 0 0" 
-                                 Width="40"
-                                 BorderThickness="0"
-                                 Text="{Binding NoSN, Mode=OneWay}"
-                                 IsReadOnly="True"/>
+                                     Width="40"
+                                     BorderThickness="0"
+                                     Text="{Binding NoSN, Mode=OneWay}"
+                                     IsReadOnly="True"
+                                     TextAlignment="Right"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

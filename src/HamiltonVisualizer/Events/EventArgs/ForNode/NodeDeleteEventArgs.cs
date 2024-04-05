@@ -1,6 +1,6 @@
 ﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 
-namespace HamiltonVisualizer.Events.EventArgs
+namespace HamiltonVisualizer.Events.EventArgs.NodeEventArg
 {
     /// <summary>
     /// Contain details about delete event associate with node.

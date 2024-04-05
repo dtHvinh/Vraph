@@ -2,8 +2,8 @@
 using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
-using HamiltonVisualizer.Events.EventArgs;
-using HamiltonVisualizer.Events.EventHandlers;
+using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
+using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Media;
@@ -43,7 +43,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         public event OnNodeSelectedEventHandler? OnNodeSelected;
         public event OnNodeReleaseSelectEventHandler? OnNodeReleaseSelect;
 
-        public Node(DrawingCanvas parrent, Point position, GraphNodeCollection others)
+        public Node(CustomCanvas parrent, Point position, GraphNodeCollection others)
             : base(parrent, position, others)
         {
             StyleUIComponent();

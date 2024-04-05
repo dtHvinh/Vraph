@@ -1,10 +1,9 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
-using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
-using HamiltonVisualizer.Events.EventArgs;
+using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Utilities;
 using HamiltonVisualizer.ViewModels;
@@ -50,7 +49,7 @@ public partial class MainWindow : Window
     //
     private void Border_MouseDown(object sender, MouseButtonEventArgs e)
     {
-        if (e.ChangedButton == MouseButton.Left)
+        if (e.LeftButton == MouseButtonState.Pressed)
             DragMove();
     }
     private void Exit(object sender, MouseButtonEventArgs e)
@@ -69,6 +68,21 @@ public partial class MainWindow : Window
     private void MinimizeToTaskbar(object sender, MouseButtonEventArgs e)
     {
         WindowState = WindowState.Minimized;
+    }
+    private void InstructionOnTaskbar(object sender, MouseButtonEventArgs e)
+    {
+        MessageBox.Show(
+            """
+            Nhấn chuột trái 2 lần vào vùng có màu đậm hơn để vẽ
+
+            Sau khi nhập giá trị của nhãn nhấn Enter để hoàn thành
+
+            Thực hiện các thuật toán bằng chuột phải lên các Node hoặc khoảng trống
+            trong vùng vẽ.
+
+            Để vẽ các cạnh trong đồ thì chuột phải vào nút để bắt đầu chọn
+            Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ. 
+            """, "Hướng dẫn", button: MessageBoxButton.OK);
     }
 
     //
@@ -92,21 +106,6 @@ public partial class MainWindow : Window
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
         _viewModel.SkipTransition = !_viewModel.SkipTransition;
-    }
-    private void InstructionButton_Click(object sender, RoutedEventArgs e)
-    {
-        MessageBox.Show(
-            """
-            Nhấn chuột trái 2 lần vào vùng có màu đậm hơn để vẽ
-
-            Sau khi nhập giá trị của nhãn nhấn Enter để hoàn thành
-
-            Thực hiện các thuật toán bằng chuột phải lên các Node hoặc khoảng trống
-            trong vùng vẽ.
-
-            Để vẽ các cạnh trong đồ thì chuột phải vào nút để bắt đầu chọn
-            Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ. 
-            """, "Hướng dẫn", button: MessageBoxButton.OK);
     }
 
     //

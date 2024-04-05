@@ -1,7 +1,7 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
-using HamiltonVisualizer.Events.EventArgs;
-using HamiltonVisualizer.Events.EventHandlers;
+using HamiltonVisualizer.Events.EventArgs.ForGraphLine;
+using HamiltonVisualizer.Events.EventHandlers.ForGraphLine;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;

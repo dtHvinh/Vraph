@@ -4,8 +4,8 @@ using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
-using HamiltonVisualizer.Events.EventArgs;
-using HamiltonVisualizer.Events.EventHandlers;
+using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
+using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using HamiltonVisualizer.Helpers;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,7 +41,7 @@ namespace HamiltonVisualizer.Core.Base
         }
 
         protected NodeBase(
-            DrawingCanvas parent,
+            CustomCanvas parent,
             Point position,
             GraphNodeCollection others)
         {

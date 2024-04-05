@@ -38,7 +38,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             // Click event is set by MainWindow
 
             Information = new() { Header = "Thông tin" };
-            Information.Click += (sender, e) => { MessageBox.Show(_node.ToString("vi")); };
+            Information.Click += (sender, e) =>
+            {
+                MessageBox.Show(_node.ToString("vi"), $"Đỉnh: [{_node.NodeLabel.Text}]");
+            };
 
             AddItems(
                 Information,
