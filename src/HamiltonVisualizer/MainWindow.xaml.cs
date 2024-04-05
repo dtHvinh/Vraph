@@ -24,8 +24,7 @@ public partial class MainWindow : Window
     private readonly ObjectVisualizationManager _visualAppearanceManager;
     private readonly GraphElementsCollection _elementCollection;
 
-    public bool IsSelectMode { get; set; } = false;
-
+    //
     public MainWindow()
     {
         InitializeComponent();
