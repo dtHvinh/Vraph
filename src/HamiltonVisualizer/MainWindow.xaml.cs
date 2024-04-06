@@ -1,5 +1,4 @@
-﻿using HamiltonVisualizer.Constants;
-using HamiltonVisualizer.Core.Collections;
+﻿using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
@@ -22,7 +21,7 @@ public partial class MainWindow : Window
     private readonly MainViewModel _viewModel = null!;
     private readonly SelectedNodeCollection _selectedCollection = new();
     private readonly DrawManager _drawManager;
-    private readonly ObjectVisualizationManager _visualAppearanceManager;
+    private readonly AlgorithmPresentation _algorithm;
     private readonly GraphElementsCollection _elementCollection;
 
     //
@@ -37,12 +36,13 @@ public partial class MainWindow : Window
 
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
         _viewModel.SetRefs(new RefBag(roNodes, roEdges, _selectedCollection));
-        _drawManager = new DrawManager(DrawingCanvas);
-        _visualAppearanceManager = new ObjectVisualizationManager(roNodes, roEdges);
+        _drawManager = new DrawManager(_canvas);
+        _algorithm = new AlgorithmPresentation(roNodes, roEdges);
 
         SubscribeCollectionEvents();
         SubscribeCanvasEvents();
         SubscribeAlgorithmPresentingEvents();
+        SubscribeCanvasContextMenuEvents();
     }
 
     //
@@ -83,6 +83,7 @@ public partial class MainWindow : Window
              Cách 1: Chuột phải vào nút để bắt đầu chọn
              Cách 2: Nhấn chuột giữa
 
+            Nếu đỉnh trong trạng thái chọn (nền màu xanh) nhấn chuột giữa để hủy chọn
             Lưu ý: Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ. 
             """, "Hướng dẫn", button: MessageBoxButton.OK);
     }
@@ -97,13 +98,13 @@ public partial class MainWindow : Window
 
         _elementCollection.ClearAll();
         _selectedCollection.Nodes.Clear();
-        DrawingCanvas.Children.Clear();
+        _canvas.Children.Clear();
 
         _viewModel.Refresh();
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        _visualAppearanceManager.ResetColor();
+        _algorithm.ResetColor();
     }
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
@@ -115,58 +116,48 @@ public partial class MainWindow : Window
     {
         if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
         {
-            var mPos = e.GetPosition(DrawingCanvas);
+            var mPos = e.GetPosition(_canvas);
 
-            var node = new Node(DrawingCanvas,
-                                ObjectPosition.TryStayInBound(mPos),
-                                _elementCollection.Nodes);
+            var node = new Node(_canvas,
+                ObjectPosition.TryStayInBound(mPos),
+                _elementCollection.Nodes);
 
             SubscribeNodeEvents(node);
             SubscribeNodeContextMenuEvents(node);
 
-            if (node.Physic.IsNoCollide())
-            {
-                DrawingCanvas.Children.Add(node);
-                _elementCollection.Nodes.Add(node);
-                _viewModel.Refresh();
-            }
+            _canvas.Children.Add(node);
+            _elementCollection.Nodes.Add(node);
+            _viewModel.Refresh();
         }
     }
 
     //
     private void SubscribeCanvasEvents()
     {
-        DrawingCanvas.MouseDown += DrawingCanvas_MouseDown;
+        _canvas.MouseDown += DrawingCanvas_MouseDown;
 
-        ((DCContextMenu)DrawingCanvas.ContextMenu).SCC.Click += (sender, e) =>
+    }
+    private void SubscribeCanvasContextMenuEvents()
+    {
+        ((DCContextMenu)_canvas.ContextMenu).SCC.Click += (sender, e) =>
         {
             _viewModel.DisplaySCC();
         };
     }
     private void SubscribeAlgorithmPresentingEvents()
     {
-        _viewModel.OnPresentingTraversalAlgorithm += async (sender, e) =>
+        _viewModel.OnPresentingTraversalAlgorithm += (sender, e) =>
         {
-            _visualAppearanceManager.ResetColor();
+            _algorithm.SkipTransition = e.SkipTransition;
 
-            if (e.SkipTransition)
-                _visualAppearanceManager.ColorizeNodes(
-                    (IEnumerable<Node>)e.Data,
-                    ConstantValues.ControlColors.NodeTraversalBackground);
-            else
-                await _visualAppearanceManager.ColorizeNodes(
-                    (IEnumerable<Node>)e.Data,
-                    ConstantValues.ControlColors.NodeTraversalBackground, 500);
-
-            _visualAppearanceManager.IsModified = true;
+            _algorithm.PresentTraversalAlgorithm(e.Data);
         };
 
         _viewModel.OnPresentingSCCAlgorithm += (sender, e) =>
         {
-            _visualAppearanceManager.IsModified = true;
+            _algorithm.SkipTransition = e.SkipTransition;
 
-            var scc = e.Data;
-            var leftOverNode = _elementCollection.Nodes.Except(scc.SelectMany(e => e));
+            _algorithm.PresentComponentAlgorithm(e.Data);
         };
     }
     private void SubscribeNodeEvents(Node node)
@@ -177,11 +168,11 @@ public partial class MainWindow : Window
             switch (e.State)
             {
                 case NodeState.Idle:
-                    DrawingCanvas.MouseDown += DrawingCanvas_MouseDown;
+                    _canvas.MouseDown += DrawingCanvas_MouseDown;
                     break;
 
                 case NodeState.Moving:
-                    DrawingCanvas.MouseDown -= DrawingCanvas_MouseDown;
+                    _canvas.MouseDown -= DrawingCanvas_MouseDown;
                     break;
             }
         };
@@ -192,15 +183,15 @@ public partial class MainWindow : Window
             if (!_viewModel.SkipTransition)
                 await Task.Delay(500);
             _elementCollection.Remove(e.Node);
-            DrawingCanvas.Children.Remove(e.Node);
+            _canvas.Children.Remove(e.Node);
             _selectedCollection.Remove(e.Node);
-            _viewModel.Refresh(e.Node, out var pendingRemoveEdge);
+            _viewModel.Refresh();
 
             // remove associate _edge.
-            pendingRemoveEdge.ForEach(e =>
+            e.Node.Adjacent.ForEach(e =>
             {
                 _elementCollection.Remove(e.Edge);
-                DrawingCanvas.Children.Remove(e.Edge);
+                _canvas.Children.Remove(e.Edge);
                 _viewModel.Refresh();
             });
         };
@@ -221,7 +212,7 @@ public partial class MainWindow : Window
         {
             _selectedCollection.Add((Node)sender);
             _viewModel.Refresh();
-            _visualAppearanceManager.ResetColor();
+            _algorithm.ResetColor();
         };
 
         // when release select on a mode
@@ -254,7 +245,7 @@ public partial class MainWindow : Window
             // TODO: line may have some kind of animation ???
 
             _elementCollection.Remove(deleteLine);
-            DrawingCanvas.Children.Remove(deleteLine);
+            _canvas.Children.Remove(deleteLine);
             _viewModel.Refresh();
         };
     }

@@ -26,7 +26,6 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="150"/>
         </Grid.ColumnDefinitions>
-
         <Border Grid.Row="0" 
                 Grid.ColumnSpan="2" 
                 MouseDown="Border_MouseDown"
@@ -64,7 +63,7 @@
                 Width="1440"
                 Height="1440"
                 Background="FloralWhite"
-                x:Name="DrawingCanvas">
+                x:Name="_canvas">
             </customCanvas:CustomCanvas>
         </ScrollViewer>
         <Border Grid.Row="1"

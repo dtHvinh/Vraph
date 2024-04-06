@@ -156,15 +156,5 @@ namespace HamiltonVisualizer.ViewModels
 
             _graph.AddEdge(u, v);
         }
-
-        /// <summary>
-        /// When remove a node, refresh the view model.
-        /// </summary>
-        public void Refresh(Node node, out List<GraphLineConnectInfo> pendingRemove)
-        {
-            Refresh();
-            pendingRemove = node.Adjacent;
-        }
-
     }
 }

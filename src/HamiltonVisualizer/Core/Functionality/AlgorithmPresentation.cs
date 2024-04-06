@@ -7,13 +7,14 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Core.Functions
 {
-    public class ObjectVisualizationManager(
+    public class AlgorithmPresentation(
         ReadOnlyCollection<Node> nodes,
         ReadOnlyCollection<GraphLine> linePolygons)
     {
         public bool IsModified { get; set; } = false; // value indicate if reset actually need to be perform
+        public bool SkipTransition { get; set; } = false; // how result will be displayed
 
-        public void ColorizeNodes(SolidColorBrush color)
+        private void ColorizeNodes(SolidColorBrush color)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
@@ -23,9 +24,7 @@ namespace HamiltonVisualizer.Core.Functions
                 node.Background = color;
             }
         }
-
-        //TODO: unused
-        public void ColorizeGraphLine(SolidColorBrush color)
+        private void ColorizeGraphLine(SolidColorBrush color)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
@@ -38,8 +37,20 @@ namespace HamiltonVisualizer.Core.Functions
                 line.Body.Stroke = color;
             }
         }
+        private void ColorizeGraphLine(IEnumerable<GraphLine> lines, SolidColorBrush color)
+        {
+            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+                IsModified = true;
 
-        public void ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color)
+            foreach (GraphLine line in lines)
+            {
+                line.Head.Fill = color;
+                line.Head.Stroke = color;
+                line.Body.Fill = color;
+                line.Body.Stroke = color;
+            }
+        }
+        private void ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
@@ -49,15 +60,7 @@ namespace HamiltonVisualizer.Core.Functions
                 node.Background = color;
             }
         }
-
-        /// <summary>
-        /// Sequency colorize node after <paramref name="millisecondsDelay"/>.
-        /// </summary>
-        public async Task ColorizeNodes(
-            IEnumerable<Node> nodes,
-            SolidColorBrush color,
-            int millisecondsDelay,
-            bool delayAtStart = false)
+        private async Task ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay, bool delayAtStart = false)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
@@ -94,6 +97,28 @@ namespace HamiltonVisualizer.Core.Functions
                     catch (Exception) { }
                 }
             }
+        }
+
+        public async void PresentTraversalAlgorithm(IEnumerable<Node> node)
+        {
+            ResetColor();
+
+            if (SkipTransition)
+                ColorizeNodes(node,
+                    ConstantValues.ControlColors.NodeTraversalBackground);
+            else
+                await ColorizeNodes(node,
+                    ConstantValues.ControlColors.NodeTraversalBackground, 500);
+
+            IsModified = true;
+        }
+        public async void PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
+        {
+            ResetColor();
+
+            var leftOverNode = nodes.Except(components.SelectMany(e => e));
+
+            IsModified = true;
         }
 
         public void ResetColor()

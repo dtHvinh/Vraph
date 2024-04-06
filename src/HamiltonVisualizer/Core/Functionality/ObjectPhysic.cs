@@ -34,16 +34,25 @@ namespace HamiltonVisualizer.Core.Functions
             }
         }
 
-        /// <summary>
-        /// No collision detected on this element.
-        /// </summary>
-        /// <returns></returns>
         public bool IsNoCollide()
         {
             foreach (Node n in _nodes)
             {
                 var dis = PointHelper.Distance(_node.Origin.X, _node.Origin.Y, n.Origin.X, n.Origin.Y);
                 if (dis > 0 && dis < 2 * _radius)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool HasNoCollide(Point point, IEnumerable<Node> nodes)
+        {
+            foreach (Node n in nodes)
+            {
+                var dis = PointHelper.Distance(point.X, point.Y, n.Origin.X, n.Origin.Y);
+                if (dis > 0 && dis < ConstantValues.ControlSpecifications.NodeWidth)
                 {
                     return false;
                 }

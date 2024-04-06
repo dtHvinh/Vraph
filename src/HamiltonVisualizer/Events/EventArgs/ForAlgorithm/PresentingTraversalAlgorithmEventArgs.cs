@@ -1,4 +1,6 @@
-﻿namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
+﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+
+namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
 {
     public class PresentingTraversalAlgorithmEventArgs
     {
@@ -10,7 +12,7 @@
         /// <summary>
         /// The data.
         /// </summary>
-        public object Data { get; set; } = null!;
+        public IEnumerable<Node> Data { get; set; } = null!;
 
         /// <summary>
         /// Tell client if it should skip the transition.

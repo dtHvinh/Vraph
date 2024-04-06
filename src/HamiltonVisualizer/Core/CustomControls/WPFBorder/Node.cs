@@ -58,7 +58,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             {
                 if (e.MiddleButton == MouseButtonState.Pressed)
                 {
-                    SelectNode();
+                    if (IsSelected)
+                        ReleaseSelectMode();
+                    else
+                        SelectNode();
                 }
             };
         }
