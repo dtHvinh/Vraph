@@ -1,6 +1,7 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.Contracts;
+using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
@@ -18,7 +19,12 @@ namespace HamiltonVisualizer.Core.Base
     /// <summary>
     /// A node that can move on a canvas
     /// </summary>
-    public abstract class NodeBase : Border, IUIComponent, INavigableElement, IMultiLanguageSupport, IEquatable<NodeBase>
+    public abstract class NodeBase :
+        Border,
+        IUIComponent,
+        INavigableElement,
+        IMultiLanguageSupport,
+        IEquatable<NodeBase>
     {
         private Point _origin;
 
@@ -32,17 +38,25 @@ namespace HamiltonVisualizer.Core.Base
         public event NodeStateChangedEventHandler? OnNodeStateChanged;
         public event NodePositionChangedEventHandler? OnNodePositionChanged;
 
+        /// <summary>
+        /// Set this property will move the Node on canvas.
+        /// </summary>
         public Point Origin
         {
             get => _origin;
             set
             {
-                if (Position.RequestChangePosition(value, out var validPos))
-                {
-                    _origin = value;
-                    OnStateChanged(validPos, NodeState.Moving);
-                    OnPositionChanged(validPos);
-                }
+                var validPos = ObjectPosition.TryStayInBound(value);
+
+                var collideNode = Physic.CollideDetect();
+
+                _origin = value;
+
+                OnStateChanged(validPos, NodeState.Moving);
+                OnPositionChanged(validPos, collideNode);
+
+                Canvas.SetLeft(this, validPos.X - ConstantValues.ControlSpecifications.NodeWidth / 2);
+                Canvas.SetTop(this, validPos.Y - ConstantValues.ControlSpecifications.NodeWidth / 2);
             }
         }
 
@@ -63,9 +77,9 @@ namespace HamiltonVisualizer.Core.Base
             OnNodeStateChanged?.Invoke(this, new NodeStateChangeEventArgs(newPosition, state));
         }
 
-        public void OnPositionChanged(Point newPosition)
+        public void OnPositionChanged(Point newPosition, IEnumerable<Node> nodes)
         {
-            OnNodePositionChanged?.Invoke(this, new NodePositionChangedEventArgs(newPosition));
+            OnNodePositionChanged?.Invoke(this, new NodePositionChangedEventArgs(newPosition, nodes));
         }
 
         public void StyleUIComponent()

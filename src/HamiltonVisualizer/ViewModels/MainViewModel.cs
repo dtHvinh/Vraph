@@ -1,10 +1,11 @@
-﻿using CSLibraries.DataStructure.Graph.Implements;
+﻿using CSLibraries.DataStructure.Graph.Component;
+using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
-using HamiltonVisualizer.Events.EventArgs;
-using HamiltonVisualizer.Events.EventHandlers;
+using HamiltonVisualizer.Events.EventArgs.ForAlgorithm;
+using HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
 using HamiltonVisualizer.Utilities;
 using System.Collections.ObjectModel;
 
@@ -20,7 +21,8 @@ namespace HamiltonVisualizer.ViewModels
         private ReadOnlyCollection<GraphLine> _edges = null!;
         private SelectedNodeCollection _selectedNode = null!;
 
-        public event PresentingAlgorithmEventHandler? OnPresentingAlgorithm;
+        public event PresentingTraversalAlgorithmEventHandler? OnPresentingTraversalAlgorithm;
+        public event PresentingSCCEventHandler? OnPresentingSCCAlgorithm;
 
         public bool SkipTransition
         {
@@ -64,34 +66,7 @@ namespace HamiltonVisualizer.ViewModels
             }
         }
 
-        public void VM_NodeAdded()
-        {
-            OnPropertyChanged(nameof(NoV));
-        }
-        public void VM_NodeRemoved(Node node, out List<GraphLineConnectInfo> pendingRemove)
-        {
-            Refresh();
-            pendingRemove = node.Adjacent;
-        }
-        public void VM_EdgeAdded(GraphLine line)
-        {
-            Refresh();
-
-            var u = _map.LookUp(line.From);
-            var v = _map.LookUp(line.To);
-
-            _graph.AddEdge(u, v);
-        }
-        public void VM_EdgeRemoved()
-        {
-            Refresh();
-        }
-        public void VM_NodeSelectedOrRelease()
-        {
-            Refresh();
-        }
-
-        public void DFS(Node node)
+        public void DisplayDFS(Node node)
         {
             try
             {
@@ -101,16 +76,16 @@ namespace HamiltonVisualizer.ViewModels
 
                 IEnumerable<Node> nodes = result.Select(_map.LookUp);
 
-                OnPresentingAlgorithm?.Invoke(this, new PresentingAlgorithmEventArgs()
+                OnPresentingTraversalAlgorithm?.Invoke(this, new PresentingTraversalAlgorithmEventArgs()
                 {
-                    Name = nameof(DFS),
+                    Name = nameof(DisplayDFS),
                     Data = nodes,
                     SkipTransition = SkipTransition,
                 });
             }
             catch (Exception) { }
         }
-        public void BFS(Node node)
+        public void DisplayBFS(Node node)
         {
             try
             {
@@ -120,20 +95,76 @@ namespace HamiltonVisualizer.ViewModels
 
                 IEnumerable<Node> nodes = result.Select(_map.LookUp);
 
-                OnPresentingAlgorithm?.Invoke(this, new()
+                OnPresentingTraversalAlgorithm?.Invoke(this, new()
                 {
-                    Name = nameof(BFS),
+                    Name = nameof(DisplayBFS),
                     Data = nodes,
                     SkipTransition = SkipTransition,
                 });
             }
             catch (Exception) { }
         }
+        public void DisplaySCC()
+        {
+            try
+            {
+
+                IEnumerable<SCC<int>> result = _graph.Algorithm.GetComponents();
+
+                IEnumerable<IEnumerable<Node>> nodes = result.Select(Convert);
+
+                OnPresentingSCCAlgorithm?.Invoke(this, new()
+                {
+                    Name = nameof(DisplaySCC),
+                    Data = nodes,
+                    SkipTransition = SkipTransition,
+                });
+            }
+            catch (Exception) { }
+        }
+
+        private IEnumerable<Node> Convert(SCC<int> scc)
+        {
+            return scc.Vertices.Select(_map.LookUp);
+        }
+
+        /// <summary>
+        /// Should invoke this method when:
+        /// <list type="bullet">
+        /// <item>Modify the collection of selected nodes.</item>
+        /// <item>Modify the collection edges.</item>
+        /// <item>Modify the collection vertices.</item>
+        /// </list>
+        /// </summary>
         public void Refresh()
         {
             OnPropertyChanged(nameof(NoSN));
             OnPropertyChanged(nameof(NoE));
             OnPropertyChanged(nameof(NoV));
         }
+
+        /// <summary>
+        /// When add new <see cref="GraphLine"/>, refresh view model.
+        /// </summary>
+        /// <param name="line">The newly added <see cref="GraphLine"/>.</param>
+        public void Refresh(GraphLine line)
+        {
+            Refresh();
+
+            var u = _map.LookUp(line.From);
+            var v = _map.LookUp(line.To);
+
+            _graph.AddEdge(u, v);
+        }
+
+        /// <summary>
+        /// When remove a node, refresh the view model.
+        /// </summary>
+        public void Refresh(Node node, out List<GraphLineConnectInfo> pendingRemove)
+        {
+            Refresh();
+            pendingRemove = node.Adjacent;
+        }
+
     }
 }

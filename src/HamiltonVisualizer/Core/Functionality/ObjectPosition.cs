@@ -3,7 +3,6 @@ using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using ES = HamiltonVisualizer.Constants.ConstantValues.ControlSpecifications;
 
@@ -88,17 +87,5 @@ public class ObjectPosition
             Y = point.Y;
 
         return new Point(X, Y);
-    }
-
-    public bool RequestChangePosition(Point pos, out Point validPosition)
-    {
-        var validPos = TryStayInBound(pos);
-
-        Canvas.SetLeft(_node, validPos.X - 34 / 2);
-        Canvas.SetTop(_node, validPos.Y - 34 / 2);
-
-        validPosition = validPos;
-
-        return true;
     }
 }

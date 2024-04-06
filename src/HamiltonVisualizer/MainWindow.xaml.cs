@@ -1,6 +1,7 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functions;
 using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
@@ -40,9 +41,8 @@ public partial class MainWindow : Window
         _visualAppearanceManager = new ObjectVisualizationManager(roNodes, roEdges);
 
         SubscribeCollectionEvents();
-        SubscribeModelViewEvents();
         SubscribeCanvasEvents();
-        SubscribeViewModelEvents();
+        SubscribeAlgorithmPresentingEvents();
     }
 
     //
@@ -128,7 +128,7 @@ public partial class MainWindow : Window
             {
                 DrawingCanvas.Children.Add(node);
                 _elementCollection.Nodes.Add(node);
-                _viewModel.VM_NodeAdded();
+                _viewModel.Refresh();
             }
         }
     }
@@ -137,12 +137,36 @@ public partial class MainWindow : Window
     private void SubscribeCanvasEvents()
     {
         DrawingCanvas.MouseDown += DrawingCanvas_MouseDown;
+
+        ((DCContextMenu)DrawingCanvas.ContextMenu).SCC.Click += (sender, e) =>
+        {
+            _viewModel.DisplaySCC();
+        };
     }
-    private void SubscribeViewModelEvents()
+    private void SubscribeAlgorithmPresentingEvents()
     {
-        _viewModel.OnPresentingAlgorithm += (sender, e) =>
+        _viewModel.OnPresentingTraversalAlgorithm += async (sender, e) =>
+        {
+            _visualAppearanceManager.ResetColor();
+
+            if (e.SkipTransition)
+                _visualAppearanceManager.ColorizeNodes(
+                    (IEnumerable<Node>)e.Data,
+                    ConstantValues.ControlColors.NodeTraversalBackground);
+            else
+                await _visualAppearanceManager.ColorizeNodes(
+                    (IEnumerable<Node>)e.Data,
+                    ConstantValues.ControlColors.NodeTraversalBackground, 500);
+
+            _visualAppearanceManager.IsModified = true;
+        };
+
+        _viewModel.OnPresentingSCCAlgorithm += (sender, e) =>
         {
             _visualAppearanceManager.IsModified = true;
+
+            var scc = e.Data;
+            var leftOverNode = _elementCollection.Nodes.Except(scc.SelectMany(e => e));
         };
     }
     private void SubscribeNodeEvents(Node node)
@@ -170,18 +194,18 @@ public partial class MainWindow : Window
             _elementCollection.Remove(e.Node);
             DrawingCanvas.Children.Remove(e.Node);
             _selectedCollection.Remove(e.Node);
-            _viewModel.VM_NodeRemoved(e.Node, out var pendingRemoveEdge);
+            _viewModel.Refresh(e.Node, out var pendingRemoveEdge);
 
             // remove associate _edge.
             pendingRemoveEdge.ForEach(e =>
             {
                 _elementCollection.Remove(e.Edge);
                 DrawingCanvas.Children.Remove(e.Edge);
-                _viewModel.VM_EdgeRemoved();
+                _viewModel.Refresh();
             });
         };
 
-        // delete duplicate node with identical label
+        // delete duplicate node when label existed
         node.OnNodeLabelChanged += (object sender, NodeSetLabelEventArgs e) =>
         {
             var text = e.Text;
@@ -196,15 +220,15 @@ public partial class MainWindow : Window
         node.OnNodeSelected += (object sender, NodeSelectedEventArgs e) =>
         {
             _selectedCollection.Add((Node)sender);
-            _viewModel.VM_NodeSelectedOrRelease();
-
+            _viewModel.Refresh();
+            _visualAppearanceManager.ResetColor();
         };
 
         // when release select on a mode
         node.OnNodeReleaseSelect += (object sender, NodeReleaseSelectEventArgs e) =>
         {
             _selectedCollection.Remove((Node)sender);
-            _viewModel.VM_NodeSelectedOrRelease();
+            _viewModel.Refresh();
         };
     }
     private void SubscribeNodeContextMenuEvents(Node node)
@@ -213,26 +237,12 @@ public partial class MainWindow : Window
 
         nodeContextMenu.DFS.Click += (_, _) =>
         {
-            _viewModel.DFS(node);
+            _viewModel.DisplayDFS(node);
         };
 
         nodeContextMenu.BFS.Click += (_, _) =>
         {
-            _viewModel.BFS(node);
-        };
-    }
-    private void SubscribeModelViewEvents()
-    {
-        _viewModel.OnPresentingAlgorithm += async (sender, e) =>
-        {
-            if (e.SkipTransition)
-                _visualAppearanceManager.ColorizeNodes(
-                    (IEnumerable<Node>)e.Data!,
-                    ConstantValues.ControlColors.NodeTraversalBackground);
-            else
-                await _visualAppearanceManager.ColorizeNodes(
-                    (IEnumerable<Node>)e.Data!,
-                    ConstantValues.ControlColors.NodeTraversalBackground, 500);
+            _viewModel.DisplayBFS(node);
         };
     }
     private void SubscribeGraphLineEvents(GraphLine graphLine)
@@ -245,7 +255,7 @@ public partial class MainWindow : Window
 
             _elementCollection.Remove(deleteLine);
             DrawingCanvas.Children.Remove(deleteLine);
-            _viewModel.VM_EdgeRemoved();
+            _viewModel.Refresh();
         };
     }
     private void SubscribeCollectionEvents()
@@ -278,10 +288,10 @@ public partial class MainWindow : Window
                 var node2 = nodes.Item2;
 
                 if (!_elementCollection.Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
-                    && _drawManager.Draw(node1, node2, out var edge))
+                    && _drawManager.DrawLine(node1, node2, out var edge))
                 {
                     _elementCollection.Edges.Add(edge);
-                    _viewModel.VM_EdgeAdded(edge);
+                    _viewModel.Refresh(edge);
                     SubscribeGraphLineEvents(edge);
                 }
                 node1.ReleaseSelectMode();

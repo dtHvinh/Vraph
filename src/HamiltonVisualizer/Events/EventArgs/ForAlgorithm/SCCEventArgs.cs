@@ -1,16 +1,15 @@
-﻿namespace HamiltonVisualizer.Events.EventArgs
+﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+
+namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
 {
-    public class PresentingAlgorithmEventArgs
+    public class SCCEventArgs
     {
         /// <summary>
         /// The algorithm name.
         /// </summary>
         public string? Name { get; set; }
 
-        /// <summary>
-        /// The data.
-        /// </summary>
-        public object? Data { get; set; }
+        public IEnumerable<IEnumerable<Node>> Data { get; set; } = null!;
 
         /// <summary>
         /// Tell client if it should skip the transition.

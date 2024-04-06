@@ -4,12 +4,10 @@ add bi-direct graph
 
 add multi threading 
 
-object physic
-
 add multi-lang use IMultiLangComponent
 
 add redo func ??
 
-use dependency prop
-
 add pdf export
+
+read csv, txt
