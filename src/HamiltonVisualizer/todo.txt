@@ -11,3 +11,5 @@ add redo func ??
 add pdf export
 
 read csv, txt
+
+allow log

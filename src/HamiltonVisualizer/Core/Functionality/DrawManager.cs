@@ -16,9 +16,13 @@ namespace HamiltonVisualizer.Core.Functions
         /// <summary>
         /// Draw a <see cref="Line"/> and add to the collection.
         /// </summary>
-        public bool DrawLine(Node src, Node dst, [NotNullWhen(true)] out GraphLine? obj)
+        public bool DrawLine(Node src, Node dst, bool headVisible, [NotNullWhen(true)] out GraphLine? obj)
         {
             var edge = new GraphLine(src, dst);
+            if (!headVisible)
+            {
+                edge.Head.Visibility = System.Windows.Visibility.Collapsed;
+            }
             Canvas.Children.Add(edge);
             obj = edge;
             return true;

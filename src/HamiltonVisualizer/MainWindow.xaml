@@ -141,6 +141,27 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
+                            </Button>                              
+                            <Button Padding="0 10 0 10"
+                                    Click="GraphMode_Click"
+                                    BorderBrush="Black"
+                                    BorderThickness="0 0 0 1">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsDirectionalGraph, Mode=OneWay}" Value="True">
+                                                <Setter Property="Content" Value="Đồ thị có hướng"/>
+                                                <Setter Property="Background" Value="Wheat"/>
+                                                <Setter Property="ToolTip" Value="Nhấn để chuyển đổi"></Setter>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsDirectionalGraph, Mode=OneWay}" Value="False">
+                                                <Setter Property="Content" Value="Đồ thị vô hướng"/>
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="ToolTip" Value="Nhấn để chuyển đổi"></Setter>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
                             </Button>   
                         </StackPanel>
                         <TextBlock Padding="0 10 0 10">-------Thông tin đồ thị-------</TextBlock>
