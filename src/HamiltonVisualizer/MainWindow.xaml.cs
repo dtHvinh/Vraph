@@ -148,6 +148,10 @@ public partial class MainWindow : Window
         {
             _viewModel.DisplaySCC();
         };
+        ((DCContextMenu)_canvas.ContextMenu).HamiltonCycle.Click += (sender, e) =>
+        {
+            _viewModel.DisplayHamiltonCycle();
+        };
     }
     private void SubscribeAlgorithmPresentingEvents()
     {
@@ -175,7 +179,7 @@ public partial class MainWindow : Window
             _elementCollection.Remove(e.Node);
             _canvas.Children.Remove(e.Node);
             _selectedCollection.Remove(e.Node);
-            _viewModel.Refresh();
+            _viewModel.RefreshWhendRemove(e.Node);
 
             // remove associate _edge.
             e.Node.Adjacent.ForEach(e =>
@@ -232,8 +236,6 @@ public partial class MainWindow : Window
         {
             var deleteLine = e.GraphLine;
 
-            // TODO: line may have some kind of animation ???
-
             _elementCollection.Remove(deleteLine);
             _canvas.Children.Remove(deleteLine);
             _viewModel.Refresh();
@@ -272,7 +274,7 @@ public partial class MainWindow : Window
                     && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
                 {
                     _elementCollection.Edges.Add(edge);
-                    _viewModel.Refresh(edge);
+                    _viewModel.RefreshWhendAdd(edge);
                     SubscribeGraphLineEvents(edge);
                 }
                 node1.ReleaseSelectMode();

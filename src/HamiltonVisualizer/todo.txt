@@ -1,7 +1,5 @@
 clear TODO
 
-add bi-direct graph
-
 add multi threading 
 
 add multi-lang use IMultiLangComponent
@@ -11,5 +9,3 @@ add redo func ??
 add pdf export
 
 read csv, txt
-
-allow log

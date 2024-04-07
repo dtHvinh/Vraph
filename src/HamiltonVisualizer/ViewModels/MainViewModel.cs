@@ -5,11 +5,11 @@ using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
-using HamiltonVisualizer.Events.EventArgs.ForAlgorithm;
 using HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
 using HamiltonVisualizer.Events.EventHandlers.ForGraph;
 using HamiltonVisualizer.Utilities;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace HamiltonVisualizer.ViewModels
 {
@@ -26,6 +26,7 @@ namespace HamiltonVisualizer.ViewModels
 
         public event PresentingTraversalAlgorithmEventHandler? PresentingTraversalAlgorithm;
         public event PresentingSCCEventHandler? PresentingSCCAlgorithm;
+        public event PresentingHamiltonAlgorithmEventHandler? PresentingHamiltonCycleAlgorithm;
         public event GraphModeChangeEventHandler? GraphModeChanged;
 
         public bool SkipTransition
@@ -90,15 +91,8 @@ namespace HamiltonVisualizer.ViewModels
                 int intNum = _map.LookUp(node);
 
                 IEnumerable<int> result = _graph.Algorithm.DFS(intNum);
-
                 IEnumerable<Node> nodes = result.Select(_map.LookUp);
-
-                PresentingTraversalAlgorithm?.Invoke(this, new PresentingTraversalAlgorithmEventArgs()
-                {
-                    Name = nameof(DisplayDFS),
-                    Data = nodes,
-                    SkipTransition = SkipTransition,
-                });
+                OnPresentingTraversal("DFS", nodes);
             }
             catch (Exception) { }
         }
@@ -109,15 +103,8 @@ namespace HamiltonVisualizer.ViewModels
                 int intNum = _map.LookUp(node);
 
                 IEnumerable<int> result = _graph.Algorithm.BFS(intNum);
-
                 IEnumerable<Node> nodes = result.Select(_map.LookUp);
-
-                PresentingTraversalAlgorithm?.Invoke(this, new()
-                {
-                    Name = nameof(DisplayBFS),
-                    Data = nodes,
-                    SkipTransition = SkipTransition,
-                });
+                OnPresentingTraversal("BFS", nodes);
             }
             catch (Exception) { }
         }
@@ -126,17 +113,18 @@ namespace HamiltonVisualizer.ViewModels
             try
             {
                 IEnumerable<SCC<int>> result = _graph.Algorithm.GetComponents();
-
                 IEnumerable<IEnumerable<Node>> nodes = result.Select(Convert);
-
-                PresentingSCCAlgorithm?.Invoke(this, new()
-                {
-                    Name = nameof(DisplaySCC),
-                    Data = nodes,
-                    SkipTransition = SkipTransition,
-                });
+                OnPresentingSCC(nodes);
             }
             catch (Exception) { }
+        }
+        public void DisplayHamiltonCycle()
+        {
+            IEnumerable<Node> nodes = _graph.Algorithm.HamiltonianCycle().Select(_map.LookUp);
+            if (nodes.Any())
+                OnPresentingTraversal("Hamilton", nodes);
+            else
+                MessageBox.Show("Không tìm thấy chu trình", "Thông báo");
         }
 
         private IEnumerable<Node> Convert(SCC<int> scc)
@@ -163,7 +151,7 @@ namespace HamiltonVisualizer.ViewModels
         /// When add new <see cref="GraphLine"/>, refresh view model.
         /// </summary>
         /// <param name="line">The newly added <see cref="GraphLine"/>.</param>
-        public void Refresh(GraphLine line)
+        public void RefreshWhendAdd(GraphLine line)
         {
             Refresh();
 
@@ -173,11 +161,38 @@ namespace HamiltonVisualizer.ViewModels
             _graph.AddEdge(u, v);
         }
 
+        public void RefreshWhendRemove(Node node)
+        {
+            Refresh();
+
+            var u = _map.LookUp(node);
+            _graph.Adjacent.RemoveVertex(u);
+        }
+
         public void OnGraphModeChanged()
         {
             OnPropertyChanged(nameof(IsDirectionalGraph));
             _graph = _graph.Change();
             GraphModeChanged?.Invoke(this, new());
+        }
+        public void OnPresentingSCC(IEnumerable<IEnumerable<Node>> nodes)
+        {
+
+            PresentingSCCAlgorithm?.Invoke(this, new()
+            {
+                Name = nameof(DisplaySCC),
+                Data = nodes,
+                SkipTransition = SkipTransition,
+            });
+        }
+        public void OnPresentingTraversal(string name, IEnumerable<Node> nodes)
+        {
+            PresentingTraversalAlgorithm?.Invoke(this, new()
+            {
+                Name = name,
+                Data = nodes,
+                SkipTransition = SkipTransition,
+            });
         }
     }
 }

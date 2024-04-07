@@ -1,0 +1,2 @@
+﻿namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm;
+public class HamiltonAlgorithmEventArgs;

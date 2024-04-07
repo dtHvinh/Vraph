@@ -5,10 +5,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
 {
     public class DCContextMenu : ContextMenu, IAppContextMenu
     {
-        // TODO: add more
         private static DCContextMenu? _instance;
 
         public MenuItem SCC = null!;
+        public MenuItem HamiltonCycle = null!;
         public MenuItem Quit = null!;
 
         public static DCContextMenu Instance
@@ -27,6 +27,11 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
                 Header = "Bộ Phận Liên Thông"
             };
 
+            HamiltonCycle = new()
+            {
+                Header = "Chu trình hamilton"
+            };
+
             Quit = new()
             {
                 Header = "Huỷ",
@@ -40,6 +45,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
 
             AddItems(
                 SCC,
+                HamiltonCycle,
                 Quit);
         }
 

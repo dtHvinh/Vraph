@@ -3,8 +3,6 @@ using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functionality;
 using HamiltonVisualizer.Exceptions;
-using HamiltonVisualizer.Helpers;
-using Serilog;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
@@ -21,46 +19,28 @@ namespace HamiltonVisualizer.Core.Functions
         {
             foreach (var line in linePolygons)
             {
-                node.Background = color;
+                switch (line.Head.Visibility)
+                {
+                    case System.Windows.Visibility.Visible:
+                        line.Head.Visibility = System.Windows.Visibility.Collapsed;
+                        break;
+                    case System.Windows.Visibility.Collapsed:
+                        line.Head.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                }
             }
         }
-        private void ColorizeGraphLine(SolidColorBrush color)
+        private async Task ColorizeNode(Node node, SolidColorBrush color, int millisecondsDelay = 0)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
 
-            foreach (GraphLine line in linePolygons)
-            {
-                line.Head.Fill = color;
-                line.Head.Stroke = color;
-                line.Body.Fill = color;
-                line.Body.Stroke = color;
-            }
-        }
-        private void ColorizeGraphLine(IEnumerable<GraphLine> lines, SolidColorBrush color)
-        {
-            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-                IsModified = true;
+            if (millisecondsDelay > 0)
+                await Task.Delay(millisecondsDelay);
 
-            foreach (GraphLine line in lines)
-            {
-                line.Head.Fill = color;
-                line.Head.Stroke = color;
-                line.Body.Fill = color;
-                line.Body.Stroke = color;
-            }
+            node.Background = color;
         }
-        private void ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color)
-        {
-            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-                IsModified = true;
-
-            foreach (Node node in nodes)
-            {
-                node.Background = color;
-            }
-        }
-        private async Task ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay, bool delayAtStart = false)
+        private async Task ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay = 0, bool delayAtStart = false)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
@@ -92,7 +72,6 @@ namespace HamiltonVisualizer.Core.Functions
 
         public async void PresentTraversalAlgorithm(IEnumerable<Node> node)
         {
-            Log.Information("Presenting Traversal algorithm!");
             ResetColor();
 
             if (SkipTransition)
@@ -106,8 +85,6 @@ namespace HamiltonVisualizer.Core.Functions
         }
         public async void PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
         {
-            Log.Information("Presenting Component algorithm!");
-
             ResetColor();
             ColorPalate.Reset();
 
