@@ -1,7 +1,10 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.Core.Functionality;
 using HamiltonVisualizer.Exceptions;
+using HamiltonVisualizer.Helpers;
+using Serilog;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
@@ -14,53 +17,34 @@ namespace HamiltonVisualizer.Core.Functions
         public bool IsModified { get; set; } = false; // value indicate if reset actually need to be perform
         public bool SkipTransition { get; set; } = false; // how result will be displayed
 
-        private void ColorizeNodes(SolidColorBrush color)
+        private void GraphLineArrowVisibilityChange()
+        {
+            foreach (var line in linePolygons)
+            {
+                switch (line.Head.Visibility)
+                {
+                    case System.Windows.Visibility.Visible:
+                        line.Head.Visibility = System.Windows.Visibility.Collapsed;
+                        break;
+                    case System.Windows.Visibility.Collapsed:
+                        line.Head.Visibility = System.Windows.Visibility.Visible;
+                        break;
+                }
+            }
+        }
+        private async Task ColorizeNode(Node node, SolidColorBrush color, int millisecondsDelay = 0)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
 
-            foreach (Node node in nodes)
-            {
-                node.Background = color;
-            }
-        }
-        private void ColorizeGraphLine(SolidColorBrush color)
-        {
-            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-                IsModified = true;
+            if (millisecondsDelay > 0)
+                await Task.Delay(millisecondsDelay);
 
-            foreach (GraphLine line in linePolygons)
-            {
-                line.Head.Fill = color;
-                line.Head.Stroke = color;
-                line.Body.Fill = color;
-                line.Body.Stroke = color;
-            }
-        }
-        private void ColorizeGraphLine(IEnumerable<GraphLine> lines, SolidColorBrush color)
-        {
-            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-                IsModified = true;
+            node.Background = color;
 
-            foreach (GraphLine line in lines)
-            {
-                line.Head.Fill = color;
-                line.Head.Stroke = color;
-                line.Body.Fill = color;
-                line.Body.Stroke = color;
-            }
+            LogHelper.Colorize(node.NodeLabel.Text, color.ToString());
         }
-        private void ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color)
-        {
-            if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-                IsModified = true;
-
-            foreach (Node node in nodes)
-            {
-                node.Background = color;
-            }
-        }
-        private async Task ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay, bool delayAtStart = false)
+        private async Task ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay = 0, bool delayAtStart = false)
         {
             if (color != ConstantValues.ControlColors.NodeDefaultBackground)
                 IsModified = true;
@@ -70,57 +54,65 @@ namespace HamiltonVisualizer.Core.Functions
                 exception: typeof(ArgumentException),
                 errorMessage: EM.Not_Support_Negative_Number);
 
-            if (millisecondsDelay == 0)
-            {
-                ColorizeNodes(nodes, color);
-            }
+            if (delayAtStart)
+                foreach (Node node in nodes.ToList())
+                {
+                    await ColorizeNode(node, color, millisecondsDelay);
+                }
             else
             {
-                if (delayAtStart)
-                    foreach (Node node in nodes)
-                    {
-                        await Task.Delay(millisecondsDelay);
-                        node.Background = color;
-                    }
-                else
+                try
                 {
-                    try
-                    {
-                        nodes.First().Background = color;
+                    await ColorizeNode(nodes.First(), color);
 
-                        foreach (Node node in nodes.Skip(1))
-                        {
-                            await Task.Delay(millisecondsDelay);
-                            node.Background = color;
-                        }
+                    foreach (Node node in nodes.Skip(1))
+                    {
+                        await ColorizeNode(node, color, millisecondsDelay);
                     }
-                    catch (Exception) { }
                 }
+                catch (Exception) { }
             }
         }
 
         public async void PresentTraversalAlgorithm(IEnumerable<Node> node)
         {
+            Log.Information("Presenting Traversal algorithm!");
             ResetColor();
 
             if (SkipTransition)
-                ColorizeNodes(node,
+                await ColorizeNodes(node,
                     ConstantValues.ControlColors.NodeTraversalBackground);
             else
                 await ColorizeNodes(node,
-                    ConstantValues.ControlColors.NodeTraversalBackground, 500);
+                    ConstantValues.ControlColors.NodeTraversalBackground, ConstantValues.Time.TransitionDelay);
 
             IsModified = true;
         }
         public async void PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
         {
-            ResetColor();
+            Log.Information("Presenting Component algorithm!");
 
-            var leftOverNode = nodes.Except(components.SelectMany(e => e));
+            ResetColor();
+            ColorPalate.Reset();
+
+            foreach (var component in components)
+            {
+                var color = ColorPalate.GetUnusedColor();
+                await ColorizeNodes(component, color);
+            }
+
+            foreach (var node in nodes.Where(e => e.Adjacent.Count == 0))
+            {
+                var color = ColorPalate.GetUnusedColor();
+                await ColorizeNode(node, color);
+            }
 
             IsModified = true;
         }
-
+        public void GraphModeChange()
+        {
+            GraphLineArrowVisibilityChange();
+        }
         public void ResetColor()
         {
             if (IsModified)

@@ -37,8 +37,6 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _body = InitLine();
             _head = CreateArrowHeadDefault();
 
-            _body.ContextMenu = new GraphLineContextMenu(this);
-
             src.Attach(this, ConnectPosition.Head);
             dst.Attach(this, ConnectPosition.Tail);
         }

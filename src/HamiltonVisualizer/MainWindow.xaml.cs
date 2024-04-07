@@ -43,6 +43,7 @@ public partial class MainWindow : Window
         SubscribeCanvasEvents();
         SubscribeAlgorithmPresentingEvents();
         SubscribeCanvasContextMenuEvents();
+        SubscribeGraphModeChangeEvents();
     }
 
     //
@@ -110,6 +111,10 @@ public partial class MainWindow : Window
     {
         _viewModel.SkipTransition = !_viewModel.SkipTransition;
     }
+    private void GraphMode_Click(object sender, RoutedEventArgs e)
+    {
+        _viewModel.IsDirectionalGraph = !_viewModel.IsDirectionalGraph;
+    }
 
     //
     private void DrawingCanvas_MouseDown(object sender, MouseButtonEventArgs e)
@@ -146,14 +151,14 @@ public partial class MainWindow : Window
     }
     private void SubscribeAlgorithmPresentingEvents()
     {
-        _viewModel.OnPresentingTraversalAlgorithm += (sender, e) =>
+        _viewModel.PresentingTraversalAlgorithm += (sender, e) =>
         {
             _algorithm.SkipTransition = e.SkipTransition;
 
             _algorithm.PresentTraversalAlgorithm(e.Data);
         };
 
-        _viewModel.OnPresentingSCCAlgorithm += (sender, e) =>
+        _viewModel.PresentingSCCAlgorithm += (sender, e) =>
         {
             _algorithm.SkipTransition = e.SkipTransition;
 
@@ -162,21 +167,6 @@ public partial class MainWindow : Window
     }
     private void SubscribeNodeEvents(Node node)
     {
-        // when node moving, prevent canvas to listen to click event
-        node.OnNodeStateChanged += (sender, e) =>
-        {
-            switch (e.State)
-            {
-                case NodeState.Idle:
-                    _canvas.MouseDown += DrawingCanvas_MouseDown;
-                    break;
-
-                case NodeState.Moving:
-                    _canvas.MouseDown -= DrawingCanvas_MouseDown;
-                    break;
-            }
-        };
-
         // when node deleted
         node.OnNodeDelete += async (object sender, NodeDeleteEventArgs e) =>
         {
@@ -279,7 +269,7 @@ public partial class MainWindow : Window
                 var node2 = nodes.Item2;
 
                 if (!_elementCollection.Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
-                    && _drawManager.DrawLine(node1, node2, out var edge))
+                    && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
                 {
                     _elementCollection.Edges.Add(edge);
                     _viewModel.Refresh(edge);
@@ -290,10 +280,19 @@ public partial class MainWindow : Window
             }
         };
     }
+    private void SubscribeGraphModeChangeEvents()
+    {
+        _viewModel.GraphModeChanged += (sender, e) =>
+        {
+            _algorithm.GraphModeChange();
+            _algorithm.ResetColor();
+        };
+    }
 
     //
     private bool IsNodeAlreadyExist(string? nodeLabelContent)
     {
         return _elementCollection.Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
     }
+
 }

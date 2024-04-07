@@ -1,4 +1,5 @@
-﻿using CSLibraries.DataStructure.Graph.Component;
+﻿using CSLibraries.DataStructure.Graph.Base;
+using CSLibraries.DataStructure.Graph.Component;
 using CSLibraries.DataStructure.Graph.Implements;
 using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.Collections;
@@ -6,6 +7,7 @@ using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Events.EventArgs.ForAlgorithm;
 using HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
+using HamiltonVisualizer.Events.EventHandlers.ForGraph;
 using HamiltonVisualizer.Utilities;
 using System.Collections.ObjectModel;
 
@@ -14,15 +16,17 @@ namespace HamiltonVisualizer.ViewModels
     public class MainViewModel : ObservableObject
     {
         private bool _skipTransition = false;
-        private readonly DirectedGraph<int> _graph = new();
+        private bool _isDirectionalGraph = true;
+        private GraphBase<int> _graph = new DirectedGraph<int>();
         private readonly NodeMap _map = new();
 
         private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
         private ReadOnlyCollection<GraphLine> _edges = null!;
         private SelectedNodeCollection _selectedNode = null!;
 
-        public event PresentingTraversalAlgorithmEventHandler? OnPresentingTraversalAlgorithm;
-        public event PresentingSCCEventHandler? OnPresentingSCCAlgorithm;
+        public event PresentingTraversalAlgorithmEventHandler? PresentingTraversalAlgorithm;
+        public event PresentingSCCEventHandler? PresentingSCCAlgorithm;
+        public event GraphModeChangeEventHandler? GraphModeChanged;
 
         public bool SkipTransition
         {
@@ -34,6 +38,19 @@ namespace HamiltonVisualizer.ViewModels
             {
                 _skipTransition = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public bool IsDirectionalGraph
+        {
+            get
+            {
+                return _isDirectionalGraph;
+            }
+            set
+            {
+                _isDirectionalGraph = value;
+                OnGraphModeChanged();
             }
         }
 
@@ -76,7 +93,7 @@ namespace HamiltonVisualizer.ViewModels
 
                 IEnumerable<Node> nodes = result.Select(_map.LookUp);
 
-                OnPresentingTraversalAlgorithm?.Invoke(this, new PresentingTraversalAlgorithmEventArgs()
+                PresentingTraversalAlgorithm?.Invoke(this, new PresentingTraversalAlgorithmEventArgs()
                 {
                     Name = nameof(DisplayDFS),
                     Data = nodes,
@@ -95,7 +112,7 @@ namespace HamiltonVisualizer.ViewModels
 
                 IEnumerable<Node> nodes = result.Select(_map.LookUp);
 
-                OnPresentingTraversalAlgorithm?.Invoke(this, new()
+                PresentingTraversalAlgorithm?.Invoke(this, new()
                 {
                     Name = nameof(DisplayBFS),
                     Data = nodes,
@@ -108,12 +125,11 @@ namespace HamiltonVisualizer.ViewModels
         {
             try
             {
-
                 IEnumerable<SCC<int>> result = _graph.Algorithm.GetComponents();
 
                 IEnumerable<IEnumerable<Node>> nodes = result.Select(Convert);
 
-                OnPresentingSCCAlgorithm?.Invoke(this, new()
+                PresentingSCCAlgorithm?.Invoke(this, new()
                 {
                     Name = nameof(DisplaySCC),
                     Data = nodes,
@@ -155,6 +171,13 @@ namespace HamiltonVisualizer.ViewModels
             var v = _map.LookUp(line.To);
 
             _graph.AddEdge(u, v);
+        }
+
+        public void OnGraphModeChanged()
+        {
+            OnPropertyChanged(nameof(IsDirectionalGraph));
+            _graph = _graph.Change();
+            GraphModeChanged?.Invoke(this, new());
         }
     }
 }

@@ -36,5 +36,10 @@ namespace HamiltonVisualizer.Constants
             /// </summary>
             public const int DrawingCanvasSidesLength = 1440;
         }
+
+        public static class Time
+        {
+            public const int TransitionDelay = 500;
+        }
     }
 }
