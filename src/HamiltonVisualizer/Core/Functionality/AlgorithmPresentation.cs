@@ -3,7 +3,6 @@ using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.Core.Functionality;
 using HamiltonVisualizer.Exceptions;
-using HamiltonVisualizer.Helpers;
 using System.Collections.ObjectModel;
 using System.Windows.Media;
 
@@ -40,8 +39,6 @@ namespace HamiltonVisualizer.Core.Functions
                 await Task.Delay(millisecondsDelay);
 
             node.Background = color;
-
-            LogHelper.Colorize(node.NodeLabel.Text, color.ToString());
         }
         private async Task ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay = 0, bool delayAtStart = false)
         {
@@ -88,8 +85,6 @@ namespace HamiltonVisualizer.Core.Functions
         }
         public async void PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
         {
-            Log.Information("Presenting Component algorithm!");
-
             ResetColor();
             ColorPalate.Reset();
 
