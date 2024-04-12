@@ -27,7 +27,6 @@ namespace HamiltonVisualizer.Core.Base
         IEquatable<NodeBase>
     {
         private Point _origin;
-
         private readonly List<GraphLineConnectInfo> _adjacent;
 
         public ObjectPhysic Physic { get; }
@@ -48,9 +47,9 @@ namespace HamiltonVisualizer.Core.Base
             {
                 var validPos = ObjectPosition.TryStayInBound(value);
 
-                var collideNode = Physic.CollideDetect();
+                var collideNode = Physic.CollisionDetect();
 
-                _origin = value;
+                _origin = validPos;
 
                 OnStateChanged(validPos, NodeState.Moving);
                 OnPositionChanged(validPos, collideNode);

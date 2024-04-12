@@ -1,5 +1,6 @@
 ﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Exceptions;
+using HamiltonVisualizer.Extensions;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -21,7 +22,7 @@ namespace HamiltonVisualizer.Core.Collections
 
         public bool Equals(Node? x, Node? y)
         {
-            return x is not null && y is not null && x.NodeLabel.Text.Equals(y.NodeLabel.Text);
+            return x is not null && y is not null && x.Origin.TolerantEquals(y.Origin);
         }
 
         public int GetHashCode([DisallowNull] Node obj)

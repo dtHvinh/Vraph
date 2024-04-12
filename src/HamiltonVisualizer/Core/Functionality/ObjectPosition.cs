@@ -2,6 +2,7 @@
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
+using HamiltonVisualizer.Extensions;
 using System.Windows;
 using System.Windows.Input;
 using ES = HamiltonVisualizer.Constants.ConstantValues.ControlSpecifications;
@@ -21,6 +22,11 @@ public class ObjectPosition
 
     private readonly NodeBase _node;
     private readonly CustomCanvas _drawingCanvas;
+
+    private const double _maxX = ES.DrawingCanvasSidesLength - ES.NodeWidth / 2;
+    private const double _maxY = ES.DrawingCanvasSidesLength - ES.NodeWidth / 2;
+    private const double _minX = ES.NodeWidth / 2;
+    private const double _minY = ES.NodeWidth / 2;
 
     public ObjectPosition(
         NodeBase node,
@@ -85,7 +91,28 @@ public class ObjectPosition
             Y = upperBound;
         else
             Y = point.Y;
-
         return new Point(X, Y);
+    }
+
+    /// <summary>
+    /// Check if <paramref name="point"/> is the position of one of the corner, if true
+    /// return the center of the canvas base on constant values specified in <see cref="Constants.ConstantValues.ControlSpecifications"/>
+    /// </summary>
+    public static Point IfStuckAtCorner(Point point)
+    {
+        var bottomLeft = new Point(_minX, _minY);
+        var bottomRight = new Point(_maxX, _minY);
+        var topLeft = new Point(_minX, _maxY);
+        var topRight = new Point(_maxX, _maxY);
+
+        if (point.TolerantEquals(bottomLeft)
+            || point.TolerantEquals(bottomRight)
+            || point.TolerantEquals(topLeft)
+            || point.TolerantEquals(topRight))
+        {
+            return new Point(_maxX / 2, _maxY / 2);
+        }
+
+        return point;
     }
 }

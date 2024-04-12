@@ -4,6 +4,7 @@ using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
+using HamiltonVisualizer.Extensions;
 using System.Windows;
 
 namespace HamiltonVisualizer.Core.Functions
@@ -60,7 +61,7 @@ namespace HamiltonVisualizer.Core.Functions
             return true;
         }
 
-        public IEnumerable<Node> CollideDetect()
+        public IEnumerable<Node> CollisionDetect()
         {
             foreach (Node node in _nodes)
             {
@@ -72,6 +73,11 @@ namespace HamiltonVisualizer.Core.Functions
             }
         }
 
+        /// <summary>
+        /// Move nodes that collide with the <paramref name="first"/> node. <br/>
+        /// If <paramref name="second"/> node is moved to the corner of the canvas, it will be move to the
+        /// almost center of its.
+        /// </summary>
         private static void MoveAway(NodeBase first, NodeBase second)
         {
             var newX = 2 * second.Origin.X - first.Origin.X;
@@ -79,6 +85,13 @@ namespace HamiltonVisualizer.Core.Functions
             var secondNewPos = new Point(newX, newY);
 
             second.Origin = secondNewPos;
+
+            var newPos = ObjectPosition.IfStuckAtCorner(second.Origin);
+
+            if (!second.Origin.TolerantEquals(newPos))
+            {
+                second.Origin = newPos;
+            }
         }
     }
 }
