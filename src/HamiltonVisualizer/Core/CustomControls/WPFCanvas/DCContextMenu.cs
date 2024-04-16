@@ -7,8 +7,13 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
     {
         private static DCContextMenu? _instance;
 
+        public MenuItem Algorithms = null!;
         public MenuItem SCC = null!;
         public MenuItem HamiltonCycle = null!;
+
+        public MenuItem Export = null!;
+        public MenuItem CSV = null!;
+
         public MenuItem Quit = null!;
 
         public static DCContextMenu Instance
@@ -22,15 +27,33 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
 
         public void Initialize()
         {
+            Algorithms = new()
+            {
+                Header = "Thuật toán"
+            };
+
             SCC = new()
             {
                 Header = "Bộ Phận Liên Thông"
             };
-
             HamiltonCycle = new()
             {
                 Header = "Chu trình hamilton"
             };
+
+            Algorithms.Items.Add(SCC);
+            Algorithms.Items.Add(HamiltonCycle);
+
+            Export = new()
+            {
+                Header = "Xuất tập tin"
+            };
+
+            CSV = new()
+            {
+                Header = "CSV"
+            };
+            Export.Items.Add(CSV);
 
             Quit = new()
             {
@@ -44,8 +67,8 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
             Initialize();
 
             AddItems(
-                SCC,
-                HamiltonCycle,
+                Algorithms,
+                Export,
                 Quit);
         }
 

@@ -121,8 +121,10 @@ namespace HamiltonVisualizer.ViewModels
         public void DisplayHamiltonCycle()
         {
             IEnumerable<Node> nodes = _graph.Algorithm.HamiltonianCycle().Select(_map.LookUp);
-            if (nodes.Any())
+            if (nodes.Count() == NoV)
+            {
                 OnPresentingTraversal("Hamilton", nodes);
+            }
             else
                 MessageBox.Show("Không tìm thấy chu trình", "Thông báo");
         }
@@ -146,11 +148,6 @@ namespace HamiltonVisualizer.ViewModels
             OnPropertyChanged(nameof(NoE));
             OnPropertyChanged(nameof(NoV));
         }
-
-        /// <summary>
-        /// When add new <see cref="GraphLine"/>, refresh view model.
-        /// </summary>
-        /// <param name="line">The newly added <see cref="GraphLine"/>.</param>
         public void RefreshWhendAdd(GraphLine line)
         {
             Refresh();
@@ -160,7 +157,6 @@ namespace HamiltonVisualizer.ViewModels
 
             _graph.AddEdge(u, v);
         }
-
         public void RefreshWhendRemove(Node node)
         {
             Refresh();

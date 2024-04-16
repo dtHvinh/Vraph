@@ -7,6 +7,7 @@ using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Utilities;
 using HamiltonVisualizer.ViewModels;
+using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shapes;
@@ -151,6 +152,18 @@ public partial class MainWindow : Window
         ((DCContextMenu)_canvas.ContextMenu).HamiltonCycle.Click += (sender, e) =>
         {
             _viewModel.DisplayHamiltonCycle();
+        };
+        ((DCContextMenu)_canvas.ContextMenu).CSV.Click += (sender, e) =>
+        {
+            SaveFileDialog dlg = new()
+            {
+                FileName = "Graph",
+                DefaultExt = ".csv",
+                Filter = "Text documents (.csv)|*.csv"
+            };
+
+            var result = dlg.ShowDialog();
+            NodeCSVWriter.WriteTo(dlg.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
         };
     }
     private void SubscribeAlgorithmPresentingEvents()

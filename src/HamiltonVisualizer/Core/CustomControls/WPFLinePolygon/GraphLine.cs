@@ -46,7 +46,6 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _head.Stroke = color;
             _body.Fill = color;
         }
-
         public void ChangeColor(Brush head, Brush body)
         {
             _head.Stroke = head;
@@ -100,7 +99,6 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _head.Points[2] = points.Item3;
             _head.RenderTransform = new RotateTransform(angle, To.Origin.X, To.Origin.Y);
         }
-
         public void OnHeadPositionChanged()
         {
             var angle = 90 + Math.Atan2(To.Origin.Y - From.Origin.Y, To.Origin.X - From.Origin.X) * (180 / Math.PI);

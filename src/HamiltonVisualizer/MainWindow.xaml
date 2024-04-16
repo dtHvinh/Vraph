@@ -60,8 +60,8 @@
             FocusVisualStyle="{x:Null}"
             x:Name="DrawingCanvasWrapper">
             <customCanvas:CustomCanvas
-                Width="1440"
-                Height="1440"
+                Width="1150"
+                Height="720"
                 Background="FloralWhite"
                 x:Name="_canvas">
             </customCanvas:CustomCanvas>
@@ -112,7 +112,7 @@
                                     ToolTip="Xóa tất cả các đỉnh và cạnh"
                                     BorderBrush="Black"
                                     BorderThickness="0 1 0 1">
-                            </Button>     
+                            </Button>
                             <Button Content="Đặt lại"
                                     Padding="0 10 0 10"
                                     Background="White"
@@ -141,7 +141,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                            </Button>                              
+                            </Button>
                             <Button Padding="0 10 0 10"
                                     Click="GraphMode_Click"
                                     BorderBrush="Black"
@@ -162,7 +162,7 @@
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
-                            </Button>   
+                            </Button>
                         </StackPanel>
                         <TextBlock Padding="0 10 0 10">-------Thông tin đồ thị-------</TextBlock>
                         <StackPanel Orientation="Horizontal" 

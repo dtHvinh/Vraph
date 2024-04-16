@@ -23,8 +23,8 @@ public class ObjectPosition
     private readonly NodeBase _node;
     private readonly CustomCanvas _drawingCanvas;
 
-    private const double _maxX = ES.DrawingCanvasSidesLength - ES.NodeWidth / 2;
-    private const double _maxY = ES.DrawingCanvasSidesLength - ES.NodeWidth / 2;
+    private const double _maxX = ES.DrawingCanvasSidesWidth - ES.NodeWidth / 2;
+    private const double _maxY = ES.DrawingCanvasSidesHeight - ES.NodeWidth / 2;
     private const double _minX = ES.NodeWidth / 2;
     private const double _minY = ES.NodeWidth / 2;
 
@@ -73,22 +73,23 @@ public class ObjectPosition
     public static Point TryStayInBound(Point point)
     {
         double lowerBound = ES.NodeWidth / 2;
-        double upperBound = ES.DrawingCanvasSidesLength - ES.NodeWidth / 2;
+        double upperBoundX = ES.DrawingCanvasSidesWidth - ES.NodeWidth / 2;
+        double upperBoundY = ES.DrawingCanvasSidesHeight - ES.NodeWidth / 2;
 
         double X;
         double Y;
 
         if (point.X < lowerBound)
             X = lowerBound;
-        else if (point.X > upperBound)
-            X = upperBound;
+        else if (point.X > upperBoundX)
+            X = upperBoundX;
         else
             X = point.X;
 
         if (point.Y < lowerBound)
             Y = lowerBound;
-        else if (point.Y > upperBound)
-            Y = upperBound;
+        else if (point.Y > upperBoundY)
+            Y = upperBoundY;
         else
             Y = point.Y;
         return new Point(X, Y);

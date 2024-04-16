@@ -11,7 +11,19 @@ public class ObservableGraph<T>(bool isDirectional, IEqualityComparer<T> compare
     private Dictionary<T, HashSet<T>> _transpose = new(comparer); // lazily loading transpose adjacent.
     private readonly Dictionary<T, HashSet<T>> _combineAdjacent = new(comparer);
 
-    public bool IsDirectional { get => _isDirectional; set => _isDirectional = value; }
+    public bool IsDirectional
+    {
+        get => _isDirectional;
+        set
+        {
+            if (value == false)
+            {
+                ProcessTransposition(_adjacent);
+                UpdateCombineAdjacent();
+            }
+            _isDirectional = value;
+        }
+    }
 
     #region Constructors
 
@@ -19,26 +31,23 @@ public class ObservableGraph<T>(bool isDirectional, IEqualityComparer<T> compare
     public ObservableGraph(IEqualityComparer<T> comparer) : this(true, comparer) { }
 
     #endregion Constructors
-    private Dictionary<T, HashSet<T>> ProcessTransposition(Dictionary<T, HashSet<T>> source)
+    private void ProcessTransposition(Dictionary<T, HashSet<T>> source)
     {
         Dictionary<T, HashSet<T>> result = [];
+
+        foreach (T v in _adjacent.Keys)
+        {
+            result.TryAdd(v, new(comparer));
+        }
 
         foreach (KeyValuePair<T, HashSet<T>> pair in source)
         {
             foreach (T v in pair.Value)
             {
-                if (result.TryGetValue(v, out var adj))
-                {
-                    adj.Add(pair.Key);
-                }
-                else
-                    result.Add(v, new(comparer)
-                    {
-                        pair.Key,
-                    });
+                result[v].Add(pair.Key);
             }
         }
-        return result;
+        _transpose = result;
     }
     private void UpdateCombineAdjacent()
     {
@@ -50,7 +59,8 @@ public class ObservableGraph<T>(bool isDirectional, IEqualityComparer<T> compare
             }
             else
             {
-                _combineAdjacent.Add(vertex, (HashSet<T>)_adjacent[vertex].Union(GetTranspose()[vertex]));
+                var ta = GetTranspose()[vertex];
+                _combineAdjacent.Add(vertex, [.. _adjacent[vertex].Union(ta)]);
             }
         }
     }
@@ -90,13 +100,12 @@ public class ObservableGraph<T>(bool isDirectional, IEqualityComparer<T> compare
         DFSTraversal(source);
     }
 
-    public IEnumerable<T> GetAdjacent(T vertex)
+    public IEnumerable<T> GetVertices() => _adjacent.Keys;
+    public IEnumerable<T> GetAdjacent(T vertex) // get adjacent of a vertex, may execute update method
     {
-        _adjacent.TryGetValue(vertex, out var adj1);
-
         if (IsDirectional)
         {
-            return adj1 is not null ? adj1 : [];
+            return _adjacent[vertex];
         }
         else
         {
@@ -105,18 +114,17 @@ public class ObservableGraph<T>(bool isDirectional, IEqualityComparer<T> compare
             return _combineAdjacent[vertex];
         }
     }
-    public IEnumerable<T> GetVertices() => _adjacent.Keys;
-    public Dictionary<T, HashSet<T>> GetTranspose()
+    public Dictionary<T, HashSet<T>> GetTranspose() // get transpose graph, may execute update method
     {
         if (_isModified)
         {
-            _transpose = ProcessTransposition(_adjacent);
+            ProcessTransposition(_adjacent);
         }
         _isModified = false;
         return _transpose;
     }
 
-    public IEnumerable<T> BFS(T start)
+    public IEnumerable<T> BreathFirstSearch(T start)
     {
         List<T> list = [];
         HashSet<T> hashSet = [];
@@ -140,7 +148,7 @@ public class ObservableGraph<T>(bool isDirectional, IEqualityComparer<T> compare
 
         return list;
     }
-    public IEnumerable<T> DFS(T start)
+    public IEnumerable<T> DepthFirstSearch(T start)
     {
         List<T> list = [];
         HashSet<T> hashSet = [];
@@ -176,17 +184,33 @@ public class ObservableGraph<T>(bool isDirectional, IEqualityComparer<T> compare
     {
         Add(u);
         Add(v);
-        if (_adjacent.TryGetValue(u, out HashSet<T>? adj1))
+        _adjacent[u].Add(v);
+        OnModified();
+    }
+
+    public void Remove(T u)
+    {
+        _adjacent.Remove(u);
+        _transpose.Remove(u);
+
+        foreach (var pair in _adjacent)
         {
-            adj1.Add(v);
+            pair.Value.Remove(u);
         }
-        else
+
+        foreach (var pair in _transpose)
         {
-            _adjacent.Add(u, new(comparer)
-            {
-                v
-            });
+            pair.Value.Remove(u);
         }
+
+        OnModified();
+    }
+    public void Remove(T u, T v)
+    {
+        _adjacent[u].Remove(v);
+        _adjacent[v].Remove(u);
+        _transpose[u].Remove(v);
+        _transpose[v].Remove(u);
         OnModified();
     }
 

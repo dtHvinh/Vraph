@@ -30,11 +30,8 @@ namespace HamiltonVisualizer.Constants
         public static class ControlSpecifications
         {
             public const double NodeWidth = 34;
-
-            /// <summary>
-            /// The drawing canvas width and height.
-            /// </summary>
-            public const double DrawingCanvasSidesLength = 1440;
+            public const double DrawingCanvasSidesHeight = 720;
+            public const double DrawingCanvasSidesWidth = 1150;
         }
 
         public static class Time

@@ -29,8 +29,8 @@ namespace HamiltonVisualizer.Core.Base
         private Point _origin;
         private readonly List<GraphLineConnectInfo> _adjacent;
 
-        public ObjectPhysic Physic { get; }
-        public ObjectPosition Position { get; }
+        public ObjectPhysic PhysicManager { get; }
+        public ObjectPosition PositionManager { get; }
 
         public List<GraphLineConnectInfo> Adjacent => _adjacent;
 
@@ -47,7 +47,7 @@ namespace HamiltonVisualizer.Core.Base
             {
                 var validPos = ObjectPosition.TryStayInBound(value);
 
-                var collideNode = Physic.CollisionDetect();
+                var collideNode = PhysicManager.CollisionDetect();
 
                 _origin = validPos;
 
@@ -64,8 +64,8 @@ namespace HamiltonVisualizer.Core.Base
             StyleUIComponent();
             SubscribeEvents();
 
-            Position = new ObjectPosition(this, parent);
-            Physic = new ObjectPhysic(this, others);
+            PositionManager = new ObjectPosition(this, parent);
+            PhysicManager = new ObjectPhysic(this, others);
             _adjacent = [];
 
             Origin = position;
