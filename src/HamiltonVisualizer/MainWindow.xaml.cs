@@ -19,11 +19,12 @@ namespace HamiltonVisualizer;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private readonly MainViewModel _viewModel = null!;
-    private readonly SelectedNodeCollection _selectedCollection = new();
-    private readonly DrawManager _drawManager;
-    private readonly AlgorithmPresentation _algorithm;
-    private readonly GraphElementsCollection _elementCollection;
+    internal readonly MainViewModel _viewModel = null!;
+    internal readonly SelectedNodeCollection _selectedCollection = new();
+    internal readonly DrawManager _drawManager;
+    internal readonly AlgorithmPresentation _algorithm;
+    internal readonly GraphElementsCollection _elementCollection;
+    internal readonly SaveFileDialog _saveFileDialog;
 
     //
     public MainWindow()
@@ -39,6 +40,16 @@ public partial class MainWindow : Window
         _viewModel.SetRefs(new RefBag(roNodes, roEdges, _selectedCollection));
         _drawManager = new DrawManager(_canvas);
         _algorithm = new AlgorithmPresentation(roNodes, roEdges);
+
+        _saveFileDialog = new()
+        {
+            FileName = "Graph",
+            DefaultExt = ".csv",
+            Filter = "Text documents (.csv)|*.csv",
+            OverwritePrompt = true,
+            AddExtension = true,
+            AddToRecent = true,
+        };
 
         SubscribeCollectionEvents();
         SubscribeCanvasEvents();
@@ -86,7 +97,9 @@ public partial class MainWindow : Window
              Cách 2: Nhấn chuột giữa
 
             Nếu đỉnh trong trạng thái chọn (nền màu xanh) nhấn chuột giữa để hủy chọn
-            Lưu ý: Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ. 
+            Lưu ý: Cứ mỗi 2 nút được chọn một cạnh của đồ thị sẽ được vẽ.
+            
+            Nhập dữ liệu từ tệp tin bằng cách kéo thả tệp vào vùng vẽ
             """, "Hướng dẫn", button: MessageBoxButton.OK);
     }
 
@@ -118,30 +131,33 @@ public partial class MainWindow : Window
     }
 
     //
-    private void DrawingCanvas_MouseDown(object sender, MouseButtonEventArgs e)
-    {
-        if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
-        {
-            var mPos = e.GetPosition(_canvas);
-
-            var node = new Node(_canvas,
-                ObjectPosition.TryStayInBound(mPos),
-                _elementCollection.Nodes);
-
-            SubscribeNodeEvents(node);
-            SubscribeNodeContextMenuEvents(node);
-
-            _canvas.Children.Add(node);
-            _elementCollection.Nodes.Add(node);
-            _viewModel.Refresh();
-        }
-    }
-
-    //
     private void SubscribeCanvasEvents()
     {
-        _canvas.MouseDown += DrawingCanvas_MouseDown;
+        _canvas.MouseDown += (sender, e) =>
+        {
+            if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
+            {
+                var mPos = e.GetPosition(_canvas);
 
+                var node = new Node(_canvas,
+                    ObjectPosition.TryStayInBound(mPos),
+                    _elementCollection.Nodes);
+
+                if (node.PhysicManager.IsNoCollide())
+                {
+                    CreateNode(node);
+                }
+            }
+        };
+
+        _canvas.Drop += (sender, e) =>
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, true);
+                FileImporter.ReadFrom(this, files[0]);
+            }
+        };
     }
     private void SubscribeCanvasContextMenuEvents()
     {
@@ -155,15 +171,8 @@ public partial class MainWindow : Window
         };
         ((DCContextMenu)_canvas.ContextMenu).CSV.Click += (sender, e) =>
         {
-            SaveFileDialog dlg = new()
-            {
-                FileName = "Graph",
-                DefaultExt = ".csv",
-                Filter = "Text documents (.csv)|*.csv"
-            };
-
-            var result = dlg.ShowDialog();
-            NodeCSVWriter.WriteTo(dlg.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
+            var result = _saveFileDialog.ShowDialog();
+            FileExporter.WriteTo(_saveFileDialog.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
         };
     }
     private void SubscribeAlgorithmPresentingEvents()
@@ -256,24 +265,6 @@ public partial class MainWindow : Window
     }
     private void SubscribeCollectionEvents()
     {
-        static bool AreTheSameLine(Line line, Node node1, Node node2, bool directed = false)
-        {
-            bool sameDirCompare = line.X1 == node1.Origin.X
-                    && line.Y1 == node1.Origin.Y
-                    && line.X2 == node2.Origin.X
-                    && line.Y2 == node2.Origin.Y;
-
-            if (directed)
-                return sameDirCompare;
-
-            bool opositeDirCompare = line.X1 == node2.Origin.X
-                    && line.Y1 == node2.Origin.Y
-                    && line.X2 == node1.Origin.X
-                    && line.Y2 == node1.Origin.Y;
-
-            return sameDirCompare || opositeDirCompare;
-        }
-
         _selectedCollection.PropertyChanged += (sender, e) =>
         {
             // whenever 2 node selected, connect them.
@@ -283,13 +274,8 @@ public partial class MainWindow : Window
                 var node1 = nodes.Item1;
                 var node2 = nodes.Item2;
 
-                if (!_elementCollection.Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
-                    && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
-                {
-                    _elementCollection.Edges.Add(edge);
-                    _viewModel.RefreshWhendAdd(edge);
-                    SubscribeGraphLineEvents(edge);
-                }
+                CreateLine(node1, node2);
+
                 node1.ReleaseSelectMode();
                 node2.ReleaseSelectMode();
             }
@@ -310,4 +296,42 @@ public partial class MainWindow : Window
         return _elementCollection.Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
     }
 
+    //
+    public void CreateNode(Node node)
+    {
+        SubscribeNodeEvents(node);
+        SubscribeNodeContextMenuEvents(node);
+
+        _canvas.Children.Add(node);
+        _elementCollection.Add(node);
+        _viewModel.Refresh();
+    }
+    public void CreateLine(Node node1, Node node2)
+    {
+        static bool AreTheSameLine(Line line, Node node1, Node node2, bool directed = false)
+        {
+            bool sameDirCompare = line.X1 == node1.Origin.X
+                    && line.Y1 == node1.Origin.Y
+                    && line.X2 == node2.Origin.X
+                    && line.Y2 == node2.Origin.Y;
+
+            if (directed)
+                return sameDirCompare;
+
+            bool opositeDirCompare = line.X1 == node2.Origin.X
+                    && line.Y1 == node2.Origin.Y
+                    && line.X2 == node1.Origin.X
+                    && line.Y2 == node1.Origin.Y;
+
+            return sameDirCompare || opositeDirCompare;
+        }
+
+        if (!_elementCollection.Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
+            && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
+        {
+            _elementCollection.Edges.Add(edge);
+            _viewModel.RefreshWhendAdd(edge);
+            SubscribeGraphLineEvents(edge);
+        }
+    }
 }

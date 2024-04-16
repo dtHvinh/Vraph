@@ -63,7 +63,8 @@
                 Width="1150"
                 Height="720"
                 Background="FloralWhite"
-                x:Name="_canvas">
+                x:Name="_canvas"
+                AllowDrop="True">
             </customCanvas:CustomCanvas>
         </ScrollViewer>
         <Border Grid.Row="1"
