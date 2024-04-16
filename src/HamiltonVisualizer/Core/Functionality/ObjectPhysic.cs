@@ -40,7 +40,7 @@ namespace HamiltonVisualizer.Core.Functions
             foreach (Node n in _nodes)
             {
                 var dis = PointHelper.Distance(_node.Origin.X, _node.Origin.Y, n.Origin.X, n.Origin.Y);
-                if (dis > 0 && dis < 2 * _radius)
+                if (dis >= 0 && dis < 2 * _radius)
                 {
                     return false;
                 }
