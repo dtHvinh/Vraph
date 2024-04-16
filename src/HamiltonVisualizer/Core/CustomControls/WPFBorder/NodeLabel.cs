@@ -54,23 +54,23 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             }
         }
 
-        #region Event listener handle
-
         private void NodeLabel_KeyDown(object sender, KeyEventArgs e)
         {
             // if user press enter and fill the text before hand, REMOVE modifiability.
             if (e.Key == Key.Enter && !string.IsNullOrEmpty(Text))
             {
-                IsReadonly = true;
+                OnLabelSetFinished();
             }
         }
-
         private void NodeLabel_LostFocus(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrEmpty(Text))
-                IsReadonly = true;
+                OnLabelSetFinished();
         }
 
-        #endregion
+        public void OnLabelSetFinished()
+        {
+            IsReadonly = true;
+        }
     }
 }

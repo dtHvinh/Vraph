@@ -15,4 +15,8 @@
     <ProjectReference Include="..\..\HamiltonVisualizer.DataStructure\HamiltonVisualizer.DataStructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataTest\" />
+  </ItemGroup>
+
 </Project>

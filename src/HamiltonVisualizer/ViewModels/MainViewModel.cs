@@ -10,9 +10,16 @@ using HamiltonVisualizer.Events.EventHandlers.ForGraph;
 using HamiltonVisualizer.Utilities;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Input;
 
 namespace HamiltonVisualizer.ViewModels
 {
+    /**
+     * ***************************************************************************************************
+     * ** Node or GraphLine Should not be added directly from inside this class, it should be add       **
+     * ** using method like CreateNode from MainView instead                                            **
+     * ***************************************************************************************************
+     */
     public class MainViewModel : ObservableObject
     {
         private bool _skipTransition = false;
@@ -168,12 +175,13 @@ namespace HamiltonVisualizer.ViewModels
         public void OnGraphModeChanged()
         {
             OnPropertyChanged(nameof(IsDirectionalGraph));
+            Mouse.OverrideCursor = Cursors.Wait;
             _graph = _graph.Change();
+            Mouse.OverrideCursor = Cursors.Arrow;
             GraphModeChanged?.Invoke(this, new());
         }
         public void OnPresentingSCC(IEnumerable<IEnumerable<Node>> nodes)
         {
-
             PresentingSCCAlgorithm?.Invoke(this, new()
             {
                 Name = nameof(DisplaySCC),

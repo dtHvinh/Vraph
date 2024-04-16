@@ -1,11 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-using CSLibraries.DataStructure.Graph.Base;
-using CSLibraries.DataStructure.Graph.Implements;
-using HamiltonVisualizer.DataStructure.Impl;
-
-ObservableGraph<int> e = new(true, EqualityComparer<int>.Default);
-GraphBase<int> graph = new DirectedGraph<int>().Change();
+﻿//ObservableGraph<int> e = new(true, EqualityComparer<int>.Default);
+//GraphBase<int> graph = new DirectedGraph<int>().Change();
 
 //e.Add(0, 1);
 //e.Add(1, 2);
@@ -40,10 +34,18 @@ GraphBase<int> graph = new DirectedGraph<int>().Change();
 //    Console.Write(item);
 //};
 
-foreach (var t in e.GetAdjacent(11))
-{
-    Console.WriteLine(t);
-}
+//foreach (var t in e.GetAdjacent(11))
+//{
+//    Console.WriteLine(t);
+//}
 
+//Console.ReadKey();
+//record class User(string? Name, string? Email);
+
+//765:231,590:495
+using System.Text.RegularExpressions;
+
+var regex = new Regex("^[0-9]*:[0-9]*,[0-9]*:[0-9]*$");
+Console.WriteLine(regex.IsMatch("123:313,213145:12312"));
 Console.ReadKey();
-record class User(string? Name, string? Email);
+
