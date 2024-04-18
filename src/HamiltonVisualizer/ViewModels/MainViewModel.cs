@@ -1,4 +1,5 @@
-﻿using HamiltonVisualizer.Core;
+﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
@@ -32,6 +33,7 @@ namespace HamiltonVisualizer.ViewModels
         private SelectedNodeCollection _selectedNode = null!;
 
         public event PresentingTraversalAlgorithmEventHandler? PresentingTraversalAlgorithm;
+        public event PresentingLayeredBFSEventHandler? PresentingLayeredBFSAlgorithm;
         public event PresentingSCCEventHandler? PresentingSCCAlgorithm;
         public event PresentingHamiltonAlgorithmEventHandler? PresentingHamiltonCycleAlgorithm;
         public event GraphModeChangeEventHandler? GraphModeChanged;
@@ -99,7 +101,7 @@ namespace HamiltonVisualizer.ViewModels
 
                 IEnumerable<int> result = _graph.Algorithm.DFS(intNum);
                 IEnumerable<Node> nodes = result.Select(_map.LookUp);
-                OnPresentingTraversal("DFS", nodes);
+                OnPresentingTraversal(ConstantValues.AlgorithmNames.DFS, nodes);
             }
             catch (Exception) { }
         }
@@ -109,9 +111,9 @@ namespace HamiltonVisualizer.ViewModels
             {
                 int intNum = _map.LookUp(node);
 
-                IEnumerable<int> result = _graph.Algorithm.BFS(intNum);
-                IEnumerable<Node> nodes = result.Select(_map.LookUp);
-                OnPresentingTraversal("BFS", nodes);
+                IEnumerable<IEnumerable<int>> result = _graph.Algorithm.BFSLayered(intNum);
+                IEnumerable<IEnumerable<Node>> nodes = result.Select(e => e.Select(_map.LookUp));
+                OnPresentingLayeredBFS(nodes);
             }
             catch (Exception) { }
         }
@@ -130,7 +132,7 @@ namespace HamiltonVisualizer.ViewModels
             IEnumerable<Node> nodes = _graph.Algorithm.HamiltonianCycle().Select(_map.LookUp);
             if (nodes.Count() == NoV)
             {
-                OnPresentingTraversal("Hamilton", nodes);
+                OnPresentingTraversal(ConstantValues.AlgorithmNames.Hamilton, nodes);
             }
             else
                 MessageBox.Show("Không tìm thấy chu trình", "Thông báo");
@@ -164,12 +166,26 @@ namespace HamiltonVisualizer.ViewModels
 
             _graph.AddEdge(u, v);
         }
-        public void RefreshWhendRemove(Node node)
+        public void RefreshWhendAdd(Node node)
+        {
+            Refresh();
+
+            var u = _map.LookUp(node);
+            _graph.Adjacent.AddVertex(u);
+        }
+        public void RefreshWhenRemove(Node node)
         {
             Refresh();
 
             var u = _map.LookUp(node);
             _graph.Adjacent.RemoveVertex(u);
+        }
+
+        public void Clear()
+        {
+            _graph.Clear();
+            _map.Clear();
+            Refresh();
         }
 
         public void OnGraphModeChanged()
@@ -196,6 +212,13 @@ namespace HamiltonVisualizer.ViewModels
                 Name = name,
                 Data = nodes,
                 SkipTransition = SkipTransition,
+            });
+        }
+        public void OnPresentingLayeredBFS(IEnumerable<IEnumerable<Node>> layeredNodes)
+        {
+            PresentingLayeredBFSAlgorithm?.Invoke(this, new()
+            {
+                Data = layeredNodes,
             });
         }
     }

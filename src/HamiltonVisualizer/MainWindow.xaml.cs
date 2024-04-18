@@ -1,4 +1,5 @@
-﻿using HamiltonVisualizer.Core.Collections;
+﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
@@ -22,7 +23,7 @@ public partial class MainWindow : Window
     internal readonly MainViewModel _viewModel = null!;
     internal readonly SelectedNodeCollection _selectedCollection = new();
     internal readonly DrawManager _drawManager;
-    internal readonly AlgorithmPresentation _algorithm;
+    internal readonly AlgorithmPresenter _algorithm;
     internal readonly GraphElementsCollection _elementCollection;
     internal readonly SaveFileDialog _saveFileDialog;
     internal readonly OpenFileDialog _openFileDialog;
@@ -40,7 +41,7 @@ public partial class MainWindow : Window
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
         _viewModel.SetRefs(new RefBag(roNodes, roEdges, _selectedCollection));
         _drawManager = new DrawManager(_canvas);
-        _algorithm = new AlgorithmPresentation(roNodes, roEdges);
+        _algorithm = new AlgorithmPresenter(roNodes, roEdges);
 
         _saveFileDialog = new()
         {
@@ -121,7 +122,7 @@ public partial class MainWindow : Window
         _selectedCollection.Nodes.Clear();
         _canvas.Children.Clear();
 
-        _viewModel.Refresh();
+        _viewModel.Clear();
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
@@ -154,6 +155,7 @@ public partial class MainWindow : Window
                 if (node.PhysicManager.IsNoCollide())
                 {
                     CreateNode(node);
+                    _viewModel.RefreshWhendAdd(node);
                 }
             }
         };
@@ -202,7 +204,15 @@ public partial class MainWindow : Window
         {
             _algorithm.SkipTransition = e.SkipTransition;
 
-            _algorithm.PresentTraversalAlgorithm(e.Data);
+            switch (e.Name)
+            {
+                case ConstantValues.AlgorithmNames.DFS:
+                    _algorithm.PresentTraversalAlgorithm(e.Data);
+                    break;
+                case ConstantValues.AlgorithmNames.Hamilton:
+                    _algorithm.PresentHamiltonianCycleAlgorithm(e.Data);
+                    break;
+            }
         };
 
         _viewModel.PresentingSCCAlgorithm += (sender, e) =>
@@ -210,6 +220,11 @@ public partial class MainWindow : Window
             _algorithm.SkipTransition = e.SkipTransition;
 
             _algorithm.PresentComponentAlgorithm(e.Data);
+        };
+
+        _viewModel.PresentingLayeredBFSAlgorithm += (sender, e) =>
+        {
+            _algorithm.PresentLayeredBFSAlgorithm(e.Data);
         };
     }
     private void SubscribeNodeEvents(Node node)
@@ -222,7 +237,7 @@ public partial class MainWindow : Window
             _elementCollection.Remove(e.Node);
             _canvas.Children.Remove(e.Node);
             _selectedCollection.Remove(e.Node);
-            _viewModel.RefreshWhendRemove(e.Node);
+            _viewModel.RefreshWhenRemove(e.Node);
 
             // remove associate _edge.
             e.Node.Adjacent.ForEach(e =>

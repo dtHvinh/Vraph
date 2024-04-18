@@ -43,13 +43,14 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 
         public void ChangeColor(Brush color)
         {
-            _head.Stroke = color;
-            _body.Fill = color;
+            _head.Fill = color;
+            _body.Stroke = color;
         }
-        public void ChangeColor(Brush head, Brush body)
+
+        public void ResetColor()
         {
-            _head.Stroke = head;
-            _body.Fill = body;
+            _head.Fill = Brushes.Black;
+            _body.Stroke = Brushes.Black;
         }
 
         private Line InitLine()

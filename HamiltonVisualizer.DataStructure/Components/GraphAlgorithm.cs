@@ -27,8 +27,11 @@ namespace HamiltonVisualizer.DataStructure.Components
                 throw new ArgumentException($"Vertex \"{start}\" not found!");
 
             Queue<TVertex> queue = [];
+
             queue.Enqueue(start);
-            list.Add([queue.Dequeue()]);
+
+            list.Add([queue.First()]);
+
             while (queue.Count > 0)
             {
                 var front = queue.Dequeue();
@@ -46,8 +49,8 @@ namespace HamiltonVisualizer.DataStructure.Components
                         layer.Add(v);
                     }
                 }
-
-                list.Add(layer);
+                if (layer.Count > 0)
+                    list.Add(layer);
             }
             return list;
         }

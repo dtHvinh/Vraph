@@ -8,7 +8,7 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Core.Functions
 {
-    public class AlgorithmPresentation(
+    public class AlgorithmPresenter(
         ReadOnlyCollection<Node> nodes,
         ReadOnlyCollection<GraphLine> linePolygons)
     {
@@ -28,6 +28,13 @@ namespace HamiltonVisualizer.Core.Functions
                         line.Head.Visibility = System.Windows.Visibility.Visible;
                         break;
                 }
+            }
+        }
+        private void ColorizeLines(IEnumerable<GraphLine> lines, SolidColorBrush color)
+        {
+            foreach (var line in lines)
+            {
+                line.ChangeColor(color);
             }
         }
         private async Task ColorizeNode(Node node, SolidColorBrush color, int millisecondsDelay = 0)
@@ -70,6 +77,30 @@ namespace HamiltonVisualizer.Core.Functions
             }
         }
 
+        //private async Task ColorizeNodesAndLines(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay = 0)
+        //{
+        //    if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+        //        IsModified = true;
+
+        //    Ensure.ThrowIf(
+        //        condition: millisecondsDelay < 0,
+        //        exception: typeof(ArgumentException),
+        //        errorMessage: EM.Not_Support_Negative_Number);
+
+        //    var fromNode = nodes.First();
+
+        //    await ColorizeNode(fromNode, color);
+
+        //    foreach (Node nodes in nodes.Skip(1))
+        //    {
+        //        GraphLine? lineBetween = fromNode.Adjacent.FirstOrDefault(e => e.Edge.To.Origin.TolerantEquals(nodes.Origin))?.Edge;
+        //        if (lineBetween != null)
+        //            await ColorizeLine(lineBetween, color);
+        //        await ColorizeNode(nodes, color);
+        //        fromNode = nodes;
+        //    }
+        //}
+
         public async void PresentTraversalAlgorithm(IEnumerable<Node> node)
         {
             ResetColor();
@@ -82,6 +113,27 @@ namespace HamiltonVisualizer.Core.Functions
                     ConstantValues.ControlColors.NodeTraversalBackground, ConstantValues.Time.TransitionDelay);
 
             IsModified = true;
+        }
+        public async void PresentHamiltonianCycleAlgorithm(IEnumerable<Node> nodes)
+        {
+            ResetColor();
+            if (SkipTransition)
+                await ColorizeNodes(nodes,
+                    ConstantValues.ControlColors.NodeTraversalBackground);
+            else
+                await ColorizeNodes(nodes,
+                    ConstantValues.ControlColors.NodeTraversalBackground, ConstantValues.Time.TransitionDelay);
+
+            var from = nodes.First();
+
+            //foreach (var node in nodes.Skip(1))
+            //{
+            //    var line = linePolygons
+            //        .First(e => e.From.Origin.TolerantEquals(from.Origin)
+            //                    && e.To.Origin.TolerantEquals(node.Origin));
+
+            //    line.ChangeColor(ConstantValues.ControlColors.NodeTraversalBackground);
+            //}
         }
         public async void PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
         {
@@ -102,6 +154,17 @@ namespace HamiltonVisualizer.Core.Functions
 
             IsModified = true;
         }
+        public async void PresentLayeredBFSAlgorithm(IEnumerable<IEnumerable<Node>> layeredNode)
+        {
+            ResetColor();
+            ColorPalate.Reset();
+
+            foreach (IEnumerable<Node> layer in layeredNode)
+            {
+                await ColorizeNodes(layer, ConstantValues.ControlColors.NodeTraversalBackground, 0, false);
+                await Task.Delay(1000);
+            }
+        }
         public void GraphModeChange()
         {
             GraphLineArrowVisibilityChange();
@@ -109,10 +172,16 @@ namespace HamiltonVisualizer.Core.Functions
         public void ResetColor()
         {
             if (IsModified)
+            {
                 foreach (Node node in nodes)
                 {
                     node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
                 }
+                foreach (GraphLine line in linePolygons)
+                {
+                    line.ResetColor();
+                }
+            }
         }
     }
 }

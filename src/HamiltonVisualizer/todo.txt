@@ -6,8 +6,6 @@ add multi-lang use IMultiLangComponent
 
 add redo func ??
 
-add pdf export
-
-read csv, txt
-
 loading animation when run algorithm
+
+allow modify transition speed!

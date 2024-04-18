@@ -19,4 +19,12 @@ namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
         /// </summary>
         public bool SkipTransition { get; set; } = false;
     }
+
+    public class PresentingLayeredBFSEventArgs
+    {
+        /// <summary>
+        /// The data.
+        /// </summary>
+        public IEnumerable<IEnumerable<Node>> Data { get; set; } = null!;
+    }
 }

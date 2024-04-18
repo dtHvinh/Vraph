@@ -73,5 +73,15 @@ namespace HamiltonVisualizer.Core.Collections
         {
             return _map.Remove(key);
         }
+
+        public void Clear()
+        {
+            _map.Clear();
+
+            _reverseMap.Clear();
+            _reverseMap.Add(null!);
+
+            _i = 1;
+        }
     }
 }

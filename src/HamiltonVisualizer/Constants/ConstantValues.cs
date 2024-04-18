@@ -38,5 +38,12 @@ namespace HamiltonVisualizer.Constants
         {
             public const int TransitionDelay = 500;
         }
+
+
+        public static class AlgorithmNames
+        {
+            public const string DFS = "DFS";
+            public const string Hamilton = "Hamilton";
+        }
     }
 }

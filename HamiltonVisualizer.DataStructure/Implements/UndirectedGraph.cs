@@ -20,8 +20,8 @@ namespace HamiltonVisualizer.DataStructure.Implements
             InternalSetAdjacent(edge.U, edge.V);
             InternalSetAdjacent(edge.V, edge.U);
 
-            Adjacent.Vertices.Add(edge.V);
-            Adjacent.Vertices.Add(edge.U);
+            Adjacent.AddVertex(edge.V);
+            Adjacent.AddVertex(edge.U);
 
             return true;
         }
@@ -40,8 +40,8 @@ namespace HamiltonVisualizer.DataStructure.Implements
                 Adjacent.Disconnect(er.U, er.V);
             }
 
-            Adjacent.Vertices.Remove(edge.V);
-            Adjacent.Vertices.Remove(edge.U);
+            Adjacent.RemoveVertex(edge.V);
+            Adjacent.RemoveVertex(edge.U);
 
             return r1 && r2;
         }
