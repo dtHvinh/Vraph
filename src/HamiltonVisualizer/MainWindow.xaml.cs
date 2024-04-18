@@ -25,6 +25,7 @@ public partial class MainWindow : Window
     internal readonly AlgorithmPresentation _algorithm;
     internal readonly GraphElementsCollection _elementCollection;
     internal readonly SaveFileDialog _saveFileDialog;
+    internal readonly OpenFileDialog _openFileDialog;
 
     //
     public MainWindow()
@@ -49,6 +50,11 @@ public partial class MainWindow : Window
             OverwritePrompt = true,
             AddExtension = true,
             AddToRecent = true,
+        };
+
+        _openFileDialog = new()
+        {
+            AddExtension = true,
         };
 
         SubscribeCollectionEvents();
@@ -137,6 +143,8 @@ public partial class MainWindow : Window
         {
             if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
+                _algorithm.ResetColor();
+
                 var mPos = e.GetPosition(_canvas);
 
                 var node = new Node(_canvas,
@@ -155,24 +163,37 @@ public partial class MainWindow : Window
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, true);
+                Mouse.OverrideCursor = Cursors.Wait;
                 FileImporter.ReadFrom(this, files[0]);
+                Mouse.OverrideCursor = Cursors.Arrow;
             }
         };
     }
     private void SubscribeCanvasContextMenuEvents()
     {
-        ((DCContextMenu)_canvas.ContextMenu).SCC.Click += (sender, e) =>
+        DCContextMenu canvasContextMenu = ((DCContextMenu)_canvas.ContextMenu);
+
+        canvasContextMenu.SCC.Click += (sender, e) =>
         {
             _viewModel.DisplaySCC();
         };
-        ((DCContextMenu)_canvas.ContextMenu).HamiltonCycle.Click += (sender, e) =>
+        canvasContextMenu.HamiltonCycle.Click += (sender, e) =>
         {
             _viewModel.DisplayHamiltonCycle();
         };
-        ((DCContextMenu)_canvas.ContextMenu).CSV.Click += (sender, e) =>
+        canvasContextMenu.CSVExport.Click += (sender, e) =>
         {
             var result = _saveFileDialog.ShowDialog();
+            Mouse.OverrideCursor = Cursors.Wait;
             FileExporter.WriteTo(_saveFileDialog.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
+            Mouse.OverrideCursor = Cursors.Arrow;
+        };
+        canvasContextMenu.CSVImport.Click += (sender, e) =>
+        {
+            var result = _openFileDialog.ShowDialog();
+            Mouse.OverrideCursor = Cursors.Wait;
+            FileImporter.ReadFrom(this, _openFileDialog.FileName);
+            Mouse.OverrideCursor = Cursors.Arrow;
         };
     }
     private void SubscribeAlgorithmPresentingEvents()

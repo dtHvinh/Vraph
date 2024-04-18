@@ -122,7 +122,7 @@ namespace HamiltonVisualizer.Core.Base
             {
                 "vi" => $"""
                         Tọa Độ:{new string(' ', 14)}{(int)_origin.X}:{(int)_origin.Y}
-                        Số cạnh liền kề:{new string(' ', 2)}{_adjacent.Count}
+                        Bậc:{new string(' ', 2)}{_adjacent.Count}
                         """,
                 _ => throw new Exception($"Invalid lang {lang}!"),// TODO: add to EM class
             };

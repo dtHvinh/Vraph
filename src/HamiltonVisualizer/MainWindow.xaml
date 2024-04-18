@@ -11,7 +11,8 @@
         WindowStyle="None"
         Background="Transparent"
         AllowsTransparency="True"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Icon=".\Resources\graph2icon.ico">
 
     <Window.DataContext>
         <VM:MainViewModel/>

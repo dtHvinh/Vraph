@@ -9,8 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CSLibraries.DataStructure" Version="1.0.0-preview1.3.3" />
+    <None Remove="Resources\graph2icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CSLibraries.Mathematic" Version="1.0.0-preview1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\HamiltonVisualizer.DataStructure\HamiltonVisualizer.DataStructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\graph2icon.ico" />
   </ItemGroup>
 
 </Project>

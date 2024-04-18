@@ -15,7 +15,10 @@ public static class FileExporter
     public static int WriteTo(string path, GraphElementsCollection data, bool isDirectional)
     {
         if (data.Nodes.Count == 0)
+        {
+            File.Create(path);
             return 0;
+        }
 
         int c = 0;
 

@@ -1,10 +1,10 @@
-﻿using CSLibraries.DataStructure.Graph.Base;
-using CSLibraries.DataStructure.Graph.Component;
-using CSLibraries.DataStructure.Graph.Implements;
-using HamiltonVisualizer.Core;
+﻿using HamiltonVisualizer.Core;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.DataStructure.Base;
+using HamiltonVisualizer.DataStructure.Components;
+using HamiltonVisualizer.DataStructure.Implements;
 using HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
 using HamiltonVisualizer.Events.EventHandlers.ForGraph;
 using HamiltonVisualizer.Utilities;

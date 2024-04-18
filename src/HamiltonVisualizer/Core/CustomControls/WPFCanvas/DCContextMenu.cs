@@ -12,7 +12,9 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
         public MenuItem HamiltonCycle = null!;
 
         public MenuItem Export = null!;
-        public MenuItem CSV = null!;
+        public MenuItem Import = null!;
+        public MenuItem CSVExport = null!;
+        public MenuItem CSVImport = null!;
 
         public MenuItem Quit = null!;
 
@@ -48,12 +50,22 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
             {
                 Header = "Xuất tập tin"
             };
+            Import = new()
+            {
+                Header = "Nhập tập tin"
+            };
 
-            CSV = new()
+            CSVExport = new()
             {
                 Header = "CSV"
             };
-            Export.Items.Add(CSV);
+            Export.Items.Add(CSVExport);
+
+            CSVImport = new()
+            {
+                Header = "CSV"
+            };
+            Import.Items.Add(CSVImport);
 
             Quit = new()
             {
@@ -69,6 +81,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
             AddItems(
                 Algorithms,
                 Export,
+                Import,
                 Quit);
         }
 
