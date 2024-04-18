@@ -3,8 +3,8 @@ using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
-using HamiltonVisualizer.Core.Functions;
-using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
+using HamiltonVisualizer.Core.Functionality;
+using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Utilities;
 using HamiltonVisualizer.ViewModels;
@@ -155,7 +155,7 @@ public partial class MainWindow : Window
                 if (node.PhysicManager.IsNoCollide())
                 {
                     CreateNode(node);
-                    _viewModel.RefreshWhendAdd(node);
+                    _viewModel.RefreshWhenAdd(node);
                 }
             }
         };
@@ -165,9 +165,7 @@ public partial class MainWindow : Window
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, true);
-                Mouse.OverrideCursor = Cursors.Wait;
                 FileImporter.ReadFrom(this, files[0]);
-                Mouse.OverrideCursor = Cursors.Arrow;
             }
         };
     }
@@ -185,17 +183,13 @@ public partial class MainWindow : Window
         };
         canvasContextMenu.CSVExport.Click += (sender, e) =>
         {
-            var result = _saveFileDialog.ShowDialog();
-            Mouse.OverrideCursor = Cursors.Wait;
+            _saveFileDialog.ShowDialog();
             FileExporter.WriteTo(_saveFileDialog.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
-            Mouse.OverrideCursor = Cursors.Arrow;
         };
         canvasContextMenu.CSVImport.Click += (sender, e) =>
         {
-            var result = _openFileDialog.ShowDialog();
-            Mouse.OverrideCursor = Cursors.Wait;
+            _openFileDialog.ShowDialog();
             FileImporter.ReadFrom(this, _openFileDialog.FileName);
-            Mouse.OverrideCursor = Cursors.Arrow;
         };
     }
     private void SubscribeAlgorithmPresentingEvents()
@@ -366,7 +360,7 @@ public partial class MainWindow : Window
             && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
         {
             _elementCollection.Edges.Add(edge);
-            _viewModel.RefreshWhendAdd(edge);
+            _viewModel.RefreshWhenAdd(edge);
             SubscribeGraphLineEvents(edge);
         }
     }

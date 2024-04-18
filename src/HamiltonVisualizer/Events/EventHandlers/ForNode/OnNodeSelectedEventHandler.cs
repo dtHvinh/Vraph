@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
+﻿using HamiltonVisualizer.Events.EventArgs.ForNode;
 
 namespace HamiltonVisualizer.Events.EventHandlers.ForNode
 {

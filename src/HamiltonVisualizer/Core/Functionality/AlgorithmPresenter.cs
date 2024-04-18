@@ -1,12 +1,13 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
-using HamiltonVisualizer.Core.Functionality;
 using HamiltonVisualizer.Exceptions;
+using HamiltonVisualizer.Extensions;
 using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Media;
 
-namespace HamiltonVisualizer.Core.Functions
+namespace HamiltonVisualizer.Core.Functionality
 {
     public class AlgorithmPresenter(
         ReadOnlyCollection<Node> nodes,
@@ -21,11 +22,11 @@ namespace HamiltonVisualizer.Core.Functions
             {
                 switch (line.Head.Visibility)
                 {
-                    case System.Windows.Visibility.Visible:
-                        line.Head.Visibility = System.Windows.Visibility.Collapsed;
+                    case Visibility.Visible:
+                        line.Head.Visibility = Visibility.Collapsed;
                         break;
-                    case System.Windows.Visibility.Collapsed:
-                        line.Head.Visibility = System.Windows.Visibility.Visible;
+                    case Visibility.Collapsed:
+                        line.Head.Visibility = Visibility.Visible;
                         break;
                 }
             }
@@ -124,16 +125,31 @@ namespace HamiltonVisualizer.Core.Functions
                 await ColorizeNodes(nodes,
                     ConstantValues.ControlColors.NodeTraversalBackground, ConstantValues.Time.TransitionDelay);
 
-            var from = nodes.First();
+            try
+            {
+                var previous = nodes.First();
 
-            //foreach (var node in nodes.Skip(1))
-            //{
-            //    var line = linePolygons
-            //        .First(e => e.From.Origin.TolerantEquals(from.Origin)
-            //                    && e.To.Origin.TolerantEquals(node.Origin));
+                foreach (var node in nodes.Skip(1))
+                {
+                    var line = linePolygons
+                        .FirstOrDefault(e => e.From.Origin.TolerantEquals(previous.Origin)
+                                    && e.To.Origin.TolerantEquals(node.Origin))
+                        ?? throw new ArgumentException($"Not found any edge from {previous.NodeLabel.Text} to {node.NodeLabel.Text}");
 
-            //    line.ChangeColor(ConstantValues.ControlColors.NodeTraversalBackground);
-            //}
+                    line.ChangeColor(ConstantValues.ControlColors.NodeTraversalBackground);
+                    previous = node;
+                }
+                var firstNode = nodes.First();
+                var lastLine = linePolygons
+                    .FirstOrDefault(e => e.From.Origin.TolerantEquals(previous.Origin)
+                                && e.To.Origin.TolerantEquals(firstNode.Origin))
+                ?? throw new ArgumentException($"Not found any edge from {previous.NodeLabel.Text} to {firstNode.NodeLabel.Text}");
+                lastLine.ChangeColor(ConstantValues.ControlColors.NodeTraversalBackground);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Lỗi thuật toán");
+            }
         }
         public async void PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
         {
