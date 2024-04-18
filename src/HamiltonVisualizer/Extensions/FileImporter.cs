@@ -96,9 +96,9 @@ public static partial class FileImporter
                 mainWindow.CreateLine(node1, node2);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            MessageBox.Show(ex.Message);
+            MessageBox.Show("Lỗi đọc tệp tin!");
             return;
         }
     }
