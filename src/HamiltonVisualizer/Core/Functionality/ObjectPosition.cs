@@ -1,6 +1,6 @@
 ﻿using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
-using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
+using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using HamiltonVisualizer.Extensions;
 using System.Windows;
@@ -8,7 +8,7 @@ using System.Windows.Input;
 using ES = HamiltonVisualizer.Constants.ConstantValues.ControlSpecifications;
 
 
-namespace HamiltonVisualizer.Core.Functions;
+namespace HamiltonVisualizer.Core.Functionality;
 
 /// <summary>
 /// Manage object poistion. And raise <see cref="NodeStateChangedEventHandler"/> event.

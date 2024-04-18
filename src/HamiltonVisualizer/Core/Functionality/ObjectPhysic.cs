@@ -7,7 +7,7 @@ using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Extensions;
 using System.Windows;
 
-namespace HamiltonVisualizer.Core.Functions
+namespace HamiltonVisualizer.Core.Functionality
 {
     /// <summary>
     /// Represent the physic of the <paramref name="node"/>.

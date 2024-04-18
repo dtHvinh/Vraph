@@ -1,6 +1,6 @@
 ﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 
-namespace HamiltonVisualizer.Events.EventArgs.NodeEventArg
+namespace HamiltonVisualizer.Events.EventArgs.ForNode
 {
     public class NodeSetLabelEventArgs(Node node, string text)
     {
