@@ -67,6 +67,8 @@ namespace HamiltonVisualizer.Core.Functionality
             {
                 try
                 {
+                    nodes = nodes.ToList();
+
                     await ColorizeNode(nodes.First(), color);
 
                     foreach (Node node in nodes.Skip(1))
@@ -77,30 +79,6 @@ namespace HamiltonVisualizer.Core.Functionality
                 catch (Exception) { }
             }
         }
-
-        //private async Task ColorizeNodesAndLines(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay = 0)
-        //{
-        //    if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-        //        IsModified = true;
-
-        //    Ensure.ThrowIf(
-        //        condition: millisecondsDelay < 0,
-        //        exception: typeof(ArgumentException),
-        //        errorMessage: EM.Not_Support_Negative_Number);
-
-        //    var fromNode = nodes.First();
-
-        //    await ColorizeNode(fromNode, color);
-
-        //    foreach (Node nodes in nodes.Skip(1))
-        //    {
-        //        GraphLine? lineBetween = fromNode.Adjacent.FirstOrDefault(e => e.Edge.To.Origin.TolerantEquals(nodes.Origin))?.Edge;
-        //        if (lineBetween != null)
-        //            await ColorizeLine(lineBetween, color);
-        //        await ColorizeNode(nodes, color);
-        //        fromNode = nodes;
-        //    }
-        //}
 
         public async void PresentTraversalAlgorithm(IEnumerable<Node> node)
         {
@@ -145,6 +123,8 @@ namespace HamiltonVisualizer.Core.Functionality
                                 && e.To.Origin.TolerantEquals(firstNode.Origin))
                 ?? throw new ArgumentException($"Not found any edge from {previous.NodeLabel.Text} to {firstNode.NodeLabel.Text}");
                 lastLine.ChangeColor(ConstantValues.ControlColors.NodeTraversalBackground);
+
+                MessageBox.Show("Hoàn thành");
             }
             catch (Exception)
             {
@@ -167,6 +147,7 @@ namespace HamiltonVisualizer.Core.Functionality
                 var color = ColorPalate.GetUnusedColor();
                 await ColorizeNode(node, color);
             }
+            MessageBox.Show("Hoàn thành");
 
             IsModified = true;
         }
@@ -180,6 +161,7 @@ namespace HamiltonVisualizer.Core.Functionality
                 await ColorizeNodes(layer, ConstantValues.ControlColors.NodeTraversalBackground, 0, false);
                 await Task.Delay(1000);
             }
+            MessageBox.Show("Hoàn thành");
         }
         public void GraphModeChange()
         {

@@ -4,7 +4,6 @@ using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.DataStructure.Base;
-using HamiltonVisualizer.DataStructure.Components;
 using HamiltonVisualizer.DataStructure.Implements;
 using HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
 using HamiltonVisualizer.Events.EventHandlers.ForGraph;
@@ -25,8 +24,7 @@ namespace HamiltonVisualizer.ViewModels
     {
         private bool _skipTransition = false;
         private bool _isDirectionalGraph = true;
-        private GraphBase<int> _graph = new DirectedGraph<int>();
-        private readonly NodeMap _map = new();
+        private GraphBase<Node> _graph = new DirectedGraph<Node>();
 
         private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
         private ReadOnlyCollection<GraphLine> _edges = null!;
@@ -97,10 +95,7 @@ namespace HamiltonVisualizer.ViewModels
         {
             try
             {
-                int intNum = _map.LookUp(node);
-
-                IEnumerable<int> result = _graph.Algorithm.DFS(intNum);
-                IEnumerable<Node> nodes = result.Select(_map.LookUp);
+                IEnumerable<Node> nodes = _graph.Algorithm.DFS(node);
                 OnPresentingTraversal(ConstantValues.AlgorithmNames.DFS, nodes);
             }
             catch (Exception) { }
@@ -109,10 +104,7 @@ namespace HamiltonVisualizer.ViewModels
         {
             try
             {
-                int intNum = _map.LookUp(node);
-
-                IEnumerable<IEnumerable<int>> result = _graph.Algorithm.BFSLayered(intNum);
-                IEnumerable<IEnumerable<Node>> nodes = result.Select(e => e.Select(_map.LookUp));
+                IEnumerable<IEnumerable<Node>> nodes = _graph.Algorithm.BFSLayered(node);
                 OnPresentingLayeredBFS(nodes);
             }
             catch (Exception) { }
@@ -121,26 +113,20 @@ namespace HamiltonVisualizer.ViewModels
         {
             try
             {
-                IEnumerable<SCC<int>> result = _graph.Algorithm.GetComponents();
-                IEnumerable<IEnumerable<Node>> nodes = result.Select(Convert);
+                IEnumerable<IEnumerable<Node>> nodes = _graph.Algorithm.GetComponents().Select(e => e.Vertices);
                 OnPresentingSCC(nodes);
             }
             catch (Exception) { }
         }
         public void DisplayHamiltonCycle()
         {
-            IEnumerable<Node> nodes = _graph.Algorithm.HamiltonianCycle().Select(_map.LookUp);
+            IEnumerable<Node> nodes = _graph.Algorithm.HamiltonianCycle();
             if (nodes.Count() == NoV)
             {
                 OnPresentingTraversal(ConstantValues.AlgorithmNames.Hamilton, nodes);
             }
             else
                 MessageBox.Show("Không tìm thấy chu trình", "Thông báo");
-        }
-
-        private IEnumerable<Node> Convert(SCC<int> scc)
-        {
-            return scc.Vertices.Select(_map.LookUp);
         }
 
         /// <summary>
@@ -157,34 +143,25 @@ namespace HamiltonVisualizer.ViewModels
             OnPropertyChanged(nameof(NoE));
             OnPropertyChanged(nameof(NoV));
         }
-        public void RefreshWhendAdd(GraphLine line)
+        public void RefreshWhenAdd(GraphLine line)
         {
             Refresh();
-
-            var u = _map.LookUp(line.From);
-            var v = _map.LookUp(line.To);
-
-            _graph.AddEdge(u, v);
+            _graph.AddEdge(line.From, line.To);
         }
-        public void RefreshWhendAdd(Node node)
+        public void RefreshWhenAdd(Node node)
         {
             Refresh();
-
-            var u = _map.LookUp(node);
-            _graph.Adjacent.AddVertex(u);
+            _graph.Adjacent.AddVertex(node);
         }
         public void RefreshWhenRemove(Node node)
         {
             Refresh();
-
-            var u = _map.LookUp(node);
-            _graph.Adjacent.RemoveVertex(u);
+            _graph.Adjacent.RemoveVertex(node);
         }
 
         public void Clear()
         {
             _graph.Clear();
-            _map.Clear();
             Refresh();
         }
 

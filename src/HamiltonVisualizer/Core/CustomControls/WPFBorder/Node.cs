@@ -2,7 +2,7 @@
 using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
-using HamiltonVisualizer.Events.EventArgs.NodeEventArg;
+using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using System.Diagnostics;
 using System.Windows;

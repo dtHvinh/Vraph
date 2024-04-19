@@ -165,7 +165,9 @@ public partial class MainWindow : Window
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, true);
+                Mouse.OverrideCursor = Cursors.Wait;
                 FileImporter.ReadFrom(this, files[0]);
+                Mouse.OverrideCursor = Cursors.Arrow;
             }
         };
     }
@@ -183,13 +185,17 @@ public partial class MainWindow : Window
         };
         canvasContextMenu.CSVExport.Click += (sender, e) =>
         {
-            _saveFileDialog.ShowDialog();
+            var result = _saveFileDialog.ShowDialog();
+            Mouse.OverrideCursor = Cursors.Wait;
             FileExporter.WriteTo(_saveFileDialog.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
+            Mouse.OverrideCursor = Cursors.Arrow;
         };
         canvasContextMenu.CSVImport.Click += (sender, e) =>
         {
-            _openFileDialog.ShowDialog();
+            var result = _openFileDialog.ShowDialog();
+            Mouse.OverrideCursor = Cursors.Wait;
             FileImporter.ReadFrom(this, _openFileDialog.FileName);
+            Mouse.OverrideCursor = Cursors.Arrow;
         };
     }
     private void SubscribeAlgorithmPresentingEvents()
