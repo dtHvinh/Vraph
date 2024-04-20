@@ -7,11 +7,8 @@ namespace HamiltonVisualizer.DataStructure.Base
     public abstract class GraphBase<TVertex>
     {
         public GraphAdjacent<TVertex> Adjacent { get; }
-
         public GraphAlgorithm<TVertex> Algorithm { get; }
-
         public int VertexCount => Adjacent.Vertices.Count;
-
         public int EdgeCount => Adjacent.Edges.Count;
 
         protected GraphBase()
@@ -32,7 +29,6 @@ namespace HamiltonVisualizer.DataStructure.Base
                 Adjacent.Vertices.Add(u);
             }
         }
-
         protected abstract bool InternalAddEdge(Edge<TVertex> edge);
         protected abstract bool InternalRemove(Edge<TVertex> edge);
         protected abstract int InternalGetWeight(TVertex u, TVertex v);
@@ -78,6 +74,11 @@ namespace HamiltonVisualizer.DataStructure.Base
             }
             return true;
         }
+        public IEnumerable<TVertex> GetAdjacent(TVertex vetex)
+        {
+            return Adjacent.GetAdjacentOrEmpty(vetex);
+        }
+        public abstract GraphBase<TVertex> Change();
         public override string ToString()
         {
             return
@@ -85,15 +86,10 @@ namespace HamiltonVisualizer.DataStructure.Base
                 [NoE: {Adjacent.Edges.Count}; NoV: {Adjacent.Vertices.Count}]
                 """;
         }
-        public IEnumerable<TVertex> GetAdjacent(TVertex vetex)
-        {
-            return Adjacent.GetAdjacentOrEmpty(vetex);
-        }
         public void Clear()
         {
             Adjacent.Edges.Clear();
             Adjacent.Vertices.Clear();
         }
-        public abstract GraphBase<TVertex> Change();
     }
 }

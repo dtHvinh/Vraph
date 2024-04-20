@@ -54,7 +54,7 @@
             }
             return false;
         }
-        public GraphAdjacent<TVertex> Reverse()
+        public GraphAdjacent<TVertex> Transpose()
         {
             var rAdjacent = new GraphAdjacent<TVertex>();
 

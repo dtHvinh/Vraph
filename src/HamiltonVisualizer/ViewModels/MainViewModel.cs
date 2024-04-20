@@ -129,14 +129,6 @@ namespace HamiltonVisualizer.ViewModels
                 MessageBox.Show("Không tìm thấy chu trình", "Thông báo");
         }
 
-        /// <summary>
-        /// Should invoke this method when:
-        /// <list type="bullet">
-        /// <item>Modify the collection of selected nodes.</item>
-        /// <item>Modify the collection edges.</item>
-        /// <item>Modify the collection vertices.</item>
-        /// </list>
-        /// </summary>
         public void Refresh()
         {
             OnPropertyChanged(nameof(NoSN));

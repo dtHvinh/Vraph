@@ -12,12 +12,10 @@ using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace HamiltonVisualizer;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
 public partial class MainWindow : Window
 {
     internal readonly MainViewModel _viewModel = null!;
@@ -113,16 +111,10 @@ public partial class MainWindow : Window
     //
     private void DeleteAll_Click(object sender, RoutedEventArgs e)
     {
-        var result = MessageBox.Show("Xác nhận xóa tất cả", "Cảnh báo", MessageBoxButton.OKCancel);
-
-        if (result == MessageBoxResult.Cancel)
-            return;
-
-        _elementCollection.ClearAll();
-        _selectedCollection.Nodes.Clear();
-        _canvas.Children.Clear();
-
-        _viewModel.Clear();
+        if (ActionGuard.ShouldContinue(ConstantValues.Messages.DeleteAllConfirmMessage))
+        {
+            DeleteAllCore();
+        }
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
@@ -165,9 +157,10 @@ public partial class MainWindow : Window
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, true);
-                Mouse.OverrideCursor = Cursors.Wait;
-                FileImporter.ReadFrom(this, files[0]);
-                Mouse.OverrideCursor = Cursors.Arrow;
+                if (ActionGuard.ShouldContinue(ConstantValues.Messages.DeleteAllConfirmMessage, DeleteAllCore, null))
+                {
+                    FileImporter.ReadFrom(this, files[0]);
+                }
             }
         };
     }
@@ -186,16 +179,15 @@ public partial class MainWindow : Window
         canvasContextMenu.CSVExport.Click += (sender, e) =>
         {
             var result = _saveFileDialog.ShowDialog();
-            Mouse.OverrideCursor = Cursors.Wait;
             FileExporter.WriteTo(_saveFileDialog.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
-            Mouse.OverrideCursor = Cursors.Arrow;
         };
         canvasContextMenu.CSVImport.Click += (sender, e) =>
         {
             var result = _openFileDialog.ShowDialog();
-            Mouse.OverrideCursor = Cursors.Wait;
-            FileImporter.ReadFrom(this, _openFileDialog.FileName);
-            Mouse.OverrideCursor = Cursors.Arrow;
+            if (ActionGuard.ShouldContinue(ConstantValues.Messages.DeleteAllConfirmMessage, DeleteAllCore, null))
+            {
+                FileImporter.ReadFrom(this, _openFileDialog.FileName);
+            }
         };
     }
     private void SubscribeAlgorithmPresentingEvents()
@@ -331,9 +323,34 @@ public partial class MainWindow : Window
     {
         return _elementCollection.Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
     }
+    private static bool IsLineAlreadyExist(Line line, Node node1, Node node2, bool directed = false)
+    {
+        bool sameDirCompare = line.X1 == node1.Origin.X
+         && line.Y1 == node1.Origin.Y
+         && line.X2 == node2.Origin.X
+         && line.Y2 == node2.Origin.Y;
+
+        if (directed)
+            return sameDirCompare;
+
+        bool opositeDirCompare = line.X1 == node2.Origin.X
+                && line.Y1 == node2.Origin.Y
+                && line.X2 == node1.Origin.X
+                && line.Y2 == node1.Origin.Y;
+
+        return sameDirCompare || opositeDirCompare;
+    }
 
     //
-    public void CreateNode(Node node)
+    private void DeleteAllCore()
+    {
+        _elementCollection.ClearAll();
+        _selectedCollection.Nodes.Clear();
+        _canvas.Children.Clear();
+
+        _viewModel.Clear();
+    }
+    private void CreateNode(Node node)
     {
         SubscribeNodeEvents(node);
         SubscribeNodeContextMenuEvents(node);
@@ -342,32 +359,26 @@ public partial class MainWindow : Window
         _elementCollection.Add(node);
         _viewModel.Refresh();
     }
-    public void CreateLine(Node node1, Node node2)
+    private void CreateLine(Node node1, Node node2)
     {
-        static bool AreTheSameLine(Line line, Node node1, Node node2, bool directed = false)
+        if (_viewModel.IsDirectionalGraph)
         {
-            bool sameDirCompare = line.X1 == node1.Origin.X
-                    && line.Y1 == node1.Origin.Y
-                    && line.X2 == node2.Origin.X
-                    && line.Y2 == node2.Origin.Y;
-
-            if (directed)
-                return sameDirCompare;
-
-            bool opositeDirCompare = line.X1 == node2.Origin.X
-                    && line.Y1 == node2.Origin.Y
-                    && line.X2 == node1.Origin.X
-                    && line.Y2 == node1.Origin.Y;
-
-            return sameDirCompare || opositeDirCompare;
+            if (_drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
+            {
+                _elementCollection.Edges.Add(edge);
+                _viewModel.RefreshWhenAdd(edge);
+                SubscribeGraphLineEvents(edge);
+            }
         }
-
-        if (!_elementCollection.Edges.Any(e => AreTheSameLine(e.Body, node1, node2))
-            && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
+        else
         {
-            _elementCollection.Edges.Add(edge);
-            _viewModel.RefreshWhenAdd(edge);
-            SubscribeGraphLineEvents(edge);
+            if (!_elementCollection.Edges.Any(e => IsLineAlreadyExist(e.Body, node1, node2))
+                && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
+            {
+                _elementCollection.Edges.Add(edge);
+                _viewModel.RefreshWhenAdd(edge);
+                SubscribeGraphLineEvents(edge);
+            }
         }
     }
 }

@@ -3,18 +3,11 @@ using HamiltonVisualizer.DataStructure.Implements;
 
 namespace HamiltonVisualizer.DataStructure.Components
 {
-    /// <summary>
-    /// The class that implement all graph algorithm
-    /// </summary>
-    /// <typeparam name="TVertex"></typeparam>
-    /// <param name="graph"></param>
     public class GraphAlgorithm<TVertex>(GraphBase<TVertex> graph)
         where TVertex : notnull
     {
         private readonly GraphBase<TVertex> _graph = graph;
         private bool IsUndirectedGraph { get; init; } = graph.GetType().GetGenericTypeDefinition() == typeof(UndirectedGraph<>);
-
-        #region Traversal
 
         public IEnumerable<IEnumerable<TVertex>> BFSLayered(TVertex start)
         {
@@ -54,33 +47,6 @@ namespace HamiltonVisualizer.DataStructure.Components
             }
             return list;
         }
-        public IEnumerable<TVertex> BFS(TVertex start)
-        {
-            var list = new List<TVertex>();
-
-            HashSet<TVertex> visited = [];
-
-            if (!_graph.ContainVertex(start))
-                throw new ArgumentException($"Vertex \"{start}\" not found!");
-
-            Queue<TVertex> queue = [];
-            queue.Enqueue(start);
-
-            while (queue.Count > 0)
-
-            {
-                var front = queue.Dequeue();
-                if (!visited.Add(front))
-                    continue;
-                list.Add(front);
-                foreach (var v in _graph.Adjacent.GetAdjacentOrEmpty(front))
-                {
-                    queue.Enqueue(v);
-                }
-            }
-            return list;
-        }
-
         public IEnumerable<TVertex> DFS(TVertex start)
         {
             var list = new List<TVertex>();
@@ -110,12 +76,6 @@ namespace HamiltonVisualizer.DataStructure.Components
 
             return list;
         }
-
-        #endregion Traversal
-
-        #region Connected Component
-
-        /// <inheritdoc/>
         public IEnumerable<SCC<TVertex>> GetComponents()
         {
             if (IsUndirectedGraph)
@@ -123,7 +83,6 @@ namespace HamiltonVisualizer.DataStructure.Components
             else
                 return KosarajuAlgorithm();
         }
-
         private List<SCC<TVertex>> UndirectedGraphGetComponents()
         {
             var list = new List<SCC<TVertex>>();
@@ -147,8 +106,6 @@ namespace HamiltonVisualizer.DataStructure.Components
 
             return list;
         }
-
-        /// <inheritdoc/>
         private List<SCC<TVertex>> KosarajuAlgorithm()
         {
             var list = new List<SCC<TVertex>>();
@@ -175,7 +132,7 @@ namespace HamiltonVisualizer.DataStructure.Components
                 DFS1(v);
             }
 
-            var rAdjacent = _graph.Adjacent.Reverse();
+            var rAdjacent = _graph.Adjacent.Transpose();
 
             visited.Clear();
 
@@ -209,16 +166,7 @@ namespace HamiltonVisualizer.DataStructure.Components
             return list;
         }
 
-        #endregion Connected Component
-
-        #region Cycle and Path
-
-        /// <inheritdoc/>
-        private bool HamiltonianCycleUtil(
-            TVertex cur,
-            HashSet<TVertex> visited,
-            List<TVertex> path,
-            int count)
+        private bool HamiltonianCycleUtil(TVertex cur, HashSet<TVertex> visited, List<TVertex> path, int count)
         {
             if (count == _graph.VertexCount)
             {
@@ -240,51 +188,6 @@ namespace HamiltonVisualizer.DataStructure.Components
 
             return false;
         }
-
-        /// <inheritdoc/>
-        private bool HamiltonianPathUtil(
-            TVertex cur,
-            HashSet<TVertex> visited,
-            List<TVertex> path,
-            int count)
-        {
-            if (count == _graph.VertexCount)
-            {
-                return true;
-            }
-
-            foreach (var next in _graph.Adjacent.GetAdjacentOrEmpty(cur))
-            {
-                if (visited.Add(next))
-                {
-                    path.Add(next);
-                    if (HamiltonianPathUtil(next, visited, path, count + 1))
-                        return true;
-
-                    visited.Remove(next);
-                    path.Remove(next);
-                }
-            }
-
-            return false;
-        }
-
-        /// <inheritdoc/>
-        public List<TVertex> HamiltonianPath()
-        {
-            foreach (var u in _graph.Adjacent.Vertices)
-            {
-                List<TVertex> path = [u];
-                if (HamiltonianPathUtil(u, [u], path, 1))
-                {
-                    return path;
-                }
-            }
-
-            return [];
-        }
-
-        /// <inheritdoc/>
         public List<TVertex> HamiltonianCycle()
         {
             foreach (var u in _graph.Adjacent.Vertices)
@@ -298,6 +201,5 @@ namespace HamiltonVisualizer.DataStructure.Components
 
             return [];
         }
-        #endregion Cycle and path
     }
 }

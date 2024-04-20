@@ -61,7 +61,6 @@ namespace HamiltonVisualizer.Core.Base
         protected NodeBase(CustomCanvas parent, Point position, GraphNodeCollection others)
         {
             StyleUIComponent();
-            SubscribeEvents();
 
             PositionManager = new ObjectPosition(this, parent);
             PhysicManager = new ObjectPhysic(this, others);
@@ -77,6 +76,10 @@ namespace HamiltonVisualizer.Core.Base
 
         public void OnPositionChanged(Point newPosition, IEnumerable<Node> nodes)
         {
+            _adjacent.ForEach(line =>
+            {
+                GraphLineRepositionHelper.Move(newPosition, line);
+            });
             OnNodePositionChanged?.Invoke(this, new NodePositionChangedEventArgs(newPosition, nodes));
         }
 
@@ -92,16 +95,6 @@ namespace HamiltonVisualizer.Core.Base
             Canvas.SetLeft(this, Origin.X - Width / 2);
             Canvas.SetTop(this, Origin.Y - Height / 2);
             Panel.SetZIndex(this, ConstantValues.ZIndex.Node);
-        }
-        private void SubscribeEvents()
-        {
-            OnNodePositionChanged += (sender, e) =>
-            {
-                _adjacent.ForEach(line =>
-                {
-                    GraphLineRepositionHelper.Move(e.NewPosition, line);
-                });
-            };
         }
 
         public void Attach(GraphLine line, ConnectPosition pos)
