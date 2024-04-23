@@ -6,7 +6,7 @@ namespace HamiltonVisualizer.Core.Collections
 {
     public class SelectedNodeCollection : INotifyPropertyChanged
     {
-        public HashSet<Node> Nodes { get; } = new(2);
+        public HashSet<Node> Nodes { get; } = new(NodeComparer.Instance);
 
         public event PropertyChangedEventHandler? PropertyChanged;
 

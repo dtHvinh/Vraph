@@ -122,11 +122,11 @@ public partial class MainWindow : Window
     }
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.SkipTransition = !_viewModel.SkipTransition;
+        _viewModel.SkipTransitionSwitch();
     }
     private void GraphMode_Click(object sender, RoutedEventArgs e)
     {
-        _viewModel.IsDirectionalGraph = !_viewModel.IsDirectionalGraph;
+        _viewModel.GraphModeSwitch();
     }
 
     //
@@ -137,18 +137,7 @@ public partial class MainWindow : Window
             if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
                 _algorithm.ResetColor();
-
-                var mPos = e.GetPosition(_canvas);
-
-                var node = new Node(_canvas,
-                    ObjectPosition.TryStayInBound(mPos),
-                    _elementCollection.Nodes);
-
-                if (node.PhysicManager.IsNoCollide())
-                {
-                    CreateNode(node);
-                    _viewModel.RefreshWhenAdd(node);
-                }
+                CreateNodeAtPosition(e.GetPosition(_canvas));
             }
         };
 
@@ -156,17 +145,28 @@ public partial class MainWindow : Window
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop, true);
-                if (ActionGuard.ShouldContinue(ConstantValues.Messages.DeleteAllConfirmMessage, DeleteAllCore, null))
+                string[] dropFiles = (string[])e.Data.GetData(DataFormats.FileDrop, true);
+                if (_elementCollection.Nodes.Any())
                 {
-                    FileImporter.ReadFrom(this, files[0]);
+
+                    if (ActionGuard.BeforeImport(out bool needSaveFile))
+                    {
+                        if (needSaveFile)
+                        {
+                            SaveFileCore();
+                        }
+                        DeleteAllCore();
+                        ReadFileCore(dropFiles[0]);
+                    }
                 }
+                else
+                    ReadFileCore(dropFiles[0]);
             }
         };
     }
     private void SubscribeCanvasContextMenuEvents()
     {
-        DCContextMenu canvasContextMenu = ((DCContextMenu)_canvas.ContextMenu);
+        DCContextMenu canvasContextMenu = (DCContextMenu)_canvas.ContextMenu;
 
         canvasContextMenu.SCC.Click += (sender, e) =>
         {
@@ -178,16 +178,25 @@ public partial class MainWindow : Window
         };
         canvasContextMenu.CSVExport.Click += (sender, e) =>
         {
-            var result = _saveFileDialog.ShowDialog();
-            FileExporter.WriteTo(_saveFileDialog.FileName, _elementCollection, _viewModel.IsDirectionalGraph);
+            SaveFileCore();
         };
         canvasContextMenu.CSVImport.Click += (sender, e) =>
         {
             var result = _openFileDialog.ShowDialog();
-            if (ActionGuard.ShouldContinue(ConstantValues.Messages.DeleteAllConfirmMessage, DeleteAllCore, null))
+            if (_elementCollection.Nodes.Any())
             {
-                FileImporter.ReadFrom(this, _openFileDialog.FileName);
+                if (ActionGuard.BeforeImport(out bool needSaveFile))
+                {
+                    if (needSaveFile)
+                    {
+                        SaveFileCore();
+                    }
+                    DeleteAllCore();
+                    ReadFileCore(_openFileDialog.FileName);
+                }
             }
+            else
+                ReadFileCore(_openFileDialog.FileName);
         };
     }
     private void SubscribeAlgorithmPresentingEvents()
@@ -323,25 +332,34 @@ public partial class MainWindow : Window
     {
         return _elementCollection.Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
     }
-    private static bool IsLineAlreadyExist(Line line, Node node1, Node node2, bool directed = false)
+    private static bool IsLineAlreadyExist(Line line, Node from, Node to, bool directed = false)
     {
-        bool sameDirCompare = line.X1 == node1.Origin.X
-         && line.Y1 == node1.Origin.Y
-         && line.X2 == node2.Origin.X
-         && line.Y2 == node2.Origin.Y;
+        bool sameDirCompare = line.X1 == from.Origin.X
+         && line.Y1 == from.Origin.Y
+         && line.X2 == to.Origin.X
+         && line.Y2 == to.Origin.Y;
 
         if (directed)
             return sameDirCompare;
 
-        bool opositeDirCompare = line.X1 == node2.Origin.X
-                && line.Y1 == node2.Origin.Y
-                && line.X2 == node1.Origin.X
-                && line.Y2 == node1.Origin.Y;
+        bool opositeDirCompare = line.X1 == to.Origin.X
+                && line.Y1 == to.Origin.Y
+                && line.X2 == from.Origin.X
+                && line.Y2 == from.Origin.Y;
 
         return sameDirCompare || opositeDirCompare;
     }
 
     //
+    private void ReadFileCore(string path)
+    {
+        FileImporter.ReadFrom(this, path);
+    }
+    private void SaveFileCore()
+    {
+        _saveFileDialog.ShowDialog();
+        FileExporter.WriteTo(_saveFileDialog.FileName, _elementCollection);
+    }
     private void DeleteAllCore()
     {
         _elementCollection.ClearAll();
@@ -350,20 +368,35 @@ public partial class MainWindow : Window
 
         _viewModel.Clear();
     }
-    private void CreateNode(Node node)
+
+    public void CreateNode(Node node)
     {
         SubscribeNodeEvents(node);
         SubscribeNodeContextMenuEvents(node);
 
         _canvas.Children.Add(node);
         _elementCollection.Add(node);
-        _viewModel.Refresh();
+        _viewModel.RefreshWhenAdd(node);
     }
-    private void CreateLine(Node node1, Node node2)
+    public void CreateNodeAtPosition(Point position)
+    {
+        var node = new Node(_canvas, ObjectPosition.TryStayInBound(position), _elementCollection.Nodes);
+
+        if (node.PhysicManager.HasNoCollide())
+        {
+            SubscribeNodeEvents(node);
+            SubscribeNodeContextMenuEvents(node);
+
+            _canvas.Children.Add(node);
+            _elementCollection.Add(node);
+            _viewModel.RefreshWhenAdd(node);
+        }
+    }
+    public void CreateLine(Node from, Node to)
     {
         if (_viewModel.IsDirectionalGraph)
         {
-            if (_drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
+            if (_drawManager.DrawLine(from, to, _viewModel.IsDirectionalGraph, out var edge))
             {
                 _elementCollection.Edges.Add(edge);
                 _viewModel.RefreshWhenAdd(edge);
@@ -372,8 +405,8 @@ public partial class MainWindow : Window
         }
         else
         {
-            if (!_elementCollection.Edges.Any(e => IsLineAlreadyExist(e.Body, node1, node2))
-                && _drawManager.DrawLine(node1, node2, _viewModel.IsDirectionalGraph, out var edge))
+            if (!_elementCollection.Edges.Any(e => IsLineAlreadyExist(e.Body, from, to))
+                && _drawManager.DrawLine(from, to, _viewModel.IsDirectionalGraph, out var edge))
             {
                 _elementCollection.Edges.Add(edge);
                 _viewModel.RefreshWhenAdd(edge);

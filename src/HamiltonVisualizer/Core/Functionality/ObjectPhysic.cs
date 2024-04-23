@@ -16,7 +16,6 @@ namespace HamiltonVisualizer.Core.Functionality
     {
         private readonly NodeBase _node;
         private readonly GraphNodeCollection _nodes;
-
         private readonly double _radius = ConstantValues.ControlSpecifications.NodeWidth / 2;
 
         public ObjectPhysic(NodeBase node, GraphNodeCollection nodes)
@@ -35,7 +34,7 @@ namespace HamiltonVisualizer.Core.Functionality
             }
         }
 
-        public bool IsNoCollide()
+        public bool HasNoCollide()
         {
             foreach (Node n in _nodes)
             {
@@ -61,7 +60,7 @@ namespace HamiltonVisualizer.Core.Functionality
             return true;
         }
 
-        public IEnumerable<Node> CollisionDetect()
+        public IEnumerable<Node> DetectCollision()
         {
             foreach (Node node in _nodes)
             {

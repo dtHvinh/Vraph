@@ -6,7 +6,8 @@ namespace HamiltonVisualizer.Constants
     {
         public static class Messages
         {
-            public const string DeleteAllConfirmMessage = "Xác nhận xóa tất cả";
+            public const string DeleteAllConfirmMessage = "Xác nhận xóa tất cả!";
+            public static readonly string ConfirmBeforeImport = $"Thao tác này cần xóa đồ thị hiện tại {Environment.NewLine}Lưu dữ liệu đồ thị hiện tại trước khi nhập!";
         }
 
         public static class Control

@@ -108,5 +108,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         {
             OnNodeSelected?.Invoke(this, new NodeSelectedEventArgs());
         }
+
+        public override string ToString()
+        {
+            return $"[{Origin.X};{Origin.Y}]";
+        }
     }
 }

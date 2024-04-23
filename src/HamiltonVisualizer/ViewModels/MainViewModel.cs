@@ -17,7 +17,7 @@ namespace HamiltonVisualizer.ViewModels
     /**
      * ***************************************************************************************************
      * ** Node or GraphLine Should not be added directly from inside this class, it should be add       **
-     * ** using method like CreateNode from MainView instead                                            **
+     * ** using method like CreateNodeAtPosition from MainView instead                                            **
      * ***************************************************************************************************
      */
     public class MainViewModel : ObservableObject
@@ -155,6 +155,14 @@ namespace HamiltonVisualizer.ViewModels
         {
             _graph.Clear();
             Refresh();
+        }
+        public void SkipTransitionSwitch()
+        {
+            SkipTransition = !SkipTransition;
+        }
+        public void GraphModeSwitch()
+        {
+            IsDirectionalGraph = !IsDirectionalGraph;
         }
 
         public void OnGraphModeChanged()

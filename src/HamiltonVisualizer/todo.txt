@@ -4,8 +4,6 @@ add multi threading
 
 add multi-lang use IMultiLangComponent
 
-add redo func ??
-
-loading animation when run algorithm
+add undo func ??
 
 allow modify transition speed!

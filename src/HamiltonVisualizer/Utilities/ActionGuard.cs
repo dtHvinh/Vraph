@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using HamiltonVisualizer.Constants;
+using System.Windows;
 
 namespace HamiltonVisualizer.Utilities;
 public static class ActionGuard
@@ -16,5 +17,17 @@ public static class ActionGuard
         if (should)
             action.DynamicInvoke();
         return should;
+    }
+
+    public static bool BeforeImport(out bool needSaveFile)
+    {
+        var result = MessageBox.Show(ConstantValues.Messages.ConfirmBeforeImport, "Cảnh Báo", MessageBoxButton.YesNoCancel);
+        if (result == MessageBoxResult.Cancel)
+        {
+            needSaveFile = false;
+            return false;
+        }
+        needSaveFile = result == MessageBoxResult.Yes;
+        return true;
     }
 }

@@ -46,7 +46,7 @@ namespace HamiltonVisualizer.Core.Base
             {
                 var validPos = ObjectPosition.TryStayInBound(value);
 
-                var collideNode = PhysicManager.CollisionDetect();
+                var collideNode = PhysicManager.DetectCollision();
 
                 _origin = validPos;
 
