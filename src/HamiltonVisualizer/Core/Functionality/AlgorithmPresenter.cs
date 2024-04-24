@@ -1,24 +1,29 @@
 ﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.DataStructure.Components;
 using HamiltonVisualizer.Exceptions;
 using HamiltonVisualizer.Extensions;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Media;
 
 namespace HamiltonVisualizer.Core.Functionality
 {
     public class AlgorithmPresenter(
-        ReadOnlyCollection<Node> nodes,
-        ReadOnlyCollection<GraphLine> linePolygons)
+        List<Node> nodes,
+        List<GraphLine> linePolygons,
+        bool isDirected)
     {
+        private readonly List<Node> _nodes = nodes;
+        private readonly List<GraphLine> _linePolygons = linePolygons;
+
+        public bool IsDirectedGraph { get; set; } = isDirected;
         public bool IsModified { get; set; } = false; // value indicate if reset actually need to be perform
         public bool SkipTransition { get; set; } = false; // how result will be displayed
 
         private void GraphLineArrowVisibilityChange()
         {
-            foreach (var line in linePolygons)
+            foreach (var line in _linePolygons)
             {
                 switch (line.Head.Visibility)
                 {
@@ -31,11 +36,18 @@ namespace HamiltonVisualizer.Core.Functionality
                 }
             }
         }
-        private void ColorizeLines(IEnumerable<GraphLine> lines, SolidColorBrush color)
+        private static void ColorizeLines(IEnumerable<GraphLine> lines, SolidColorBrush color)
         {
             foreach (var line in lines)
             {
                 line.ChangeColor(color);
+            }
+        }
+        private static void ResetLinesColor(IEnumerable<GraphLine> lines)
+        {
+            foreach (var line in lines)
+            {
+                line.ResetColor();
             }
         }
         private async Task ColorizeNode(Node node, SolidColorBrush color, int millisecondsDelay = 0)
@@ -109,7 +121,7 @@ namespace HamiltonVisualizer.Core.Functionality
 
                 foreach (var node in nodes.Skip(1))
                 {
-                    var line = linePolygons
+                    var line = _linePolygons
                         .FirstOrDefault(e => e.From.Origin.TolerantEquals(previous.Origin)
                                     && e.To.Origin.TolerantEquals(node.Origin))
                         ?? throw new ArgumentException($"Not found any edge from {previous.NodeLabel.Text} to {node.NodeLabel.Text}");
@@ -118,7 +130,7 @@ namespace HamiltonVisualizer.Core.Functionality
                     previous = node;
                 }
                 var firstNode = nodes.First();
-                var lastLine = linePolygons
+                var lastLine = _linePolygons
                     .FirstOrDefault(e => e.From.Origin.TolerantEquals(previous.Origin)
                                 && e.To.Origin.TolerantEquals(firstNode.Origin))
                 ?? throw new ArgumentException($"Not found any edge from {previous.NodeLabel.Text} to {firstNode.NodeLabel.Text}");
@@ -142,7 +154,7 @@ namespace HamiltonVisualizer.Core.Functionality
                 await ColorizeNodes(component, color);
             }
 
-            foreach (var node in nodes.Where(e => e.Adjacent.Count == 0))
+            foreach (var node in _nodes.Where(e => e.Adjacent.Count == 0))
             {
                 var color = ColorPalate.GetUnusedColor();
                 await ColorizeNode(node, color);
@@ -151,35 +163,73 @@ namespace HamiltonVisualizer.Core.Functionality
 
             IsModified = true;
         }
-        public async void PresentLayeredBFSAlgorithm(IEnumerable<IEnumerable<Node>> layeredNode)
+        public async void PresentLayeredBFSAlgorithm(IEnumerable<BFSComponent<Node>> layeredNode)
         {
             ResetColor();
             ColorPalate.Reset();
 
-            foreach (IEnumerable<Node> layer in layeredNode)
+            foreach (BFSComponent<Node> layer in layeredNode)
             {
-                await ColorizeNodes(layer, ConstantValues.ControlColors.NodeTraversalBackground, 0, false);
+                var lines = BFSComponentProcesser.GetLines(_linePolygons, layer, IsDirectedGraph);
+                ColorizeLines(lines, ConstantValues.ControlColors.NodeTraversalBackground);
+                await ColorizeNodes(layer.Children, ConstantValues.ControlColors.NodeTraversalBackground, 0, false);
                 await Task.Delay(1000);
+                ResetLinesColor(lines);
             }
             MessageBox.Show("Hoàn thành");
         }
         public void GraphModeChange()
         {
+            IsDirectedGraph = !IsDirectedGraph;
             GraphLineArrowVisibilityChange();
         }
         public void ResetColor()
         {
             if (IsModified)
             {
-                foreach (Node node in nodes)
+                foreach (Node node in _nodes)
                 {
                     node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
                 }
-                foreach (GraphLine line in linePolygons)
+                foreach (GraphLine line in _linePolygons)
                 {
                     line.ResetColor();
                 }
             }
+        }
+    }
+
+    static class BFSComponentProcesser
+    {
+        /// <summary>
+        /// Get the lines from <paramref name="source"/> which connect from Root to Children.
+        /// </summary>
+        public static IEnumerable<GraphLine> GetLines(IEnumerable<GraphLine> source, BFSComponent<Node> component, bool isDirectedGraph)
+        {
+            List<GraphLine> lines = [];
+
+            if (isDirectedGraph)
+            {
+                foreach (var child in component.Children)
+                {
+                    var line = source.FirstOrDefault(l => l.From.Equals(component.Root()) && l.To.Equals(child));
+                    if (line != null)
+                        lines.Add(line);
+                }
+            }
+            else // !isDirectedGraph
+            {
+                foreach (var child in component.Children)
+                {
+                    var line = source.FirstOrDefault(
+                            l => l.From.Equals(component.Root()) && l.To.Equals(child)
+                            || l.From.Equals(child) && l.To.Equals(component.Root()));
+                    if (line != null)
+                        lines.Add(line);
+                }
+            }
+
+            return lines;
         }
     }
 }

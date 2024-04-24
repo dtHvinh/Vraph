@@ -39,7 +39,7 @@ public partial class MainWindow : Window
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
         _viewModel.SetRefs(new RefBag(roNodes, roEdges, _selectedCollection));
         _drawManager = new DrawManager(_canvas);
-        _algorithm = new AlgorithmPresenter(roNodes, roEdges);
+        _algorithm = new AlgorithmPresenter(_elementCollection.Nodes, _elementCollection.Edges, _viewModel.IsDirectionalGraph);
 
         _saveFileDialog = new()
         {
@@ -231,37 +231,26 @@ public partial class MainWindow : Window
     private void SubscribeNodeEvents(Node node)
     {
         // when node deleted
-        node.OnNodeDelete += async (object sender, NodeDeleteEventArgs e) =>
+        node.NodeDelete += async (object sender, NodeDeleteEventArgs e) =>
         {
             if (!_viewModel.SkipTransition)
                 await Task.Delay(500);
-            _elementCollection.Remove(e.Node);
-            _canvas.Children.Remove(e.Node);
-            _selectedCollection.Remove(e.Node);
-            _viewModel.RefreshWhenRemove(e.Node);
-
-            // remove associate _edge.
-            e.Node.Adjacent.ForEach(e =>
-            {
-                _elementCollection.Remove(e.Edge);
-                _canvas.Children.Remove(e.Edge);
-                _viewModel.Refresh();
-            });
+            DeleteNodeCore(node);
         };
 
         // delete duplicate node when label existed
-        node.OnNodeLabelChanged += (object sender, NodeSetLabelEventArgs e) =>
+        node.NodeLabelChanged += (object sender, NodeSetLabelEventArgs e) =>
         {
             var text = e.Text;
 
-            if (IsNodeAlreadyExist(text))
+            if (IsNodeLabelAlreadyExist(text))
             {
                 e.Node.DeleteNode();
             }
         };
 
         // when at select mode
-        node.OnNodeSelected += (object sender, NodeSelectedEventArgs e) =>
+        node.NodeSelected += (object sender, NodeSelectedEventArgs e) =>
         {
             _selectedCollection.Add((Node)sender);
             _viewModel.Refresh();
@@ -269,7 +258,7 @@ public partial class MainWindow : Window
         };
 
         // when release select on a mode
-        node.OnNodeReleaseSelect += (object sender, NodeReleaseSelectEventArgs e) =>
+        node.NodeReleaseSelect += (object sender, NodeReleaseSelectEventArgs e) =>
         {
             _selectedCollection.Remove((Node)sender);
             _viewModel.Refresh();
@@ -313,8 +302,8 @@ public partial class MainWindow : Window
 
                 CreateLine(node1, node2);
 
-                node1.ReleaseSelectMode();
-                node2.ReleaseSelectMode();
+                node1.OnReleaseSelectMode();
+                node2.OnReleaseSelectMode();
             }
         };
     }
@@ -328,7 +317,7 @@ public partial class MainWindow : Window
     }
 
     //
-    private bool IsNodeAlreadyExist(string? nodeLabelContent)
+    private bool IsNodeLabelAlreadyExist(string? nodeLabelContent)
     {
         return _elementCollection.Nodes.Count(e => e.NodeLabel.Text!.Equals(nodeLabelContent)) == 2;
     }
@@ -367,6 +356,21 @@ public partial class MainWindow : Window
         _canvas.Children.Clear();
 
         _viewModel.Clear();
+    }
+    private void DeleteNodeCore(Node node)
+    {
+        _elementCollection.Remove(node);
+        _canvas.Children.Remove(node);
+        _selectedCollection.Remove(node);
+        _viewModel.RefreshWhenRemove(node);
+
+        // remove associate _edge.
+        node.Adjacent.ForEach(e =>
+        {
+            _elementCollection.Remove(e.Edge);
+            _canvas.Children.Remove(e.Edge);
+            _viewModel.Refresh();
+        });
     }
 
     public void CreateNode(Node node)

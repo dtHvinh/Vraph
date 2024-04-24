@@ -4,6 +4,7 @@ using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.DataStructure.Base;
+using HamiltonVisualizer.DataStructure.Components;
 using HamiltonVisualizer.DataStructure.Implements;
 using HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
 using HamiltonVisualizer.Events.EventHandlers.ForGraph;
@@ -26,7 +27,7 @@ namespace HamiltonVisualizer.ViewModels
         private bool _isDirectionalGraph = true;
         private GraphBase<Node> _graph = new DirectedGraph<Node>();
 
-        private ReadOnlyCollection<Node> _nodes = null!; // nodes in the list are guaranteed to be unique due to the duplicate check in view
+        private ReadOnlyCollection<Node> _nodes = null!; // _nodes in the list are guaranteed to be unique due to the duplicate check in view
         private ReadOnlyCollection<GraphLine> _edges = null!;
         private SelectedNodeCollection _selectedNode = null!;
 
@@ -104,7 +105,7 @@ namespace HamiltonVisualizer.ViewModels
         {
             try
             {
-                IEnumerable<IEnumerable<Node>> nodes = _graph.Algorithm.BFSLayered(node);
+                IEnumerable<BFSComponent<Node>> nodes = _graph.Algorithm.BFSLayered(node);
                 OnPresentingLayeredBFS(nodes);
             }
             catch (Exception) { }
@@ -191,7 +192,7 @@ namespace HamiltonVisualizer.ViewModels
                 SkipTransition = SkipTransition,
             });
         }
-        public void OnPresentingLayeredBFS(IEnumerable<IEnumerable<Node>> layeredNodes)
+        public void OnPresentingLayeredBFS(IEnumerable<BFSComponent<Node>> layeredNodes)
         {
             PresentingLayeredBFSAlgorithm?.Invoke(this, new()
             {

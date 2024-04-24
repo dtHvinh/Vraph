@@ -9,12 +9,12 @@ namespace HamiltonVisualizer.DataStructure.Components
         private readonly GraphBase<TVertex> _graph = graph;
         private bool IsUndirectedGraph { get; init; } = graph.GetType().GetGenericTypeDefinition() == typeof(UndirectedGraph<>);
 
-        public IEnumerable<IEnumerable<TVertex>> BFSLayered(TVertex start)
+        public IEnumerable<BFSComponent<TVertex>> BFSLayered(TVertex start)
         {
-            var list = new List<List<TVertex>>();
+            var list = new List<BFSComponent<TVertex>>();
 
             HashSet<TVertex> visited = [];
-            HashSet<TVertex> visited2 = [];
+            HashSet<TVertex> cev = []; // component elements visited
 
             if (!_graph.ContainVertex(start))
                 throw new ArgumentException($"Vertex \"{start}\" not found!");
@@ -23,7 +23,10 @@ namespace HamiltonVisualizer.DataStructure.Components
 
             queue.Enqueue(start);
 
-            list.Add([queue.First()]);
+            var firstComp = new BFSComponent<TVertex>(start);
+            firstComp.AddChild(start);
+
+            list.Add(firstComp);
 
             while (queue.Count > 0)
             {
@@ -32,21 +35,22 @@ namespace HamiltonVisualizer.DataStructure.Components
                 if (!visited.Add(front))
                     continue;
 
-                List<TVertex> layer = [];
+                BFSComponent<TVertex> layer = new(front);
 
                 foreach (var v in _graph.Adjacent.GetAdjacentOrEmpty(front))
                 {
                     queue.Enqueue(v);
-                    if (visited2.Add(v))
+                    if (cev.Add(v))
                     {
-                        layer.Add(v);
+                        layer.AddChild(v);
                     }
                 }
-                if (layer.Count > 0)
+                if (layer.AnyChild())
                     list.Add(layer);
             }
             return list;
         }
+
         public IEnumerable<TVertex> DFS(TVertex start)
         {
             var list = new List<TVertex>();

@@ -1,4 +1,5 @@
 ﻿using HamiltonVisualizer.Core.CustomControls.WPFBorder;
+using HamiltonVisualizer.DataStructure.Components;
 
 namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
 {
@@ -25,6 +26,6 @@ namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
         /// <summary>
         /// The data.
         /// </summary>
-        public IEnumerable<IEnumerable<Node>> Data { get; set; } = null!;
+        public IEnumerable<BFSComponent<Node>> Data { get; set; } = null!;
     }
 }

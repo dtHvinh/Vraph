@@ -1,10 +1,10 @@
-﻿using CSLibraries.Mathematic.Geometry;
-using HamiltonVisualizer.Constants;
+﻿using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Extensions;
+using HamiltonVisualizer.Mathematic;
 using System.Windows;
 
 namespace HamiltonVisualizer.Core.Functionality
@@ -38,7 +38,7 @@ namespace HamiltonVisualizer.Core.Functionality
         {
             foreach (Node n in _nodes)
             {
-                var dis = PointHelper.Distance(_node.Origin.X, _node.Origin.Y, n.Origin.X, n.Origin.Y);
+                var dis = TwoDimensional.Distance(_node.Origin.X, _node.Origin.Y, n.Origin.X, n.Origin.Y);
                 if (dis >= 0 && dis < 2 * _radius)
                 {
                     return false;
@@ -51,7 +51,7 @@ namespace HamiltonVisualizer.Core.Functionality
         {
             foreach (Node n in nodes)
             {
-                var dis = PointHelper.Distance(point.X, point.Y, n.Origin.X, n.Origin.Y);
+                var dis = TwoDimensional.Distance(point.X, point.Y, n.Origin.X, n.Origin.Y);
                 if (dis > 0 && dis < ConstantValues.ControlSpecifications.NodeWidth)
                 {
                     return false;
@@ -64,7 +64,7 @@ namespace HamiltonVisualizer.Core.Functionality
         {
             foreach (Node node in _nodes)
             {
-                var dis = PointHelper.Distance(_node.Origin.X, _node.Origin.Y, node.Origin.X, node.Origin.Y);
+                var dis = TwoDimensional.Distance(_node.Origin.X, _node.Origin.Y, node.Origin.X, node.Origin.Y);
                 if (dis > 0 && dis < 2 * _radius)
                 {
                     yield return node;
@@ -73,7 +73,7 @@ namespace HamiltonVisualizer.Core.Functionality
         }
 
         /// <summary>
-        /// Move nodes that collide with the <paramref name="first"/> node. <br/>
+        /// Move _nodes that collide with the <paramref name="first"/> node. <br/>
         /// If <paramref name="second"/> node is moved to the corner of the canvas, it will be move to the
         /// almost center of its.
         /// </summary>

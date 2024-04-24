@@ -107,7 +107,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         }
 
         /// <summary>
-        /// Delete this <see cref="GraphLine"/> and perform <see cref="Base.NodeBase.Detach(GraphLineConnectInfo)"/>.
+        /// Delete this <see cref="GraphLine"/> and execute <see cref="Base.NodeBase.Detach(GraphLineConnectInfo)"/>.
         /// </summary>
         public void Delete()
         {
