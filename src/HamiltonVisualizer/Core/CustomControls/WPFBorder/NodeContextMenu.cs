@@ -63,9 +63,9 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         private void SelectOrReleaseSelect_Click(object sender, RoutedEventArgs e)
         {
             if (_node.IsSelected)
-                _node.ReleaseSelectMode();
+                _node.OnReleaseSelectMode();
             else
-                _node.SelectNode();
+                _node.OnSelectNode();
         }
 
         public void StyleUIComponent()

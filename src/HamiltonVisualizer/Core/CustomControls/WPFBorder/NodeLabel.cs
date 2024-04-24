@@ -45,7 +45,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
                 if (value && IsEnabled)
                 {
                     IsEnabled = false;
-                    Node.ChangeNodeLabel(Text);
+                    Node.OnChangeNodeLabel(Text);
                 }
                 else
                 {

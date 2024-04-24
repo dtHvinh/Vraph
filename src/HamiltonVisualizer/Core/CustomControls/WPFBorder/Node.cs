@@ -39,10 +39,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
         public NodeLabel NodeLabel => (NodeLabel)Child;
         public bool IsSelected { get; private set; } = false;
 
-        public event NodeDeleteEventHandler? OnNodeDelete;
-        public event NodeLabelSetCompleteEventHandler? OnNodeLabelChanged;
-        public event OnNodeSelectedEventHandler? OnNodeSelected;
-        public event OnNodeReleaseSelectEventHandler? OnNodeReleaseSelect;
+        public event NodeDeleteEventHandler? NodeDelete;
+        public event NodeLabelSetCompleteEventHandler? NodeLabelChanged;
+        public event OnNodeSelectedEventHandler? NodeSelected;
+        public event OnNodeReleaseSelectEventHandler? NodeReleaseSelect;
 
         public Node(CustomCanvas parent, Point position, GraphNodeCollection others)
             : base(parent, position, others)
@@ -59,29 +59,29 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
                 if (e.MiddleButton == MouseButtonState.Pressed)
                 {
                     if (IsSelected)
-                        ReleaseSelectMode();
+                        OnReleaseSelectMode();
                     else
-                        SelectNode();
+                        OnSelectNode();
                 }
             };
         }
 
         private void SubscribeEvents()
         {
-            OnNodeDelete += (sender, e) =>
+            NodeDelete += (sender, e) =>
             {
                 _canChangeBackground = true;
                 Background = ConstantValues.ControlColors.NodeDeleteBackground;
             };
 
-            OnNodeSelected += (sender, e) =>
+            NodeSelected += (sender, e) =>
             {
                 Background = ConstantValues.ControlColors.NodeSelectBackground;
                 IsSelected = true;
                 _canChangeBackground = false;
             };
 
-            OnNodeReleaseSelect += (sender, e) =>
+            NodeReleaseSelect += (sender, e) =>
             {
                 _canChangeBackground = true;
                 Background = Brushes.White;
@@ -91,22 +91,22 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 
         public void DeleteNode()
         {
-            OnNodeDelete?.Invoke(this, new NodeDeleteEventArgs(this));
+            NodeDelete?.Invoke(this, new NodeDeleteEventArgs(this));
         }
 
-        public void ChangeNodeLabel(string text)
+        public void OnChangeNodeLabel(string text)
         {
-            OnNodeLabelChanged?.Invoke(this, new NodeSetLabelEventArgs(this, text));
+            NodeLabelChanged?.Invoke(this, new NodeSetLabelEventArgs(this, text));
         }
 
-        public void ReleaseSelectMode()
+        public void OnReleaseSelectMode()
         {
-            OnNodeReleaseSelect?.Invoke(this, new NodeReleaseSelectEventArgs());
+            NodeReleaseSelect?.Invoke(this, new NodeReleaseSelectEventArgs());
         }
 
-        public void SelectNode()
+        public void OnSelectNode()
         {
-            OnNodeSelected?.Invoke(this, new NodeSelectedEventArgs());
+            NodeSelected?.Invoke(this, new NodeSelectedEventArgs());
         }
 
         public override string ToString()
