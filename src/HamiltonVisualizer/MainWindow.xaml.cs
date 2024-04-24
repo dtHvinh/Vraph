@@ -39,7 +39,10 @@ public partial class MainWindow : Window
         _viewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
         _viewModel.SetRefs(new RefBag(roNodes, roEdges, _selectedCollection));
         _drawManager = new DrawManager(_canvas);
-        _algorithm = new AlgorithmPresenter(_elementCollection.Nodes, _elementCollection.Edges, _viewModel.IsDirectionalGraph);
+        _algorithm = new AlgorithmPresenter(_elementCollection.Nodes, _elementCollection.Edges, options =>
+        {
+            options.EdgeTransition = 1500;
+        });
 
         _saveFileDialog = new()
         {
@@ -208,7 +211,7 @@ public partial class MainWindow : Window
             switch (e.Name)
             {
                 case ConstantValues.AlgorithmNames.DFS:
-                    _algorithm.PresentTraversalAlgorithm(e.Data);
+                    _algorithm.PresentDFSAlgorithm(e.Data);
                     break;
                 case ConstantValues.AlgorithmNames.Hamilton:
                     _algorithm.PresentHamiltonianCycleAlgorithm(e.Data);

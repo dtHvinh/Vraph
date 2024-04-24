@@ -39,7 +39,7 @@ namespace HamiltonVisualizer.Constants
 
         public static class Time
         {
-            public const int TransitionDelay = 500;
+            public const int Transition = 500;
         }
 
 
