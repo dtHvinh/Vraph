@@ -25,17 +25,13 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 
         public event GraphLineDeleteEventHandler? OnGraphLineDeleted;
 
-        /// <summary>
-        /// Create new instance of <see cref="GraphLine"/> and do <see cref="Base.NodeBase.Attach(GraphLineConnectInfo)"/>
-        /// a new instance of <see cref="GraphLineConnectInfo"/> for each <see cref="Node"/>.
-        /// </summary>
         public GraphLine(Node src, Node dst)
         {
             From = src;
             To = dst;
 
             _body = InitLine();
-            _head = CreateArrowHeadDefault();
+            _head = InitArrowHead();
 
             src.Attach(this, ConnectPosition.Head);
             dst.Attach(this, ConnectPosition.Tail);
@@ -46,13 +42,11 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _head.Fill = color;
             _body.Stroke = color;
         }
-
         public void ResetColor()
         {
             _head.Fill = Brushes.Black;
             _body.Stroke = Brushes.Black;
         }
-
         private Line InitLine()
         {
             Line line = new()
@@ -69,50 +63,53 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 
             return line;
         }
-
-        private static Tuple<Point, Point, Point> CreateArrowHead(Point arrowHeadPos, double height, double sideWidth)
+        private Polygon InitArrowHead()
         {
-            return Tuple.Create(arrowHeadPos, new Point(arrowHeadPos.X + sideWidth, arrowHeadPos.Y + height), new Point(arrowHeadPos.X - sideWidth, arrowHeadPos.Y + height));
-        }
-
-        private Polygon CreateArrowHeadDefault()
-        {
+            var points = CreateArrowHead();
             var ah = new Polygon()
             {
                 Fill = Brushes.Black,
-                Points = [new Point(To.Origin.X, To.Origin.Y), new Point(To.Origin.X + HeadWidth, To.Origin.Y + HeadLength), new Point(To.Origin.X - HeadWidth, To.Origin.Y + HeadLength)]
+                Points = [points.Item1, points.Item2, points.Item3]
             };
-            Panel.SetZIndex(ah, ConstantValues.ZIndex.Line);// Has the same z index with the obj this head attach To.Origin
-
-            // rotate
-            var angle = 90 + Math.Atan2(To.Origin.Y - From.Origin.Y, To.Origin.X - From.Origin.X) * (180 / Math.PI);
-            ah.RenderTransform = new RotateTransform(angle, To.Origin.X, To.Origin.Y);
-
+            Panel.SetZIndex(ah, ConstantValues.ZIndex.Line);
             return ah;
         }
-
-        public void OnTailPositionChanged()
+        private Tuple<Point, Point, Point> CreateArrowHead()
         {
-            var angle = 90 + Math.Atan2(To.Origin.Y - From.Origin.Y, To.Origin.X - From.Origin.X) * (180 / Math.PI);
-            var points = CreateArrowHead(To.Origin, HeadLength, HeadWidth);
+            Vector a = To.Origin - From.Origin;
+            a.Normalize();
+            Point arrHead = To.Origin - a * 17;
+
+            Point mediatorPoint = arrHead - a * HeadLength;
+            Vector b = new(a.Y, a.X * -1);
+            b.Normalize();
+
+            Point arrLeft = mediatorPoint - b * HeadWidth;
+            Point arrRight = mediatorPoint + b * HeadWidth;
+
+            return Tuple.Create(
+                arrHead,
+                arrLeft,
+                arrRight);
+        }
+        private void UpdateArrowHead() // Update arrow head base on the current position of From and To point
+        {
+            var points = CreateArrowHead();
             _head.Points[0] = points.Item1;
             _head.Points[1] = points.Item2;
             _head.Points[2] = points.Item3;
-            _head.RenderTransform = new RotateTransform(angle, To.Origin.X, To.Origin.Y);
-        }
-        public void OnHeadPositionChanged()
-        {
-            var angle = 90 + Math.Atan2(To.Origin.Y - From.Origin.Y, To.Origin.X - From.Origin.X) * (180 / Math.PI);
-            _head.RenderTransform = new RotateTransform(angle, To.Origin.X, To.Origin.Y);
         }
 
-        /// <summary>
-        /// Delete this <see cref="GraphLine"/> and execute <see cref="Base.NodeBase.Detach(GraphLineConnectInfo)"/>.
-        /// </summary>
-        public void Delete()
+        public void OnHeadOrTailPositionChanged()
         {
-            From.Detach(this);
-            To.Detach(this);
+            UpdateArrowHead();
+        }
+        public void DeleteFrom(Node node) // detach from one side and execute other side
+        {
+            if (node.Equals(From))
+                To.Detach(this);
+            else if (node.Equals(To))
+                From.Detach(this);
 
             OnGraphLineDeleted?.Invoke(this, new GraphLineDeleteEventArgs(this));
         }
@@ -120,9 +117,8 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         public override bool Equals(object? obj)
         {
             return obj is GraphLine other &&
-                other.GetHashCode().Equals(GetHashCode());
+                other.From.Equals(From) && other.To.Equals(To);
         }
-
         public override int GetHashCode()
         {
             return HashCode.Combine(_body.GetHashCode(), _head.GetHashCode, HeadLength, HeadWidth);
