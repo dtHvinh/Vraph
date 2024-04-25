@@ -45,8 +45,6 @@
 
                 <Border Background="LightBlue" Style="{StaticResource WindowButton}" 
                             MouseDown="MinimizeToTaskbar"></Border>
-                <Border Background="Yellow" Style="{StaticResource WindowButton}" 
-                            MouseDown="MaximizeAndRestore"></Border>
                 <Border Background="red" Style="{StaticResource WindowButton}"
                             MouseDown="Exit"></Border>
             </StackPanel>

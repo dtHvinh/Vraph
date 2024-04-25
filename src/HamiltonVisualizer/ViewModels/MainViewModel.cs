@@ -18,7 +18,7 @@ namespace HamiltonVisualizer.ViewModels
     /**
      * ***************************************************************************************************
      * ** Node or GraphLine Should not be added directly from inside this class, it should be add       **
-     * ** using method like CreateNodeAtPosition from MainView instead                                            **
+     * ** using method like CreateNodeAtPosition from MainView instead                                  **
      * ***************************************************************************************************
      */
     public class MainViewModel : ObservableObject
@@ -34,7 +34,6 @@ namespace HamiltonVisualizer.ViewModels
         public event PresentingTraversalAlgorithmEventHandler? PresentingTraversalAlgorithm;
         public event PresentingLayeredBFSEventHandler? PresentingLayeredBFSAlgorithm;
         public event PresentingSCCEventHandler? PresentingSCCAlgorithm;
-        public event PresentingHamiltonAlgorithmEventHandler? PresentingHamiltonCycleAlgorithm;
         public event GraphModeChangeEventHandler? GraphModeChanged;
 
         public bool SkipTransition

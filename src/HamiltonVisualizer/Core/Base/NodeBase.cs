@@ -51,7 +51,7 @@ namespace HamiltonVisualizer.Core.Base
                 _origin = validPos;
 
                 OnStateChanged(validPos, NodeState.Moving);
-                OnPositionChanged(validPos, collideNode);
+                OnPositionChanged(validPos, collideNode).ConfigureAwait(true);
 
                 Canvas.SetLeft(this, validPos.X - ConstantValues.ControlSpecifications.NodeWidth / 2);
                 Canvas.SetTop(this, validPos.Y - ConstantValues.ControlSpecifications.NodeWidth / 2);
@@ -74,11 +74,17 @@ namespace HamiltonVisualizer.Core.Base
             OnNodeStateChanged?.Invoke(this, new NodeStateChangeEventArgs(newPosition, state));
         }
 
-        public void OnPositionChanged(Point newPosition, IEnumerable<Node> nodes)
+        public async Task OnPositionChanged(Point newPosition, IEnumerable<Node> nodes)
         {
-            _adjacent.ForEach(line =>
+            await Task.Run(() =>
             {
-                GraphLineRepositionHelper.Move(newPosition, line);
+                Dispatcher.InvokeAsync(() =>
+                {
+                    _adjacent.ForEach(line =>
+                    {
+                        GraphLineRepositionHelper.Move(newPosition, line);
+                    });
+                });
             });
             OnNodePositionChanged?.Invoke(this, new NodePositionChangedEventArgs(newPosition, nodes));
         }

@@ -6,6 +6,7 @@ using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Mathematic;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace HamiltonVisualizer.Core.Functionality
 {
@@ -17,21 +18,29 @@ namespace HamiltonVisualizer.Core.Functionality
         private readonly NodeBase _node;
         private readonly GraphNodeCollection _nodes;
         private readonly double _radius = ConstantValues.ControlSpecifications.NodeWidth / 2;
+        private readonly Dispatcher _dispatcher;
+        private readonly int _impactForce = 1;
 
         public ObjectPhysic(NodeBase node, GraphNodeCollection nodes)
         {
             _node = node;
             _nodes = nodes;
-
+            _dispatcher = Dispatcher.CurrentDispatcher;
             _node.OnNodePositionChanged += Node_OnNodePositionChanged;
         }
 
-        private void Node_OnNodePositionChanged(object? sender, NodePositionChangedEventArgs e)
+        private async void Node_OnNodePositionChanged(object? sender, NodePositionChangedEventArgs e)
         {
-            foreach (var node in e.CollideNodes)
-            {
-                MoveAway(_node, node);
-            }
+            await Task.Run(() =>
+             {
+                 foreach (var node in e.CollideNodes)
+                 {
+                     _dispatcher.InvokeAsync(() =>
+                     {
+                         MoveAway(_node, node);
+                     });
+                 }
+             });
         }
 
         public bool HasNoCollide()
@@ -77,12 +86,12 @@ namespace HamiltonVisualizer.Core.Functionality
         /// If <paramref name="second"/> node is moved to the corner of the canvas, it will be move to the
         /// almost center of its.
         /// </summary>
-        private static void MoveAway(NodeBase first, NodeBase second)
+        private void MoveAway(NodeBase first, NodeBase second)
         {
-            var newX = 2 * second.Origin.X - first.Origin.X;
-            var newY = 2 * second.Origin.Y - first.Origin.Y;
-            var secondNewPos = new Point(newX, newY);
-
+            Vector fs = new(second.Origin.X - first.Origin.X, second.Origin.Y - first.Origin.Y);
+            fs.Normalize();
+            Vector fs_2 = fs * _impactForce;
+            var secondNewPos = new Point(second.Origin.X + fs_2.X, second.Origin.Y + fs_2.Y);
             second.Origin = secondNewPos;
 
             var newPos = ObjectPosition.IfStuckAtCorner(second.Origin);

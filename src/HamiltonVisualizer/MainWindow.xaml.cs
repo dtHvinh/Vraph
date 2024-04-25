@@ -76,15 +76,6 @@ public partial class MainWindow : Window
     {
         Application.Current.Shutdown();
     }
-    private void MaximizeAndRestore(object sender, MouseButtonEventArgs e)
-    {
-        if (WindowState == WindowState.Maximized)
-        {
-            WindowState = WindowState.Normal;
-        }
-        else
-            WindowState = WindowState.Maximized;
-    }
     private void MinimizeToTaskbar(object sender, MouseButtonEventArgs e)
     {
         WindowState = WindowState.Minimized;
@@ -204,31 +195,31 @@ public partial class MainWindow : Window
     }
     private void SubscribeAlgorithmPresentingEvents()
     {
-        _viewModel.PresentingTraversalAlgorithm += (sender, e) =>
+        _viewModel.PresentingTraversalAlgorithm += async (sender, e) =>
         {
             _algorithm.SkipTransition = e.SkipTransition;
 
             switch (e.Name)
             {
                 case ConstantValues.AlgorithmNames.DFS:
-                    _algorithm.PresentDFSAlgorithm(e.Data);
+                    await _algorithm.PresentDFSAlgorithm(e.Data);
                     break;
                 case ConstantValues.AlgorithmNames.Hamilton:
-                    _algorithm.PresentHamiltonianCycleAlgorithm(e.Data);
+                    await _algorithm.PresentHamiltonianCycleAlgorithm(e.Data);
                     break;
             }
         };
 
-        _viewModel.PresentingSCCAlgorithm += (sender, e) =>
+        _viewModel.PresentingSCCAlgorithm += async (sender, e) =>
         {
             _algorithm.SkipTransition = e.SkipTransition;
 
-            _algorithm.PresentComponentAlgorithm(e.Data);
+            await _algorithm.PresentComponentAlgorithm(e.Data);
         };
 
-        _viewModel.PresentingLayeredBFSAlgorithm += (sender, e) =>
+        _viewModel.PresentingLayeredBFSAlgorithm += async (sender, e) =>
         {
-            _algorithm.PresentLayeredBFSAlgorithm(e.Data);
+            await _algorithm.PresentLayeredBFSAlgorithm(e.Data);
         };
     }
     private void SubscribeNodeEvents(Node node)
@@ -372,8 +363,10 @@ public partial class MainWindow : Window
         {
             _elementCollection.Remove(e.Edge);
             _canvas.Children.Remove(e.Edge);
+            e.Edge.DeleteFrom(node);
             _viewModel.Refresh();
         });
+
     }
 
     public void CreateNode(Node node)
@@ -387,7 +380,7 @@ public partial class MainWindow : Window
     }
     public void CreateNodeAtPosition(Point position)
     {
-        var node = new Node(_canvas, ObjectPosition.TryStayInBound(position), _elementCollection.Nodes);
+        var node = new Node(_canvas, position, _elementCollection.Nodes);
 
         if (node.PhysicManager.HasNoCollide())
         {
@@ -401,24 +394,12 @@ public partial class MainWindow : Window
     }
     public void CreateLine(Node from, Node to)
     {
-        if (_viewModel.IsDirectionalGraph)
+        if (!_elementCollection.Edges.Any(e => IsLineAlreadyExist(e.Body, from, to, _viewModel.IsDirectionalGraph))
+            && _drawManager.DrawLine(from, to, _viewModel.IsDirectionalGraph, out var edge))
         {
-            if (_drawManager.DrawLine(from, to, _viewModel.IsDirectionalGraph, out var edge))
-            {
-                _elementCollection.Edges.Add(edge);
-                _viewModel.RefreshWhenAdd(edge);
-                SubscribeGraphLineEvents(edge);
-            }
-        }
-        else
-        {
-            if (!_elementCollection.Edges.Any(e => IsLineAlreadyExist(e.Body, from, to))
-                && _drawManager.DrawLine(from, to, _viewModel.IsDirectionalGraph, out var edge))
-            {
-                _elementCollection.Edges.Add(edge);
-                _viewModel.RefreshWhenAdd(edge);
-                SubscribeGraphLineEvents(edge);
-            }
+            _elementCollection.Edges.Add(edge);
+            _viewModel.RefreshWhenAdd(edge);
+            SubscribeGraphLineEvents(edge);
         }
     }
 }

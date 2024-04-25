@@ -53,7 +53,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             ContextMenu = new NodeContextMenu(this);
 
             SubscribeEvents();
+        }
 
+        private void SubscribeEvents()
+        {
             MouseDown += (sender, e) =>
             {
                 if (e.MiddleButton == MouseButtonState.Pressed)
@@ -64,10 +67,6 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
                         OnSelectNode();
                 }
             };
-        }
-
-        private void SubscribeEvents()
-        {
             NodeDelete += (sender, e) =>
             {
                 _canChangeBackground = true;

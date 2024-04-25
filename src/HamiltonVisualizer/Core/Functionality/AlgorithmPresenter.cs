@@ -102,7 +102,7 @@ namespace HamiltonVisualizer.Core.Functionality
             }
         }
 
-        public async void PresentDFSAlgorithm(IEnumerable<Node> node)
+        public async Task PresentDFSAlgorithm(IEnumerable<Node> node)
         {
             ResetColor();
 
@@ -113,7 +113,7 @@ namespace HamiltonVisualizer.Core.Functionality
 
             _isModified = true;
         }
-        public async void PresentHamiltonianCycleAlgorithm(IEnumerable<Node> nodes)
+        public async Task PresentHamiltonianCycleAlgorithm(IEnumerable<Node> nodes)
         {
             ResetColor();
             if (SkipTransition)
@@ -149,7 +149,7 @@ namespace HamiltonVisualizer.Core.Functionality
                 MessageBox.Show(e.Message);
             }
         }
-        public async void PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
+        public async Task PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
         {
             ResetColor();
             ColorPalate.Reset();
@@ -169,7 +169,7 @@ namespace HamiltonVisualizer.Core.Functionality
 
             _isModified = true;
         }
-        public async void PresentLayeredBFSAlgorithm(IEnumerable<BFSComponent<Node>> layeredNode)
+        public async Task PresentLayeredBFSAlgorithm(IEnumerable<BFSComponent<Node>> layeredNode)
         {
             ResetColor();
             ColorPalate.Reset();

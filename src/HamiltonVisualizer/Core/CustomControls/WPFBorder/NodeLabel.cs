@@ -70,6 +70,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 
         public void OnLabelSetFinished()
         {
+            Text = Text.Trim();
             IsReadonly = true;
         }
     }
