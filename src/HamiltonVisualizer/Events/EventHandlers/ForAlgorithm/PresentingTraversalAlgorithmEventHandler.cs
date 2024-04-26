@@ -2,5 +2,5 @@
 
 namespace HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
 
-public delegate void PresentingTraversalAlgorithmEventHandler(object? sender, PresentingTraversalAlgorithmEventArgs args);
-public delegate void PresentingLayeredBFSEventHandler(object? sender, PresentingLayeredBFSEventArgs args);
+internal delegate void PresentingTraversalAlgorithmEventHandler(object? sender, PresentingTraversalAlgorithmEventArgs args);
+internal delegate void PresentingLayeredBFSEventHandler(object? sender, PresentingLayeredBFSEventArgs args);

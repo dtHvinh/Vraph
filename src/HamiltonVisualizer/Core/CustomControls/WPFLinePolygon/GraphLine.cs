@@ -9,7 +9,7 @@ using System.Windows.Shapes;
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 {
-    public sealed class GraphLine
+    internal sealed class GraphLine
     {
         private double HeadLength { get; set; } = 25;
         private double HeadWidth { get; set; } = 7.5;

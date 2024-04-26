@@ -2,7 +2,7 @@
 
 namespace HamiltonVisualizer.Core.Collections
 {
-    public class GraphNodeCollection : List<Node>
+    internal class GraphNodeCollection : List<Node>
     {
     }
 }

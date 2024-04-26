@@ -2,7 +2,7 @@
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
 {
-    public class CustomCanvas : Canvas
+    internal class CustomCanvas : Canvas
     {
         public CustomCanvas()
         {

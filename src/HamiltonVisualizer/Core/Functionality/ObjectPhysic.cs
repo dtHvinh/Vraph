@@ -12,7 +12,7 @@ namespace HamiltonVisualizer.Core.Functionality
     /// <summary>
     /// Represent the physic of the <paramref name="node"/>.
     /// </summary>
-    public class ObjectPhysic
+    internal class ObjectPhysic
     {
         private readonly NodeBase _node;
         private readonly GraphNodeCollection _nodes;

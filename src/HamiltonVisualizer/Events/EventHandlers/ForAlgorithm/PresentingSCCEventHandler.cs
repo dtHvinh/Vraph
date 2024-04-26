@@ -2,4 +2,4 @@
 
 namespace HamiltonVisualizer.Events.EventHandlers.ForAlgorithm;
 
-public delegate void PresentingSCCEventHandler(object? sender, SCCEventArgs e);
+internal delegate void PresentingSCCEventHandler(object? sender, SCCEventArgs e);

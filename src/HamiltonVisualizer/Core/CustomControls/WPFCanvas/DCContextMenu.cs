@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas
 {
-    public class DCContextMenu : ContextMenu, IAppContextMenu
+    internal class DCContextMenu : ContextMenu, IAppContextMenu
     {
         private static DCContextMenu? _instance;
 

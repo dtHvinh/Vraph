@@ -2,7 +2,7 @@
 using System.Windows;
 
 namespace HamiltonVisualizer.Utilities;
-public static class ActionGuard
+internal static class ActionGuard
 {
     public static bool ShouldContinue(string message)
     {

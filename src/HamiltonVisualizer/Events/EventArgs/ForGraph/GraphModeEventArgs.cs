@@ -1,2 +1,2 @@
 ﻿namespace HamiltonVisualizer.Events.EventArgs.ForGraph;
-public class GraphModeEventArgs;
+internal class GraphModeEventArgs;

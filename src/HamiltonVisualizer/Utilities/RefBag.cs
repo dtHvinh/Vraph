@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 namespace HamiltonVisualizer.Utilities
 {
-    public class RefBag
+    internal class RefBag
     {
         public ReadOnlyCollection<Node> Nodes { get; private set; }
         public ReadOnlyCollection<GraphLine> Edges { get; private set; }

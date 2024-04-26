@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace HamiltonVisualizer.Extensions;
 
-public static partial class FileImporter
+internal static partial class FileImporter
 {
     [GeneratedRegex("[0-9]*:[0-9]*")]
     public static partial Regex PresentNode();
@@ -28,7 +28,7 @@ public static partial class FileImporter
                     int x = int.Parse(coordinatePart[0]);
                     int y = int.Parse(coordinatePart[1]);
 
-                    Node node = new(mainWindow._canvas, new Point(x, y), mainWindow._elementCollection.Nodes);
+                    Node node = new(mainWindow._canvas, new Point(x, y), mainWindow.ElementCollection.Nodes);
                     node.NodeLabel.Text = label.Equals("null") ? $"e{i++}" : label;
                     node.NodeLabel.OnLabelSetFinished();
 
@@ -63,10 +63,10 @@ public static partial class FileImporter
                 {
                     string[] node1StringParts = nodeStrings[0].Value.Split(':');
                     Point point1 = new(int.Parse(node1StringParts[0]), int.Parse(node1StringParts[1]));
-                    node1 = mainWindow._elementCollection.Nodes.FirstOrDefault(e => e.Origin.TolerantEquals(point1));
+                    node1 = mainWindow.ElementCollection.Nodes.FirstOrDefault(e => e.Origin.TolerantEquals(point1));
                     if (node1 is null)
                     {
-                        throw new Exception(mainWindow._elementCollection.Nodes.First().ToString());
+                        throw new Exception(mainWindow.ElementCollection.Nodes.First().ToString());
                         throw new Exception($"Đỉnh ({node1StringParts[0]};{node1StringParts[1]}) không tìm thấy" + " Lỗi ở dòng " + l);
                     }
                     founded.Add(nodeStrings[0].Value, node1);
@@ -76,7 +76,7 @@ public static partial class FileImporter
                 {
                     string[] node2StringParts = nodeStrings[1].Value.Split(':');
                     Point point2 = new(int.Parse(node2StringParts[0]), int.Parse(node2StringParts[1]));
-                    node2 = mainWindow._elementCollection.Nodes.FirstOrDefault(e => e.Origin.TolerantEquals(point2));
+                    node2 = mainWindow.ElementCollection.Nodes.FirstOrDefault(e => e.Origin.TolerantEquals(point2));
                     if (node2 is null)
                     {
                         throw new Exception($"Đỉnh ({node2StringParts[0]};{node2StringParts[1]}) không tìm thấy" + " Lỗi ở dòng " + l);

@@ -2,4 +2,4 @@
 
 namespace HamiltonVisualizer.Events.EventHandlers.ForNode;
 
-public delegate void NodeStateChangedEventHandler(object? sender, NodeStateChangeEventArgs e);
+internal delegate void NodeStateChangedEventHandler(object? sender, NodeStateChangeEventArgs e);

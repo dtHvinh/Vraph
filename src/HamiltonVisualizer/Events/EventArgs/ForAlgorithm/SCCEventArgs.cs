@@ -2,7 +2,7 @@
 
 namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
 {
-    public class SCCEventArgs
+    internal class SCCEventArgs
     {
         /// <summary>
         /// The algorithm name.

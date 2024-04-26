@@ -5,7 +5,7 @@ namespace HamiltonVisualizer.Events.EventArgs.ForNode
     /// <summary>
     /// Contain details about delete event associate with node.
     /// </summary>
-    public class NodeDeleteEventArgs(Node node)
+    internal class NodeDeleteEventArgs(Node node)
     {
         public Node Node { get; set; } = node;
     }

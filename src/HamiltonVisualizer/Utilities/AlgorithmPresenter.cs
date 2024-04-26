@@ -10,7 +10,7 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Utilities
 {
-    public class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graphLine)
+    internal class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graphLine)
     {
         private bool _isModified = false; // value indicate if reset actually need to be perform
         private readonly List<Node> _nodes = nodes;

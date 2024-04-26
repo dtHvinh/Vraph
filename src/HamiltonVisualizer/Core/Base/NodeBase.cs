@@ -18,7 +18,7 @@ namespace HamiltonVisualizer.Core.Base
     /// <summary>
     /// A node that can move on a canvas
     /// </summary>
-    public abstract class NodeBase :
+    internal abstract class NodeBase :
         Border,
         IUIComponent,
         INavigableElement,
@@ -114,13 +114,13 @@ namespace HamiltonVisualizer.Core.Base
             _adjacent.Remove(attachInfo);
         }
 
-        public string ToString(string lang)
+        public virtual string ToString(string lang)
         {
             return lang switch
             {
                 "vi" => $"""
                         Tọa Độ:{new string(' ', 14)}{(int)_origin.X}:{(int)_origin.Y}
-                        Bậc:{new string(' ', 2)}{_adjacent.Count}
+                        Bậc:{new string(' ', 20)}{_adjacent.Count}
                         """,
                 _ => throw new Exception($"Invalid lang {lang}!"),// TODO: add to EM class
             };

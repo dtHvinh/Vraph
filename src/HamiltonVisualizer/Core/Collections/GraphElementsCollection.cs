@@ -3,7 +3,7 @@ using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 
 namespace HamiltonVisualizer.Core.Collections
 {
-    public class GraphElementsCollection
+    internal class GraphElementsCollection
     {
         private readonly GraphNodeCollection _nodes = [];
         private readonly GraphLineCollection _edges = [];

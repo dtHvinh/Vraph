@@ -6,7 +6,7 @@ using System.Windows.Controls;
 #nullable disable
 namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 {
-    public class NodeContextMenu : ContextMenu, IUIComponent, IAppContextMenu
+    internal class NodeContextMenu : ContextMenu, IUIComponent, IAppContextMenu
     {
         private readonly Node _node;
 
@@ -45,7 +45,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             Information = new() { Header = "Thông tin" };
             Information.Click += (sender, e) =>
             {
-                MessageBox.Show(_node.ToString("vi"), $"Đỉnh: [{_node.NodeLabel.Text}]");
+                MessageBox.Show(_node.ToString("vi"), $"Thông tin");
             };
 
             AddItems(

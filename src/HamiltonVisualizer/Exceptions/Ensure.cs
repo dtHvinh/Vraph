@@ -1,6 +1,6 @@
 ﻿namespace HamiltonVisualizer.Exceptions
 {
-    public static class Ensure
+    internal static class Ensure
     {
         public static void ThrowIf(bool condition, Type? exception, string? errorMessage, params object[]? args)
         {

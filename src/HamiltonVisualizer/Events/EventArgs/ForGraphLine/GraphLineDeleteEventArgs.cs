@@ -1,9 +1,8 @@
 ﻿using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 
-namespace HamiltonVisualizer.Events.EventArgs.ForGraphLine
+namespace HamiltonVisualizer.Events.EventArgs.ForGraphLine;
+
+internal class GraphLineDeleteEventArgs(GraphLine graphLine)
 {
-    public class GraphLineDeleteEventArgs(GraphLine graphLine)
-    {
-        public GraphLine GraphLine { get; set; } = graphLine;
-    }
+    public GraphLine GraphLine { get; set; } = graphLine;
 }

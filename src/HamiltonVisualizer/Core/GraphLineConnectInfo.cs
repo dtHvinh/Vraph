@@ -7,7 +7,7 @@ namespace HamiltonVisualizer.Core
     /// Contain information about the connect between instance of <see cref="GraphLine"/> and 
     /// <see cref="Node"/>
     /// </summary>
-    public class GraphLineConnectInfo(GraphLine edge, NodeBase node, ConnectPosition pos)
+    internal class GraphLineConnectInfo(GraphLine edge, NodeBase node, ConnectPosition pos)
     {
         private readonly GraphLine _edge = edge;
         private readonly NodeBase _node = node;

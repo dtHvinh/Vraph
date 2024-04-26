@@ -3,7 +3,7 @@ using HamiltonVisualizer.DataStructure.Components;
 
 namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
 {
-    public class PresentingTraversalAlgorithmEventArgs
+    internal class PresentingTraversalAlgorithmEventArgs
     {
         /// <summary>
         /// The algorithm name.
@@ -21,7 +21,7 @@ namespace HamiltonVisualizer.Events.EventArgs.ForAlgorithm
         public bool SkipTransition { get; set; } = false;
     }
 
-    public class PresentingLayeredBFSEventArgs
+    internal class PresentingLayeredBFSEventArgs
     {
         /// <summary>
         /// The data.

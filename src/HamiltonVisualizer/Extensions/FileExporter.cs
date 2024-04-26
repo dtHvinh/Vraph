@@ -5,7 +5,7 @@ using System.IO;
 
 namespace HamiltonVisualizer.Extensions;
 
-public static class FileExporter
+internal static class FileExporter
 {
     /// <summary>
     /// Write to file specified at <paramref name="path"/>.

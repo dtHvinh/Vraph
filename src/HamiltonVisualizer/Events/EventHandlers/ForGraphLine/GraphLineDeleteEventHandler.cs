@@ -2,6 +2,6 @@
 
 namespace HamiltonVisualizer.Events.EventHandlers.ForGraphLine;
 
-public delegate void GraphLineDeleteEventHandler(object? sender, GraphLineDeleteEventArgs e);
+internal delegate void GraphLineDeleteEventHandler(object? sender, GraphLineDeleteEventArgs e);
 
 

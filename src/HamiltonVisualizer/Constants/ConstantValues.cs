@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Constants
 {
-    public class ConstantValues
+    internal class ConstantValues
     {
         public static class Messages
         {

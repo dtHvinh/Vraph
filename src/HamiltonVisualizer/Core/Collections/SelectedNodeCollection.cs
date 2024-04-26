@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace HamiltonVisualizer.Core.Collections
 {
-    public class SelectedNodeCollection : INotifyPropertyChanged
+    internal class SelectedNodeCollection : INotifyPropertyChanged
     {
         public HashSet<Node> Nodes { get; } = new(NodeComparer.Instance);
 

@@ -6,7 +6,7 @@ namespace HamiltonVisualizer.Core
     /// <summary>
     /// An object that can be tracked by the binding client.
     /// </summary>
-    public class ObservableObject : INotifyPropertyChanged
+    internal class ObservableObject : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 

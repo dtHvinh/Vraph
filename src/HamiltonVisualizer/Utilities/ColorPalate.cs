@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Utilities
 {
-    public static class ColorPalate
+    internal static class ColorPalate
     {
         private static readonly List<ColorState> _colors;
 

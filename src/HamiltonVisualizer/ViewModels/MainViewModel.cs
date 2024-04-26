@@ -21,7 +21,7 @@ namespace HamiltonVisualizer.ViewModels
      * ** using method like CreateNodeAtPosition from MainView instead                                  **
      * ***************************************************************************************************
      */
-    public class MainViewModel : ObservableObject
+    internal class MainViewModel : ObservableObject
     {
         private bool _skipTransition = false;
         private bool _isDirectionalGraph = true;

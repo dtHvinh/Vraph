@@ -1,6 +1,6 @@
 ﻿namespace HamiltonVisualizer.Core.Contracts
 {
-    public interface IUIComponent
+    internal interface IUIComponent
     {
         /// <summary>
         /// Styling component appearance.

@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace HamiltonVisualizer.Helpers
 {
-    public static class GraphLineRepositionHelper
+    internal static class GraphLineRepositionHelper
     {
         public static void Move(Point newPosition, GraphLineConnectInfo attachInfo)
         {

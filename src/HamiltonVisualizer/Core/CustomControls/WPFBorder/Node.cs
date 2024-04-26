@@ -5,6 +5,7 @@ using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -19,7 +20,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     /// </remarks>
     /// 
     [DebuggerDisplay("[Label:{NodeLabel.Text};X:{Origin.X};Y:{Origin.Y}]")]
-    public sealed class Node : NodeBase
+    internal sealed class Node : NodeBase
     {
         public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
 
@@ -108,9 +109,12 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
             NodeSelected?.Invoke(this, new NodeSelectedEventArgs());
         }
 
-        public override string ToString()
+        public override string ToString(string lang)
         {
-            return $"[{Origin.X};{Origin.Y}]";
+            var sb = new StringBuilder();
+            sb.AppendLine($"Nhãn:{new string(' ', 17)}{NodeLabel.Text}");
+            sb.AppendLine(base.ToString(lang));
+            return sb.ToString();
         }
     }
 }

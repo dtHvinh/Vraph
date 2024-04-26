@@ -2,7 +2,7 @@
 
 namespace HamiltonVisualizer.Core.CustomControls.Contracts
 {
-    public interface IAppContextMenu
+    internal interface IAppContextMenu
     {
         void Initialize();
         void AddItems(params MenuItem[] items);

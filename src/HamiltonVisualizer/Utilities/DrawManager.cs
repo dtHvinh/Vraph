@@ -11,7 +11,7 @@ namespace HamiltonVisualizer.Utilities
     /// Drawing manager.
     /// </summary>
     /// <param exception="Canvas">The canvas on which this class draws.</param>
-    public class DrawManager(Canvas Canvas)
+    internal class DrawManager(Canvas Canvas)
     {
         /// <summary>
         /// Draw a <see cref="Line"/> and add to the collection.
@@ -19,12 +19,12 @@ namespace HamiltonVisualizer.Utilities
         public bool DrawLine(Node src, Node dst, bool headVisible, [NotNullWhen(true)] out GraphLine? obj)
         {
             var edge = new GraphLine(src, dst);
+            obj = edge;
             if (!headVisible)
             {
                 edge.Head.Visibility = System.Windows.Visibility.Collapsed;
             }
             Canvas.Children.Add(edge);
-            obj = edge;
             return true;
         }
     }
