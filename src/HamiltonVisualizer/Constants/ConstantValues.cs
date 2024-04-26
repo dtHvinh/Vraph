@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Windows.Input;
+using System.Windows.Media;
 
 namespace HamiltonVisualizer.Constants
 {
@@ -47,6 +48,12 @@ namespace HamiltonVisualizer.Constants
         {
             public const string DFS = "DFS";
             public const string Hamilton = "Hamilton";
+        }
+
+        public static class KeyCombination
+        {
+            public static readonly KeyGesture SaveFile = new(Key.S, ModifierKeys.Control);
+            public static readonly KeyGesture OpenFile = new(Key.O, ModifierKeys.Control);
         }
     }
 }

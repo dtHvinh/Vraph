@@ -95,25 +95,16 @@ public class ObjectPosition
         return new Point(X, Y);
     }
 
-    /// <summary>
-    /// Check if <paramref name="point"/> is the position of one of the corner, if true
-    /// return the center of the canvas base on constant values specified in <see cref="Constants.ConstantValues.ControlSpecifications"/>
-    /// </summary>
-    public static Point IfStuckAtCorner(Point point)
+    public static bool IfStuckAtCorner(Point point)
     {
         var bottomLeft = new Point(_minX, _minY);
         var bottomRight = new Point(_maxX, _minY);
         var topLeft = new Point(_minX, _maxY);
         var topRight = new Point(_maxX, _maxY);
 
-        if (point.TolerantEquals(bottomLeft)
+        return point.TolerantEquals(bottomLeft)
             || point.TolerantEquals(bottomRight)
             || point.TolerantEquals(topLeft)
-            || point.TolerantEquals(topRight))
-        {
-            return new Point(_maxX / 2, _maxY / 2);
-        }
-
-        return point;
+            || point.TolerantEquals(topRight);
     }
 }

@@ -11,17 +11,19 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
 {
     public sealed class GraphLine
     {
-        private readonly Line _body;
-        private readonly Polygon _head;
-
         private double HeadLength { get; set; } = 25;
         private double HeadWidth { get; set; } = 7.5;
+
+        private readonly Line _body;
+        private readonly Polygon _head;
+        private Vector _vec;
 
         public Node From { get; set; }
         public Node To { get; set; }
 
         public Line Body => _body;
         public Polygon Head => _head;
+        public Vector Vector => _vec;
 
         public event GraphLineDeleteEventHandler? OnGraphLineDeleted;
 
@@ -47,6 +49,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             _head.Fill = Brushes.Black;
             _body.Stroke = Brushes.Black;
         }
+
         private Line InitLine()
         {
             Line line = new()
@@ -60,7 +63,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             };
             line.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
             Panel.SetZIndex(line, ConstantValues.ZIndex.Line);
-
+            UpdateVector();
             return line;
         }
         private Polygon InitArrowHead()
@@ -76,12 +79,10 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         }
         private Tuple<Point, Point, Point> CreateArrowHead()
         {
-            Vector a = To.Origin - From.Origin;
-            a.Normalize();
-            Point arrHead = To.Origin - a * 17;
+            Point arrHead = To.Origin - Vector * 17;
 
-            Point mediatorPoint = arrHead - a * HeadLength;
-            Vector b = new(a.Y, a.X * -1);
+            Point mediatorPoint = arrHead - Vector * HeadLength;
+            Vector b = new(Vector.Y, Vector.X * -1);
             b.Normalize();
 
             Point arrLeft = mediatorPoint - b * HeadWidth;
@@ -92,18 +93,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
                 arrLeft,
                 arrRight);
         }
-        private void UpdateArrowHead() // Update arrow head base on the current position of From and To point
-        {
-            var points = CreateArrowHead();
-            _head.Points[0] = points.Item1;
-            _head.Points[1] = points.Item2;
-            _head.Points[2] = points.Item3;
-        }
 
-        public void OnHeadOrTailPositionChanged()
-        {
-            UpdateArrowHead();
-        }
         public void DeleteFrom(Node node) // detach from one side and execute other side
         {
             if (node.Equals(From))
@@ -112,6 +102,24 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
                 From.Detach(this);
 
             OnGraphLineDeleted?.Invoke(this, new GraphLineDeleteEventArgs(this));
+        }
+        private void UpdateArrowHead() // Update arrow head base on the current position of From and To point
+        {
+            var points = CreateArrowHead();
+            _head.Points[0] = points.Item1;
+            _head.Points[1] = points.Item2;
+            _head.Points[2] = points.Item3;
+        }
+        private void UpdateVector()
+        {
+            _vec = To.Origin - From.Origin;
+            _vec.Normalize();
+        }
+
+        public void OnHeadOrTailPositionChanged()
+        {
+            UpdateVector();
+            UpdateArrowHead();
         }
 
         public override bool Equals(object? obj)

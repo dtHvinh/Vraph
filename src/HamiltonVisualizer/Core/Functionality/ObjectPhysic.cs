@@ -3,7 +3,6 @@ using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
-using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Mathematic;
 using System.Windows;
 using System.Windows.Threading;
@@ -37,7 +36,7 @@ namespace HamiltonVisualizer.Core.Functionality
                  {
                      _dispatcher.InvokeAsync(() =>
                      {
-                         MoveAway(_node, node);
+                         Push(node);
                      });
                  }
              });
@@ -81,24 +80,19 @@ namespace HamiltonVisualizer.Core.Functionality
             }
         }
 
-        /// <summary>
-        /// Move _nodes that collide with the <paramref name="first"/> node. <br/>
-        /// If <paramref name="second"/> node is moved to the corner of the canvas, it will be move to the
-        /// almost center of its.
-        /// </summary>
-        private void MoveAway(NodeBase first, NodeBase second)
+        private void Push(NodeBase other)
         {
-            Vector fs = new(second.Origin.X - first.Origin.X, second.Origin.Y - first.Origin.Y);
+            Vector fs = other.Origin - _node.Origin;
             fs.Normalize();
             Vector fs_2 = fs * _impactForce;
-            var secondNewPos = new Point(second.Origin.X + fs_2.X, second.Origin.Y + fs_2.Y);
-            second.Origin = secondNewPos;
+            var secondNewPos = other.Origin + fs_2;
+            other.Origin = secondNewPos;
 
-            var newPos = ObjectPosition.IfStuckAtCorner(second.Origin);
-
-            if (!second.Origin.TolerantEquals(newPos))
+            if (ObjectPosition.IfStuckAtCorner(other.Origin))
             {
-                second.Origin = newPos;
+                // TODO: improve
+                other.Origin = new Point(Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesWidth - 17),
+                    Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesHeight - 17));
             }
         }
     }

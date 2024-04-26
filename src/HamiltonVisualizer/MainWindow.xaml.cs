@@ -1,9 +1,9 @@
-﻿using HamiltonVisualizer.Constants;
+﻿using HamiltonVisualizer.Commands;
+using HamiltonVisualizer.Constants;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
-using HamiltonVisualizer.Core.Functionality;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Utilities;
@@ -26,10 +26,16 @@ public partial class MainWindow : Window
     internal readonly SaveFileDialog _saveFileDialog;
     internal readonly OpenFileDialog _openFileDialog;
 
+    internal ICommand SaveFileCommand = null!;
+    internal ICommand OpenFileCommand = null!;
+
     //
     public MainWindow()
     {
         InitializeComponent();
+        InitializeCommands();
+
+        SetUpInputBindings();
 
         _elementCollection = new GraphElementsCollection();
 
@@ -64,6 +70,25 @@ public partial class MainWindow : Window
         SubscribeAlgorithmPresentingEvents();
         SubscribeCanvasContextMenuEvents();
         SubscribeGraphModeChangeEvents();
+    }
+    //
+    private void InitializeCommands()
+    {
+        SaveFileCommand = new ActionCommand(SaveFileCore);
+        OpenFileCommand = new ActionCommand(OpenFileCore);
+    }
+    private void SetUpInputBindings()
+    {
+        InputBindings.Add(new KeyBinding
+        {
+            Command = SaveFileCommand,
+            Gesture = ConstantValues.KeyCombination.SaveFile,
+        });
+        InputBindings.Add(new KeyBinding
+        {
+            Command = OpenFileCommand,
+            Gesture = ConstantValues.KeyCombination.OpenFile,
+        });
     }
 
     //
@@ -150,11 +175,11 @@ public partial class MainWindow : Window
                             SaveFileCore();
                         }
                         DeleteAllCore();
-                        ReadFileCore(dropFiles[0]);
+                        OpenFileFrom(dropFiles[0]);
                     }
                 }
                 else
-                    ReadFileCore(dropFiles[0]);
+                    OpenFileFrom(dropFiles[0]);
             }
         };
     }
@@ -186,11 +211,11 @@ public partial class MainWindow : Window
                         SaveFileCore();
                     }
                     DeleteAllCore();
-                    ReadFileCore(_openFileDialog.FileName);
+                    OpenFileFrom(_openFileDialog.FileName);
                 }
             }
             else
-                ReadFileCore(_openFileDialog.FileName);
+                OpenFileFrom(_openFileDialog.FileName);
         };
     }
     private void SubscribeAlgorithmPresentingEvents()
@@ -334,9 +359,14 @@ public partial class MainWindow : Window
     }
 
     //
-    private void ReadFileCore(string path)
+    private void OpenFileFrom(string path)
     {
         FileImporter.ReadFrom(this, path);
+    }
+    private void OpenFileCore()
+    {
+        _openFileDialog.ShowDialog();
+        FileImporter.ReadFrom(this, _openFileDialog.FileName);
     }
     private void SaveFileCore()
     {

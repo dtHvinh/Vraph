@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Media;
 
-namespace HamiltonVisualizer.Core.Functionality
+namespace HamiltonVisualizer.Utilities
 {
     public static class ColorPalate
     {

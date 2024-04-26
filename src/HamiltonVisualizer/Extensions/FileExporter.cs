@@ -15,25 +15,27 @@ public static class FileExporter
     {
         if (data.Nodes.Count == 0)
         {
-            File.Create(path);
+            var fs = File.Create(path);
+            fs.Close();
             return 0;
         }
 
-        StreamWriter write = new(path);
+        using StreamWriter write = new(path);
         int c = 0;
 
         // Write Nodes
         foreach (Node node in data.Nodes)
         {
             // 24,14:32
-            write.WriteLine($"{(node.NodeLabel.Text.Length == 0 ? "null" : node.NodeLabel.Text)},{Math.Round(node.Origin.X)}:{Math.Round(node.Origin.Y)}");
+            write.WriteLineAsync($"{(node.NodeLabel.Text.Length == 0 ? "null" : node.NodeLabel.Text)},{Math.Round(node.Origin.X)}:{Math.Round(node.Origin.Y)}");
             c++;
         }
-
+        write.WriteLineAsync("--");
+        c++;
         foreach (GraphLine edge in data.Edges)
         {
             // 14:32,12:25
-            write.WriteLine($"{Math.Round(edge.From.Origin.X)}:{Math.Round(edge.From.Origin.Y)},{Math.Round(edge.To.Origin.X)}:{Math.Round(edge.To.Origin.Y)}");
+            write.WriteLineAsync($"{Math.Round(edge.From.Origin.X)}:{Math.Round(edge.From.Origin.Y)},{Math.Round(edge.To.Origin.X)}:{Math.Round(edge.To.Origin.Y)}");
             c++;
         }
 

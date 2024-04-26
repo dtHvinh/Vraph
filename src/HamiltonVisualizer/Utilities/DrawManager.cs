@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 
-namespace HamiltonVisualizer.Core.Functionality
+namespace HamiltonVisualizer.Utilities
 {
     /// <summary>
     /// Drawing manager.

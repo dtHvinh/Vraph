@@ -8,7 +8,7 @@ using HamiltonVisualizer.Options;
 using System.Windows;
 using System.Windows.Media;
 
-namespace HamiltonVisualizer.Core.Functionality
+namespace HamiltonVisualizer.Utilities
 {
     public class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graphLine)
     {
