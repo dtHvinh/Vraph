@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Options;
 
-internal class AlgorithmPresenterOptions
+internal sealed class AlgorithmPresenterOptions
 {
     public bool IsDirectedGraph { get; set; } = true;
     public bool SkipTransition { get; set; } = false;

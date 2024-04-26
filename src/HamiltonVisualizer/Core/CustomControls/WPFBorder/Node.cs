@@ -10,111 +10,110 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
+namespace HamiltonVisualizer.Core.CustomControls.WPFBorder;
+
+/// <summary>
+/// Graph node.
+/// </summary>
+/// <remarks>
+/// This node single child is <see cref="NodeLabel"/>.
+/// </remarks>
+/// 
+[DebuggerDisplay("[Label:{NodeLabel.Text};X:{Origin.X};Y:{Origin.Y}]")]
+internal sealed class Node : NodeBase
 {
-    /// <summary>
-    /// Graph node.
-    /// </summary>
-    /// <remarks>
-    /// This node single child is <see cref="NodeLabel"/>.
-    /// </remarks>
-    /// 
-    [DebuggerDisplay("[Label:{NodeLabel.Text};X:{Origin.X};Y:{Origin.Y}]")]
-    internal sealed class Node : NodeBase
+    public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
+
+    public new Brush Background
     {
-        public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
-
-        public new Brush Background
+        get
         {
-            get
+            return base.Background;
+        }
+        set
+        {
+            if (_canChangeBackground)
+                base.Background = value;
+        }
+    }
+
+    public NodeLabel NodeLabel => (NodeLabel)Child;
+    public bool IsSelected { get; private set; } = false;
+
+    public event NodeDeleteEventHandler? NodeDelete;
+    public event NodeLabelSetCompleteEventHandler? NodeLabelChanged;
+    public event OnNodeSelectedEventHandler? NodeSelected;
+    public event OnNodeReleaseSelectEventHandler? NodeReleaseSelect;
+
+    public Node(CustomCanvas parent, Point position, GraphNodeCollection others)
+        : base(parent, position, others)
+    {
+        StyleUIComponent();
+
+        Child = new NodeLabel(this);
+        ContextMenu = new NodeContextMenu(this);
+
+        SubscribeEvents();
+    }
+
+    private void SubscribeEvents()
+    {
+        MouseDown += (sender, e) =>
+        {
+            if (e.MiddleButton == MouseButtonState.Pressed)
             {
-                return base.Background;
+                if (IsSelected)
+                    OnReleaseSelectMode();
+                else
+                    OnSelectNode();
             }
-            set
-            {
-                if (_canChangeBackground)
-                    base.Background = value;
-            }
-        }
-
-        public NodeLabel NodeLabel => (NodeLabel)Child;
-        public bool IsSelected { get; private set; } = false;
-
-        public event NodeDeleteEventHandler? NodeDelete;
-        public event NodeLabelSetCompleteEventHandler? NodeLabelChanged;
-        public event OnNodeSelectedEventHandler? NodeSelected;
-        public event OnNodeReleaseSelectEventHandler? NodeReleaseSelect;
-
-        public Node(CustomCanvas parent, Point position, GraphNodeCollection others)
-            : base(parent, position, others)
+        };
+        NodeDelete += (sender, e) =>
         {
-            StyleUIComponent();
+            _canChangeBackground = true;
+            Background = ConstantValues.ControlColors.NodeDeleteBackground;
+        };
 
-            Child = new NodeLabel(this);
-            ContextMenu = new NodeContextMenu(this);
-
-            SubscribeEvents();
-        }
-
-        private void SubscribeEvents()
+        NodeSelected += (sender, e) =>
         {
-            MouseDown += (sender, e) =>
-            {
-                if (e.MiddleButton == MouseButtonState.Pressed)
-                {
-                    if (IsSelected)
-                        OnReleaseSelectMode();
-                    else
-                        OnSelectNode();
-                }
-            };
-            NodeDelete += (sender, e) =>
-            {
-                _canChangeBackground = true;
-                Background = ConstantValues.ControlColors.NodeDeleteBackground;
-            };
+            Background = ConstantValues.ControlColors.NodeSelectBackground;
+            IsSelected = true;
+            _canChangeBackground = false;
+        };
 
-            NodeSelected += (sender, e) =>
-            {
-                Background = ConstantValues.ControlColors.NodeSelectBackground;
-                IsSelected = true;
-                _canChangeBackground = false;
-            };
-
-            NodeReleaseSelect += (sender, e) =>
-            {
-                _canChangeBackground = true;
-                Background = Brushes.White;
-                IsSelected = false;
-            };
-        }
-
-        public void DeleteNode()
+        NodeReleaseSelect += (sender, e) =>
         {
-            NodeDelete?.Invoke(this, new NodeDeleteEventArgs(this));
-        }
+            _canChangeBackground = true;
+            Background = Brushes.White;
+            IsSelected = false;
+        };
+    }
 
-        public void OnChangeNodeLabel(string text)
-        {
-            NodeLabelChanged?.Invoke(this, new NodeSetLabelEventArgs(this, text));
-        }
+    public void DeleteNode()
+    {
+        NodeDelete?.Invoke(this, new NodeDeleteEventArgs(this));
+    }
 
-        public void OnReleaseSelectMode()
-        {
-            NodeReleaseSelect?.Invoke(this, new NodeReleaseSelectEventArgs());
-        }
+    public void OnChangeNodeLabel(string text)
+    {
+        NodeLabelChanged?.Invoke(this, new NodeSetLabelEventArgs(this, text));
+    }
 
-        public void OnSelectNode()
-        {
-            NodeSelected?.Invoke(this, new NodeSelectedEventArgs());
-        }
+    public void OnReleaseSelectMode()
+    {
+        NodeReleaseSelect?.Invoke(this, new NodeReleaseSelectEventArgs());
+    }
 
-        public override string ToString(string lang)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine($"Nhãn:{new string(' ', 17)}{NodeLabel.Text}");
-            sb.AppendLine(base.ToString(lang));
-            return sb.ToString();
-        }
+    public void OnSelectNode()
+    {
+        NodeSelected?.Invoke(this, new NodeSelectedEventArgs());
+    }
+
+    public override string ToString(string lang)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"Nhãn:{new string(' ', 17)}{NodeLabel.Text}");
+        sb.AppendLine(base.ToString(lang));
+        return sb.ToString();
     }
 }

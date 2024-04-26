@@ -9,7 +9,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
     /// <summary>
     /// The label of the <see cref="Node.Node"/>
     /// </summary>
-    internal class NodeLabel : TextBox, IUIComponent
+    internal sealed class NodeLabel : TextBox, IUIComponent
     {
         /// <summary>
         /// Nodes to which this label attach.

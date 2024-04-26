@@ -6,7 +6,7 @@ using System.Windows.Controls;
 #nullable disable
 namespace HamiltonVisualizer.Core.CustomControls.WPFBorder
 {
-    internal class NodeContextMenu : ContextMenu, IUIComponent, IAppContextMenu
+    internal sealed class NodeContextMenu : ContextMenu, IUIComponent, IAppContextMenu
     {
         private readonly Node _node;
 

@@ -2,7 +2,7 @@
 
 namespace HamiltonVisualizer.Events.EventArgs.ForGraphLine;
 
-internal class GraphLineDeleteEventArgs(GraphLine graphLine)
+internal sealed class GraphLineDeleteEventArgs(GraphLine graphLine)
 {
     public GraphLine GraphLine { get; set; } = graphLine;
 }

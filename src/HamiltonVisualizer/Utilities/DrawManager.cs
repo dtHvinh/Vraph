@@ -5,27 +5,26 @@ using System.Diagnostics.CodeAnalysis;
 using System.Windows.Controls;
 using System.Windows.Shapes;
 
-namespace HamiltonVisualizer.Utilities
+namespace HamiltonVisualizer.Utilities;
+
+/// <summary>
+/// Drawing manager.
+/// </summary>
+/// <param exception="Canvas">The canvas on which this class draws.</param>
+internal sealed class DrawManager(Canvas Canvas)
 {
     /// <summary>
-    /// Drawing manager.
+    /// Draw a <see cref="Line"/> and add to the collection.
     /// </summary>
-    /// <param exception="Canvas">The canvas on which this class draws.</param>
-    internal class DrawManager(Canvas Canvas)
+    public bool DrawLine(Node src, Node dst, bool headVisible, [NotNullWhen(true)] out GraphLine? obj)
     {
-        /// <summary>
-        /// Draw a <see cref="Line"/> and add to the collection.
-        /// </summary>
-        public bool DrawLine(Node src, Node dst, bool headVisible, [NotNullWhen(true)] out GraphLine? obj)
+        var edge = new GraphLine(src, dst);
+        obj = edge;
+        if (!headVisible)
         {
-            var edge = new GraphLine(src, dst);
-            obj = edge;
-            if (!headVisible)
-            {
-                edge.Head.Visibility = System.Windows.Visibility.Collapsed;
-            }
-            Canvas.Children.Add(edge);
-            return true;
+            edge.Head.Visibility = System.Windows.Visibility.Collapsed;
         }
+        Canvas.Children.Add(edge);
+        return true;
     }
 }

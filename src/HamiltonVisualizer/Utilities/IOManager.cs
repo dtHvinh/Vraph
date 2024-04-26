@@ -1,19 +1,23 @@
 ﻿using HamiltonVisualizer.Commands;
 using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Extensions;
 using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Input;
 
 namespace HamiltonVisualizer.Utilities;
-internal class IOManager
+internal sealed class IOManager : ISetupInputBinding, IImplementKeyBindings, IImplementCommand
 {
     private readonly MainWindow _window;
     private readonly SaveFileDialog _saveFileDialog;
     private readonly OpenFileDialog _openFileDialog;
 
-    private ICommand SaveFileCommand = null!;
-    private ICommand OpenFileCommand = null!;
+    private ICommand _saveFileCommand = null!;
+    private ICommand _openFileCommand = null!;
+
+    private KeyBinding _saveFileKeyBiding = null!;
+    private KeyBinding _openFileKeyBiding = null!;
 
     public IOManager(MainWindow window)
     {
@@ -33,27 +37,33 @@ internal class IOManager
             AddExtension = true,
         };
         InitializeCommands();
-        SetUpInputBindings();
+        InitializeKeyBindings();
+        SetupInputBindings();
         ImplementDrop();
     }
     //
-    private void InitializeCommands()
+    public void InitializeCommands()
     {
-        SaveFileCommand = new ActionCommand(SaveFileCore);
-        OpenFileCommand = new ActionCommand(OpenFileCore);
+        _saveFileCommand = new ActionCommand(SaveFileCore);
+        _openFileCommand = new ActionCommand(OpenFileCore);
     }
-    private void SetUpInputBindings()
+    public void InitializeKeyBindings()
     {
-        _window.InputBindings.Add(new KeyBinding
+        _saveFileKeyBiding = new KeyBinding
         {
-            Command = SaveFileCommand,
+            Command = _saveFileCommand,
             Gesture = ConstantValues.KeyCombination.SaveFile,
-        });
-        _window.InputBindings.Add(new KeyBinding
+        };
+        _openFileKeyBiding = new KeyBinding
         {
-            Command = OpenFileCommand,
+            Command = _openFileCommand,
             Gesture = ConstantValues.KeyCombination.OpenFile,
-        });
+        };
+    }
+    public void SetupInputBindings()
+    {
+        _window.InputBindings.Add(_saveFileKeyBiding);
+        _window.InputBindings.Add(_openFileKeyBiding);
     }
     private void ImplementDrop()
     {

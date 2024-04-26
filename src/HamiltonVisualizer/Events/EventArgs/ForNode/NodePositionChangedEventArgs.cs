@@ -2,4 +2,4 @@
 using System.Windows;
 
 namespace HamiltonVisualizer.Events.EventArgs.ForNode;
-internal record class NodePositionChangedEventArgs(Point NewPosition, IEnumerable<Node> CollideNodes);
+internal sealed record class NodePositionChangedEventArgs(Point NewPosition, IEnumerable<Node> CollideNodes);

@@ -1,4 +1,3 @@
-﻿namespace HamiltonVisualizer.Events.EventArgs.ForNode
-{
-    internal class NodeReleaseSelectEventArgs;
-}
+﻿namespace HamiltonVisualizer.Events.EventArgs.ForNode;
+
+internal sealed class NodeReleaseSelectEventArgs;

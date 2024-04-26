@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HamiltonVisualizer.Core.Collections
 {
-    internal class NodeComparer : IEqualityComparer<Node>
+    internal sealed class NodeComparer : IEqualityComparer<Node>
     {
         private static NodeComparer? _instance;
 

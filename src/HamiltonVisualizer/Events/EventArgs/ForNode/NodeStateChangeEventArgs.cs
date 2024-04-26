@@ -1,12 +1,11 @@
 ﻿using System.Windows;
 
-namespace HamiltonVisualizer.Events.EventArgs.ForNode
-{
-    internal record class NodeStateChangeEventArgs(Point? NewPosition = null, NodeState? State = null);
+namespace HamiltonVisualizer.Events.EventArgs.ForNode;
 
-    internal enum NodeState
-    {
-        Moving,
-        Idle
-    }
+internal sealed record class NodeStateChangeEventArgs(Point? NewPosition = null, NodeState? State = null);
+
+internal enum NodeState
+{
+    Moving,
+    Idle
 }

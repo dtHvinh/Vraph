@@ -20,14 +20,12 @@ namespace HamiltonVisualizer.Core.Collections
         public void Add(Node node)
         {
             Nodes.Add(node);
-            OnPropertyChanged(nameof(Count));
             OnPropertyChanged(nameof(Nodes));
         }
 
         public void Remove(Node node)
         {
             Nodes.Remove(node);
-            OnPropertyChanged(nameof(Count));
             OnPropertyChanged(nameof(Nodes));
         }
 

@@ -31,11 +31,10 @@ public partial class MainWindow : Window
 
         ElementCollection = new GraphElementsCollection();
 
-        var roNodes = ElementCollection.Nodes.AsReadOnly();
-        var roEdges = ElementCollection.Edges.AsReadOnly();
-
         ViewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
-        ViewModel.SetRefs(new RefBag(roNodes, roEdges, SelectedNodeCollection));
+        ViewModel.SetRefs(new RefBag(ElementCollection.Nodes.AsReadOnly(),
+                                     ElementCollection.Edges.AsReadOnly(),
+                                     SelectedNodeCollection));
         DrawManager = new DrawManager(_canvas);
         Algorithm = new AlgorithmPresenter(ElementCollection.Nodes, ElementCollection.Edges, options =>
         {
@@ -284,8 +283,6 @@ public partial class MainWindow : Window
     }
 
     //
-
-
     internal void DeleteAllCore()
     {
         ElementCollection.ClearAll();

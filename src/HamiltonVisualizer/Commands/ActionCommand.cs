@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
 
 namespace HamiltonVisualizer.Commands;
-public class ActionCommand(Action action) : ICommand
+public sealed class ActionCommand(Action action) : ICommand
 {
     public event EventHandler? CanExecuteChanged;
 

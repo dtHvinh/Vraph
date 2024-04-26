@@ -16,7 +16,7 @@ namespace HamiltonVisualizer.Core.Functionality;
 /// <param name="node">The node to manage movement.</param>
 /// <param name="canvas">The canvas to which the <paramref name="node"/> attach.</param>
 /// <param name="eventHandler">The event handler to raise.</param>
-internal class ObjectPosition
+internal sealed class ObjectPosition
 {
     private bool _isDragging;
 
