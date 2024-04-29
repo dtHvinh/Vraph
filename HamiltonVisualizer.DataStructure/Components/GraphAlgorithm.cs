@@ -37,7 +37,7 @@ namespace HamiltonVisualizer.DataStructure.Components
 
                 BFSComponent<TVertex> layer = new(front);
 
-                foreach (var v in _graph.GAdj.GetAdjacentOrEmpty(front))
+                foreach (var v in _graph.Adjacent.GetAdjacentOrEmpty(front))
                 {
                     queue.Enqueue(v);
                     if (cev.Add(v))
@@ -70,7 +70,7 @@ namespace HamiltonVisualizer.DataStructure.Components
                 {
                     list.Add(top);
 
-                    foreach (var v in _graph.GAdj.GetAdjacentOrEmpty(top))
+                    foreach (var v in _graph.Adjacent.GetAdjacentOrEmpty(top))
                     {
                         if (!visited.Contains(v))
                             stack.Push(v);
@@ -91,7 +91,7 @@ namespace HamiltonVisualizer.DataStructure.Components
             var list = new List<SCC<TVertex>>();
             HashSet<TVertex> visited = [];
 
-            foreach (var u in _graph.GAdj.Vertices)
+            foreach (var u in _graph.Adjacent.Vertices)
             {
                 if (visited.Add(u))
                 {
@@ -120,7 +120,7 @@ namespace HamiltonVisualizer.DataStructure.Components
             {
                 if (!visited.Add(u))
                     return;
-                foreach (var v in _graph.GAdj.GetAdjacentOrEmpty(u))
+                foreach (var v in _graph.Adjacent.GetAdjacentOrEmpty(u))
                 {
                     if (!visited.Contains(v))
                     {
@@ -130,12 +130,12 @@ namespace HamiltonVisualizer.DataStructure.Components
                 st.Push(u);
             }
 
-            foreach (var v in _graph.GAdj.Vertices)
+            foreach (var v in _graph.Adjacent.Vertices)
             {
                 DFS1(v);
             }
 
-            var rAdjacent = _graph.GAdj.Transpose();
+            var rAdjacent = _graph.Adjacent.Transpose();
 
             visited.Clear();
 
@@ -176,14 +176,13 @@ namespace HamiltonVisualizer.DataStructure.Components
                 return _graph.ContainEdge(cur, path[0]);
             }
 
-            foreach (var next in _graph.GAdj.GetAdjacentOrEmpty(cur))
+            foreach (var next in _graph.Adjacent.GetAdjacentOrEmpty(cur))
             {
                 if (visited.Add(next))
                 {
                     path.Add(next);
                     if (HamiltonianCycleUtil(next, visited, path, count + 1))
                         return true;
-
                     visited.Remove(next);
                     path.Remove(next);
                 }
@@ -193,7 +192,7 @@ namespace HamiltonVisualizer.DataStructure.Components
         }
         public List<TVertex> HamiltonianCycle()
         {
-            foreach (var u in _graph.GAdj.Vertices)
+            foreach (var u in _graph.Adjacent.Vertices)
             {
                 List<TVertex> path = [u];
                 if (HamiltonianCycleUtil(u, [u], path, 1))

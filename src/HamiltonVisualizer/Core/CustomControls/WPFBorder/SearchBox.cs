@@ -41,7 +41,8 @@ internal sealed class SearchBox : Border, IUIComponent
             Height = 25,
             Margin = new Thickness(10, 6, 0, 0),
             BorderBrush = Brushes.Black,
-            BorderThickness = new Thickness(1),
+            BorderThickness = new Thickness(0.5),
+            Background = Brushes.Beige,
             FontSize = 15,
         };
 
@@ -125,6 +126,7 @@ internal sealed class SearchBox : Border, IUIComponent
         };
         Visibility = Visibility.Visible;
         _textBox.Focus();
+        _textBox.SelectAll();
     }
     public void Collapse()
     {

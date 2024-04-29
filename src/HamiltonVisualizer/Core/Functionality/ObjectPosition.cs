@@ -47,6 +47,7 @@ internal sealed class ObjectPosition
                 _isDragging = true;
                 Mouse.Capture((IInputElement)sender);
                 _node.MouseMove += Node_MouseMove;
+                Mouse.OverrideCursor = Cursors.SizeAll;
             }
         };
 
@@ -59,6 +60,7 @@ internal sealed class ObjectPosition
                 _node.MouseMove -= Node_MouseMove;
 
                 _node.OnStateChanged(null, state: NodeState.Idle);
+                Mouse.OverrideCursor = Cursors.Arrow;
             }
         };
     }
