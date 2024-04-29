@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.Core.CustomControls.Contracts;
+﻿using HamiltonVisualizer.Contracts;
 using System.Windows.Controls;
 
 namespace HamiltonVisualizer.Core.CustomControls.WPFCanvas

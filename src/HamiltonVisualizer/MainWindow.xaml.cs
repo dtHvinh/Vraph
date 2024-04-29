@@ -3,6 +3,8 @@ using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.Events.EventArgs;
+using HamiltonVisualizer.Events.EventArgs.ForFeature.FeatureEventArgs;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Utilities;
@@ -43,6 +45,8 @@ public partial class MainWindow : Window
         IOManager = new(this);
         Feature = new(this);
 
+        SubscribeFeatureNotificationEvents();
+        SubscribeFeatureEvents();
         SubscribeCollectionEvents();
         SubscribeCanvasEvents();
         SubscribeAlgorithmPresentingEvents();
@@ -108,6 +112,61 @@ public partial class MainWindow : Window
     }
 
     //
+    private void SubscribeFeatureNotificationEvents()
+    {
+        Feature.NotificationEventHandler += (_, e) =>
+        {
+            MessageBox.Show(e.Message, "Kết quả");
+        };
+    }
+    private void SubscribeFeatureEvents()
+    {
+        Feature.FindEventHandler += (_, e) =>
+        {
+            var fne = (FindEventArgs)e;
+            var labels = fne.Labels.Split(',');
+
+            int c = 0;
+            var nodes = ElementCollection.Nodes.Where(e =>
+            {
+                if (labels.Contains(e.NodeLabel.Text))
+                {
+                    c++;
+                    return true;
+                }
+                return false;
+            });
+
+            foreach (var node in nodes)
+            {
+                node.OnSelectNode();
+            }
+            Feature.OnNotify(new NotificationEventArgs(c == 0 ? "Không tìm thấy đỉnh nào" : $"Đã tìm thấy {c} đỉnh!"));
+        };
+        Feature.DeleteEventHandler += (_, e) =>
+        {
+            var fne = (DeleteEventArgs)e;
+            var labels = fne.Labels.Split(',');
+
+            int c = 0;
+            var nodes = ElementCollection.Nodes.Where(e =>
+            {
+                if (labels.Contains(e.NodeLabel.Text))
+                {
+                    c++;
+                    return true;
+                }
+                return false;
+            });
+
+            foreach (var node in nodes)
+            {
+                node.DeleteNode();
+            }
+            Feature.OnNotify(new NotificationEventArgs(c == 0 ? "Không tìm thấy đỉnh nào" : $"Đã xóa {c} đỉnh!"));
+        };
+
+    }
     private void SubscribeCanvasEvents()
     {
         _canvas.MouseDown += (sender, e) =>
@@ -176,9 +235,7 @@ public partial class MainWindow : Window
         // when node deleted
         node.NodeDelete += async (object sender, NodeDeleteEventArgs e) =>
         {
-            if (!ViewModel.SkipTransition)
-                await Task.Delay(500);
-            DeleteNodeCore(node);
+            await DeleteNodeCore(node, !ViewModel.SkipTransition);
         };
 
         // delete duplicate node when label existed
@@ -291,8 +348,10 @@ public partial class MainWindow : Window
 
         ViewModel.Clear();
     }
-    internal void DeleteNodeCore(Node node)
+    internal async Task DeleteNodeCore(Node node, bool delay)
     {
+        if (delay) await Task.Delay(500);
+
         ElementCollection.Remove(node);
         _canvas.Children.Remove(node);
         SelectedNodeCollection.Remove(node);

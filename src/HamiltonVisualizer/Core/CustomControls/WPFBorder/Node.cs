@@ -19,7 +19,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder;
 /// This node single child is <see cref="NodeLabel"/>.
 /// </remarks>
 /// 
-[DebuggerDisplay("[Label:{NodeLabel.Text};X:{Origin.X};Y:{Origin.Y}]")]
+[DebuggerDisplay("[Labels:{NodeLabel.Text};X:{Origin.X};Y:{Origin.Y}]")]
 internal sealed class Node : NodeBase
 {
     public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node

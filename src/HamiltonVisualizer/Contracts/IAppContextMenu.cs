@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace HamiltonVisualizer.Core.CustomControls.Contracts
+namespace HamiltonVisualizer.Contracts
 {
     internal interface IAppContextMenu
     {

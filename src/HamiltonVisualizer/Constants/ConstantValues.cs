@@ -52,6 +52,8 @@ internal sealed class ConstantValues
 
     public static class KeyCombination
     {
+        public static readonly KeyGesture FindNodes = new(Key.F, ModifierKeys.Control);
+        public static readonly KeyGesture DeleteNodes = new(Key.D, ModifierKeys.Control | ModifierKeys.Shift);
         public static readonly KeyGesture SaveFile = new(Key.S, ModifierKeys.Control);
         public static readonly KeyGesture OpenFile = new(Key.O, ModifierKeys.Control);
     }

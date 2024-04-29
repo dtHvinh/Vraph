@@ -1,5 +1,5 @@
-﻿using HamiltonVisualizer.Core.Contracts;
-using HamiltonVisualizer.Core.CustomControls.Contracts;
+﻿using HamiltonVisualizer.Contracts;
+using HamiltonVisualizer.Core.Contracts;
 using System.Windows;
 using System.Windows.Controls;
 

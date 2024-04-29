@@ -17,7 +17,7 @@
     <Window.DataContext>
         <VM:MainViewModel/>
     </Window.DataContext>
-    <Grid>
+    <Grid x:Name="MainContainer">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
@@ -49,23 +49,17 @@
                             MouseDown="Exit"></Border>
             </StackPanel>
         </Border>
-        <ScrollViewer
-            Grid.Column="0"
-            Grid.Row="1"
-            Grid.ColumnSpan="1"
-            Grid.RowSpan="2"
-            HorizontalScrollBarVisibility="Hidden" 
-            VerticalScrollBarVisibility="Hidden"
-            FocusVisualStyle="{x:Null}"
-            x:Name="DrawingCanvasWrapper">
-            <customCanvas:CustomCanvas
+        <customCanvas:CustomCanvas
+                Grid.Column="0"
+                Grid.Row="1"
+                Grid.ColumnSpan="1"
+                Grid.RowSpan="2"
                 Width="1150"
                 Height="720"
                 Background="FloralWhite"
                 x:Name="_canvas"
                 AllowDrop="True">
-            </customCanvas:CustomCanvas>
-        </ScrollViewer>
+        </customCanvas:CustomCanvas>
         <Border Grid.Row="1"
                 Grid.Column="1"
                 Background="White"
