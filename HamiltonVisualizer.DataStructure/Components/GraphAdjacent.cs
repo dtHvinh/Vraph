@@ -58,8 +58,6 @@
         {
             var rAdjacent = new GraphAdjacent<TVertex>();
 
-            IEnumerable<object> lst = [];
-
             foreach (var va in _items)
             {
                 var ver = va.Key;

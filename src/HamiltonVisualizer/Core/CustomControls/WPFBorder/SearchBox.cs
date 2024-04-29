@@ -41,11 +41,11 @@ internal sealed class SearchBox : Border, IUIComponent
             Height = 25,
             Margin = new Thickness(10, 6, 0, 0),
             BorderBrush = Brushes.Black,
+            BorderThickness = new Thickness(1),
             FontSize = 15,
         };
 
         _textBox.KeyDown += TextBox_KeyDown;
-
 
         _okButton = new Button()
         {
@@ -109,8 +109,8 @@ internal sealed class SearchBox : Border, IUIComponent
         Background = Brushes.FloralWhite;
         Margin = new Thickness(968, 0, 0, 669);
         BorderBrush = Brushes.Black;
-        BorderThickness = new Thickness(SearchBoxBorderThickness);
-        CornerRadius = new CornerRadius(8, 0, 0, 8);
+        BorderThickness = new Thickness(SearchBoxBorderThickness, 0, 0, SearchBoxBorderThickness);
+        CornerRadius = new CornerRadius(0, 0, 0, 8);
         Name = nameof(SearchBox);
         Visibility = Visibility.Collapsed; // collapse by default
     }
@@ -119,7 +119,7 @@ internal sealed class SearchBox : Border, IUIComponent
         Mode = mode;
         _okButton.Background = mode switch
         {
-            SearchBoxMode.Delete => Brushes.Red,
+            SearchBoxMode.Delete => Brushes.OrangeRed,
             SearchBoxMode.Find => Brushes.WhiteSmoke,
             _ => Brushes.WhiteSmoke,
         };

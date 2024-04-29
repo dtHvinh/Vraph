@@ -143,12 +143,12 @@ internal sealed class MainViewModel : ObservableObject
     public void RefreshWhenAdd(Node node)
     {
         Refresh();
-        _graph.Adjacent.AddVertex(node);
+        _graph.GAdj.AddVertex(node);
     }
     public void RefreshWhenRemove(Node node)
     {
         Refresh();
-        _graph.Adjacent.RemoveVertex(node);
+        _graph.GAdj.RemoveVertex(node);
     }
 
     public void Clear()

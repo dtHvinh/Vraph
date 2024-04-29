@@ -17,7 +17,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graph
     private readonly List<GraphLine> _linePolygons = graphLine;
 
     public bool IsDirectedGraph { get; set; } = true;
-    public bool SkipTransition { get; set; } = false; // how result will be displayed
+    public bool SkipTransition { get; set; } = false;
     public int NodeTransition = ConstantValues.Time.Transition;
     public int EdgeTransition = ConstantValues.Time.Transition;
     public SolidColorBrush ColorizedNode = ConstantValues.ControlColors.NodeTraversalBackground;

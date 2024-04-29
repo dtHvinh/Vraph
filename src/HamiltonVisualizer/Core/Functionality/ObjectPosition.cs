@@ -46,15 +46,7 @@ internal sealed class ObjectPosition
             {
                 _isDragging = true;
                 Mouse.Capture((IInputElement)sender);
-            }
-        };
-
-        _node.MouseMove += (sender, e) =>
-        {
-            if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
-            {
-                Point curPos = e.GetPosition(_drawingCanvas);
-                _node.Origin = curPos;
+                _node.MouseMove += Node_MouseMove;
             }
         };
 
@@ -64,10 +56,20 @@ internal sealed class ObjectPosition
             {
                 _isDragging = false;
                 Mouse.Capture(null);
+                _node.MouseMove -= Node_MouseMove;
 
                 _node.OnStateChanged(null, state: NodeState.Idle);
             }
         };
+    }
+
+    private void Node_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
+        {
+            Point curPos = e.GetPosition(_drawingCanvas);
+            _node.Origin = curPos;
+        }
     }
 
     public static Point TryStayInBound(Point point)
