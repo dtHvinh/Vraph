@@ -100,7 +100,7 @@ public partial class MainWindow : Window
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        Algorithm.ResetColor();
+        Algorithm.Reset();
     }
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
@@ -173,7 +173,7 @@ public partial class MainWindow : Window
         {
             if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
-                Algorithm.ResetColor();
+                Algorithm.Reset();
                 CreateNodeAtPosition(e.GetPosition(_canvas));
             }
         };
@@ -210,10 +210,10 @@ public partial class MainWindow : Window
             switch (e.Name)
             {
                 case ConstantValues.AlgorithmNames.DFS:
-                    await Algorithm.PresentDFSAlgorithm(e.Data);
+                    await Algorithm.PresentDFSAlgorithmAsync(e.Data);
                     break;
                 case ConstantValues.AlgorithmNames.Hamilton:
-                    await Algorithm.PresentHamiltonianCycleAlgorithm(e.Data);
+                    await Algorithm.PresentHamiltonianCycleAlgorithmAsync(e.Data);
                     break;
             }
         };
@@ -221,7 +221,6 @@ public partial class MainWindow : Window
         ViewModel.PresentingSCCAlgorithm += async (sender, e) =>
         {
             Algorithm.SkipTransition = e.SkipTransition;
-
             await Algorithm.PresentComponentAlgorithm(e.Data);
         };
 
@@ -254,7 +253,7 @@ public partial class MainWindow : Window
         {
             SelectedNodeCollection.Add((Node)sender);
             ViewModel.Refresh();
-            Algorithm.ResetColor();
+            Algorithm.Reset();
         };
 
         // when release select on a mode
@@ -311,8 +310,8 @@ public partial class MainWindow : Window
     {
         ViewModel.GraphModeChanged += (sender, e) =>
         {
-            Algorithm.GraphModeChange();
-            Algorithm.ResetColor();
+            Algorithm.GraphTypeSwitch();
+            Algorithm.Reset();
         };
     }
 

@@ -1,6 +1,6 @@
 ﻿using HamiltonVisualizer.Commands;
 using HamiltonVisualizer.Constants;
-using HamiltonVisualizer.Core.Contracts;
+using HamiltonVisualizer.Contracts;
 using HamiltonVisualizer.Extensions;
 using Microsoft.Win32;
 using System.Windows;

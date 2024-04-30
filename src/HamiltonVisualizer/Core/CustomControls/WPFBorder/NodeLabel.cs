@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.Core.Contracts;
+﻿using HamiltonVisualizer.Contracts;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

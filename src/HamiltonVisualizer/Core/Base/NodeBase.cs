@@ -1,6 +1,6 @@
 ﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Contracts;
 using HamiltonVisualizer.Core.Collections;
-using HamiltonVisualizer.Core.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
@@ -8,7 +8,6 @@ using HamiltonVisualizer.Core.Functionality;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
 using HamiltonVisualizer.Events.EventHandlers.ForNode;
 using HamiltonVisualizer.Extensions;
-using HamiltonVisualizer.Helpers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -51,7 +50,7 @@ namespace HamiltonVisualizer.Core.Base
                 _origin = validPos;
 
                 OnStateChanged(validPos, NodeState.Moving);
-                OnPositionChanged(validPos, collideNode).ConfigureAwait(true);
+                OnPositionChanged(validPos, collideNode);
 
                 Canvas.SetLeft(this, validPos.X - ConstantValues.ControlSpecifications.NodeWidth / 2);
                 Canvas.SetTop(this, validPos.Y - ConstantValues.ControlSpecifications.NodeWidth / 2);
@@ -74,15 +73,15 @@ namespace HamiltonVisualizer.Core.Base
             OnNodeStateChanged?.Invoke(this, new NodeStateChangeEventArgs(newPosition, state));
         }
 
-        public async Task OnPositionChanged(Point newPosition, IEnumerable<Node> nodes)
+        public async void OnPositionChanged(Point newPosition, IEnumerable<Node> nodes)
         {
             await Task.Run(() =>
             {
                 Dispatcher.InvokeAsync(() =>
                 {
-                    _adjacent.ForEach(line =>
+                    _adjacent.ForEach(lineInfo =>
                     {
-                        GraphLineRepositionHelper.Move(newPosition, line);
+                        lineInfo.Move(newPosition);
                     });
                 });
             });

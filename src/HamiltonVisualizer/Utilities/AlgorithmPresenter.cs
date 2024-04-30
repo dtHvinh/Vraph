@@ -2,7 +2,6 @@
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using HamiltonVisualizer.DataStructure.Components;
-using HamiltonVisualizer.Exceptions;
 using HamiltonVisualizer.Extensions;
 using HamiltonVisualizer.Options;
 using System.Windows;
@@ -10,20 +9,24 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Utilities;
 
-internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graphLine)
+internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines)
 {
     private bool _isModified = false; // value indicate if reset actually need to be perform
     private readonly List<Node> _nodes = nodes;
-    private readonly List<GraphLine> _linePolygons = graphLine;
+    private readonly List<GraphLine> _linePolygons = lines;
 
+    public CancellationTokenSource CancellationTokenSource { get; private set; } = new CancellationTokenSource();
     public bool IsDirectedGraph { get; set; } = true;
     public bool SkipTransition { get; set; } = false;
-    public int NodeTransition = ConstantValues.Time.Transition;
-    public int EdgeTransition = ConstantValues.Time.Transition;
+    public int NodeTransition = ConstantValues.Time.TransitionDefault;
+    public int EdgeTransition = ConstantValues.Time.TransitionDefault;
     public SolidColorBrush ColorizedNode = ConstantValues.ControlColors.NodeTraversalBackground;
     public SolidColorBrush ColorizedLine = ConstantValues.ControlColors.NodeTraversalBackground;
 
-    public AlgorithmPresenter(List<Node> nodes, List<GraphLine> graphLines, Action<AlgorithmPresenterOptions> configureOptions) : this(nodes, graphLines)
+    public AlgorithmPresenter(List<Node> nodes,
+                              List<GraphLine> graphLines,
+                              Action<AlgorithmPresenterOptions> configureOptions)
+        : this(nodes, graphLines)
     {
         var options = new AlgorithmPresenterOptions();
         configureOptions?.Invoke(options);
@@ -46,13 +49,6 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graph
         }
     }
 
-    private static void ColorizeLines(IEnumerable<GraphLine> lines, SolidColorBrush color)
-    {
-        foreach (var line in lines)
-        {
-            line.ChangeColor(color);
-        }
-    }
     private static void ResetLinesColor(IEnumerable<GraphLine> lines)
     {
         foreach (var line in lines)
@@ -60,136 +56,179 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graph
             line.ResetColor();
         }
     }
-    private async Task ColorizeNode(Node node, SolidColorBrush color, int millisecondsDelay = 0)
+
+    /// <exception cref="OperationCanceledException"></exception>
+    private static void ColorizeLines(IEnumerable<GraphLine> lines, SolidColorBrush color, CancellationToken e)
     {
-        if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-            _isModified = true;
-
-        if (millisecondsDelay > 0)
-            await Task.Delay(millisecondsDelay);
-
-        node.Background = color;
-    }
-    private async Task ColorizeNodes(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay = 0, bool delayAtStart = false)
-    {
-        if (color != ConstantValues.ControlColors.NodeDefaultBackground)
-            _isModified = true;
-
-        Ensure.ThrowIf(condition: millisecondsDelay < 0, exception: typeof(ArgumentException), errorMessage: EM.Not_Support_Negative_Number);
-
-        if (delayAtStart)
-            foreach (Node node in nodes.ToList())
-            {
-                await ColorizeNode(node, color, millisecondsDelay);
-            }
-        else
+        foreach (var line in lines)
         {
-            try
-            {
-                nodes = nodes.ToList();
-
-                await ColorizeNode(nodes.First(), color);
-
-                foreach (Node node in nodes.Skip(1))
-                {
-                    await ColorizeNode(node, color, millisecondsDelay);
-                }
-            }
-            catch (Exception) { }
+            e.ThrowIfCancellationRequested();
+            line.ChangeColor(color);
         }
     }
 
-    public async Task PresentDFSAlgorithm(IEnumerable<Node> node)
+    /// <exception cref="OperationCanceledException"></exception>
+    private void ColorizeNodeCore(Node node, SolidColorBrush color, CancellationToken e)
     {
-        ResetColor();
+        e.ThrowIfCancellationRequested();
+        if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+            _isModified = true;
 
-        if (SkipTransition)
-            await ColorizeNodes(node, ColorizedNode);
-        else
-            await ColorizeNodes(node, ColorizedNode, NodeTransition);
-
-        _isModified = true;
+        node.Background = color;
     }
-    public async Task PresentHamiltonianCycleAlgorithm(IEnumerable<Node> nodes)
-    {
-        ResetColor();
-        if (SkipTransition)
-            await ColorizeNodes(nodes, ColorizedNode);
-        else
-            await ColorizeNodes(nodes, ColorizedNode, NodeTransition);
 
+    /// <exception cref="OperationCanceledException"></exception>
+    public void ColorizeNode(Node node, SolidColorBrush color, CancellationToken e)
+    {
+        ColorizeNodeCore(node, color, e);
+    }
+
+    /// <exception cref="OperationCanceledException"></exception>
+    public async Task ColorizeNodeAsync(Node node, SolidColorBrush color, int millisecondsDelay, CancellationToken e)
+    {
+        e.ThrowIfCancellationRequested();
+
+        if (millisecondsDelay > 0)
+            await Task.Delay(millisecondsDelay, e);
+
+        ColorizeNodeCore(node, color, e);
+    }
+
+    /// <exception cref="OperationCanceledException"></exception>
+    public async Task ColorizeNodesAsync(IEnumerable<Node> nodes, SolidColorBrush color, int millisecondsDelay,
+                                         bool delayAtStart, CancellationToken e)
+    {
+        e.ThrowIfCancellationRequested();
+
+        if (delayAtStart)
+            foreach (Node node in nodes)
+            {
+                await ColorizeNodeAsync(node, color, millisecondsDelay, e);
+            }
+        else
+        {
+            e.ThrowIfCancellationRequested();
+            ColorizeNode(nodes.First(), color, e);
+
+            foreach (Node node in nodes.Skip(1))
+            {
+                await ColorizeNodeAsync(node, color, millisecondsDelay, e);
+            }
+        }
+    }
+
+    public async Task PresentDFSAlgorithmAsync(IEnumerable<Node> nodes)
+    {
+        Reset();
         try
         {
+            if (SkipTransition)
+                await ColorizeNodesAsync(nodes, ColorizedNode, 0, false, CancellationTokenSource.Token);
+            else
+                await ColorizeNodesAsync(nodes, ColorizedNode, NodeTransition, false, CancellationTokenSource.Token);
+
+            MessageBox.Show("Hoàn thành!");
+        }
+        catch (OperationCanceledException)
+        {
+            MessageBox.Show("Kết Thúc!");
+        }
+    }
+    public async Task PresentHamiltonianCycleAlgorithmAsync(IEnumerable<Node> nodes)
+    {
+        Reset();
+        try
+        {
+            if (SkipTransition)
+                await ColorizeNodesAsync(nodes, ColorizedNode, 0, false, CancellationTokenSource.Token);
+            else
+                await ColorizeNodesAsync(nodes, ColorizedNode, NodeTransition, false, CancellationTokenSource.Token);
+
             var previous = nodes.First();
 
             foreach (var node in nodes.Skip(1))
             {
-                var line = _linePolygons
-                    .FirstOrDefault(e => e.From.Origin.TolerantEquals(previous.Origin)
-                                && e.To.Origin.TolerantEquals(node.Origin))
-                    ?? throw new ArgumentException($"Not found any edge from \'{previous.NodeLabel.Text}\' to \'{node.NodeLabel.Text}\'");
+                CancellationTokenSource.Token.ThrowIfCancellationRequested();
+                var line = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
+                                && e.To.Origin.TolerantEquals(node.Origin));
 
                 line.ChangeColor(ColorizedNode);
                 previous = node;
             }
             var firstNode = nodes.First();
-            var lastLine = _linePolygons
-                .FirstOrDefault(e => e.From.Origin.TolerantEquals(previous.Origin)
-                            && e.To.Origin.TolerantEquals(firstNode.Origin))
-            ?? throw new ArgumentException($"Not found any edge from \'{previous.NodeLabel.Text}\' to \'{firstNode.NodeLabel.Text}\'");
+            var lastLine = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
+                            && e.To.Origin.TolerantEquals(firstNode.Origin));
             lastLine.ChangeColor(ColorizedNode);
 
             MessageBox.Show("Hoàn thành");
         }
-        catch (Exception e)
+        catch (OperationCanceledException)
         {
-            MessageBox.Show(e.Message);
+            MessageBox.Show("Kết Thúc");
+        }
+        catch
+        {
+            MessageBox.Show("Lỗi dữ liệu");
         }
     }
     public async Task PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
     {
-        ResetColor();
+        Reset();
         ColorPalate.Reset();
-
-        foreach (var component in components)
+        try
         {
-            var color = ColorPalate.GetUnusedColor();
-            await ColorizeNodes(component, color);
-        }
 
-        foreach (var node in _nodes.Where(e => e.Adjacent.Count == 0))
+            foreach (var component in components)
+            {
+                var color = ColorPalate.GetUnusedColor();
+                await ColorizeNodesAsync(component, ColorizedNode, 0, false, CancellationTokenSource.Token);
+            }
+
+            foreach (var node in _nodes.Where(e => e.Adjacent.Count == 0))
+            {
+                var color = ColorPalate.GetUnusedColor();
+                CancellationTokenSource.Token.ThrowIfCancellationRequested();
+                ColorizeNode(node, ColorizedNode, CancellationTokenSource.Token);
+            }
+            MessageBox.Show("Hoàn thành");
+        }
+        catch (OperationCanceledException)
         {
-            var color = ColorPalate.GetUnusedColor();
-            await ColorizeNode(node, color);
+            MessageBox.Show("Kết Thúc!");
         }
-        MessageBox.Show("Hoàn thành");
-
-        _isModified = true;
     }
     public async Task PresentLayeredBFSAlgorithm(IEnumerable<BFSComponent<Node>> layeredNode)
     {
-        ResetColor();
+        Reset();
         ColorPalate.Reset();
-
-        foreach (BFSComponent<Node> layer in layeredNode)
+        try
         {
-            var lines = BFSComponentProcesser.GetLines(_linePolygons, layer, IsDirectedGraph);
-            ColorizeLines(lines, ColorizedLine);
-            await ColorizeNodes(layer.Children, ColorizedNode, 0, false);
-            await Task.Delay(EdgeTransition);
-            ResetLinesColor(lines);
+            foreach (BFSComponent<Node> layer in layeredNode)
+            {
+                var lines = BFSComponentProcesser.GetLines(_linePolygons, layer, IsDirectedGraph);
+                ColorizeLines(lines, ColorizedLine, CancellationTokenSource.Token);
+                await ColorizeNodesAsync(layer.Children, ColorizedNode, 0, false, CancellationTokenSource.Token);
+                await Task.Delay(EdgeTransition, CancellationTokenSource.Token);
+                ResetLinesColor(lines);
+            }
+            MessageBox.Show("Hoàn thành");
         }
-        MessageBox.Show("Hoàn thành");
+        catch (OperationCanceledException)
+        {
+            MessageBox.Show("Kết Thúc");
+        }
     }
-    public void GraphModeChange()
+
+    public void GraphTypeSwitch()
     {
         IsDirectedGraph = !IsDirectedGraph;
         GraphLineArrowVisibilityChange();
     }
-    public void ResetColor()
+    public void Reset()
     {
         if (_isModified)
         {
+            CancellationTokenSource.Cancel();
             foreach (Node node in _nodes)
             {
                 node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
@@ -198,15 +237,14 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> graph
             {
                 line.ResetColor();
             }
+            _isModified = false;
+            CancellationTokenSource = new();
         }
     }
 }
 
 static class BFSComponentProcesser
 {
-    /// <summary>
-    /// Get the lines from <paramref name="source"/> which connect from Root to Children.
-    /// </summary>
     public static IEnumerable<GraphLine> GetLines(IEnumerable<GraphLine> source, BFSComponent<Node> component, bool isDirectedGraph)
     {
         List<GraphLine> lines = [];

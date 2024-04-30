@@ -1,6 +1,6 @@
 ﻿using HamiltonVisualizer.Commands;
 using HamiltonVisualizer.Constants;
-using HamiltonVisualizer.Core.Contracts;
+using HamiltonVisualizer.Contracts;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventArgs.ForFeature.FeatureEventArgs;

@@ -40,7 +40,7 @@ internal sealed class ConstantValues
 
     public static class Time
     {
-        public const int Transition = 750;
+        public const int TransitionDefault = 750;
     }
 
 

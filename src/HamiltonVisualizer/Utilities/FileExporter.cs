@@ -3,7 +3,7 @@ using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 using System.IO;
 
-namespace HamiltonVisualizer.Extensions;
+namespace HamiltonVisualizer.Utilities;
 
 internal static class FileExporter
 {

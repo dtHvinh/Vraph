@@ -1,4 +1,4 @@
-﻿using HamiltonVisualizer.Core.Contracts;
+﻿using HamiltonVisualizer.Contracts;
 using HamiltonVisualizer.Events.EventArgs.ForFeature.FeatureEventArgs;
 using HamiltonVisualizer.Utilities;
 using System.Windows;
@@ -53,7 +53,7 @@ internal sealed class SearchBox : Border, IUIComponent
             Width = 20,
             Height = 25,
             Margin = new Thickness(0, 6, 0, 0),
-            BorderThickness = new Thickness(0, ButtonBorderThickness, ButtonBorderThickness, ButtonBorderThickness),
+            BorderThickness = new Thickness(ButtonBorderThickness),
             Content = '→'
         };
 

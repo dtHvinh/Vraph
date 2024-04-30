@@ -1,4 +1,4 @@
-﻿namespace HamiltonVisualizer.Core.Contracts;
+﻿namespace HamiltonVisualizer.Contracts;
 internal interface ISetupInputBinding
 {
     void SetupInputBindings();
