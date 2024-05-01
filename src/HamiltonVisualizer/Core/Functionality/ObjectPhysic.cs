@@ -1,4 +1,5 @@
 ﻿using HamiltonVisualizer.Constants;
+using HamiltonVisualizer.Contracts;
 using HamiltonVisualizer.Core.Base;
 using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
@@ -12,15 +13,15 @@ namespace HamiltonVisualizer.Core.Functionality;
 /// <summary>
 /// Represent the physic of the <paramref name="node"/>.
 /// </summary>
-internal sealed class ObjectPhysic
+internal sealed class ObjectPhysic : IPhysicInteraction
 {
-    private readonly NodeBase _node;
-    private readonly GraphNodeCollection _nodes;
-    private readonly double _radius = ConstantValues.ControlSpecifications.NodeWidth / 2;
+    private readonly MovableObject _node;
+    private readonly NodeCollection _nodes;
     private readonly Dispatcher _dispatcher;
     private readonly int _impactForce = 1;
+    private readonly double _radius = ConstantValues.ControlSpecifications.NodeWidth / 2;
 
-    public ObjectPhysic(NodeBase node, GraphNodeCollection nodes)
+    public ObjectPhysic(MovableObject node, NodeCollection nodes)
     {
         _node = node;
         _nodes = nodes;
@@ -36,23 +37,33 @@ internal sealed class ObjectPhysic
              {
                  _dispatcher.InvokeAsync(() =>
                  {
-                     Push(node);
+                     ApplyForce(node, _impactForce, CornerCheck);
                  });
              }
          });
     }
 
-    public bool HasNoCollide()
+    private static void CornerCheck(MovableObject other)
+    {
+        if (ObjectPosition.IfStuckAtCorner(other.Origin))
+        {
+            // TODO: improve
+            other.Origin = new Point(Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesWidth - 17),
+                Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesHeight - 17));
+        }
+    }
+
+    public bool HasCollisions()
     {
         foreach (Node n in _nodes)
         {
             var dis = TwoDimensional.Distance(_node.Origin.X, _node.Origin.Y, n.Origin.X, n.Origin.Y);
             if (dis >= 0 && dis < 2 * _radius)
             {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public static bool HasNoCollide(Point point, IEnumerable<Node> nodes)
@@ -68,7 +79,7 @@ internal sealed class ObjectPhysic
         return true;
     }
 
-    public IEnumerable<Node> DetectCollision()
+    public IEnumerable<Node> DetectCollisionOnMove()
     {
         foreach (Node node in _nodes)
         {
@@ -80,19 +91,35 @@ internal sealed class ObjectPhysic
         }
     }
 
-    private void Push(NodeBase other)
+    private void ApplyForceCore(MovableObject other, double force)
     {
         Vector fs = other.Origin - _node.Origin;
         fs.Normalize();
-        Vector fs_2 = fs * _impactForce;
-        var secondNewPos = other.Origin + fs_2;
+        var secondNewPos = other.Origin + fs * force;
         other.Origin = secondNewPos;
+    }
 
-        if (ObjectPosition.IfStuckAtCorner(other.Origin))
-        {
-            // TODO: improve
-            other.Origin = new Point(Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesWidth - 17),
-                Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesHeight - 17));
-        }
+    private void ApplyForceFromCore(MovableObject source, double force)
+    {
+        Vector fs = _node.Origin - source.Origin;
+        fs.Normalize();
+        var newPos = _node.Origin + fs * force;
+        _node.Origin = newPos;
+    }
+
+    public void ApplyForce(MovableObject other, double force, Action<MovableObject> callback)
+    {
+        ApplyForceCore(other, force);
+        callback?.Invoke(other);
+    }
+
+    public void ApplyForce(MovableObject other, double force)
+    {
+        ApplyForceCore(other, force);
+    }
+
+    public void ApplyForceFrom(MovableObject source, double force)
+    {
+        ApplyForceFromCore(source, force);
     }
 }

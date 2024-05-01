@@ -11,7 +11,7 @@ internal static class FileExporter
     /// Write to file specified at <paramref name="path"/>.
     /// </summary>
     /// <returns>The number of elements has been written.</returns>
-    public static int WriteTo(string path, GraphElementsCollection data)
+    public static int WriteTo(string path, ElementsCollection data)
     {
         if (data.Nodes.Count == 0)
         {

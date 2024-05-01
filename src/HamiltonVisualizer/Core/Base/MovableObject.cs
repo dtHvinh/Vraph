@@ -17,12 +17,12 @@ namespace HamiltonVisualizer.Core.Base
     /// <summary>
     /// A node that can move on a canvas
     /// </summary>
-    internal abstract class NodeBase :
+    internal abstract class MovableObject :
         Border,
         IUIComponent,
         INavigableElement,
         IMultiLanguageSupport,
-        IEquatable<NodeBase>
+        IEquatable<MovableObject>
     {
         private Point _origin;
         private readonly List<GraphLineConnectInfo> _adjacent;
@@ -45,35 +45,36 @@ namespace HamiltonVisualizer.Core.Base
             {
                 var validPos = ObjectPosition.TryStayInBound(value);
 
-                var collideNode = PhysicManager.DetectCollision();
+                var collideNode = PhysicManager.DetectCollisionOnMove();
 
                 _origin = validPos;
 
-                OnStateChanged(validPos, NodeState.Moving);
-                OnPositionChanged(validPos, collideNode);
+                StateChanged(validPos, NodeState.Moving);
+                PositionChanged(validPos, collideNode);
 
                 Canvas.SetLeft(this, validPos.X - ConstantValues.ControlSpecifications.NodeWidth / 2);
                 Canvas.SetTop(this, validPos.Y - ConstantValues.ControlSpecifications.NodeWidth / 2);
             }
         }
 
-        protected NodeBase(CustomCanvas parent, Point position, GraphNodeCollection others)
+        protected MovableObject(CustomCanvas parent, Point position, NodeCollection others)
         {
             StyleUIComponent();
 
             PositionManager = new ObjectPosition(this, parent);
             PhysicManager = new ObjectPhysic(this, others);
+
             _adjacent = [];
 
             Origin = position;
         }
 
-        public void OnStateChanged(Point? newPosition, NodeState? state)
+        public void StateChanged(Point? newPosition, NodeState? state)
         {
             OnNodeStateChanged?.Invoke(this, new NodeStateChangeEventArgs(newPosition, state));
         }
 
-        public async void OnPositionChanged(Point newPosition, IEnumerable<Node> nodes)
+        public async void PositionChanged(Point newPosition, IEnumerable<Node> nodes)
         {
             await Task.Run(() =>
             {
@@ -124,7 +125,7 @@ namespace HamiltonVisualizer.Core.Base
                 _ => throw new Exception($"Invalid lang {lang}!"),// TODO: add to EM class
             };
         }
-        public bool Equals(NodeBase? other)
+        public bool Equals(MovableObject? other)
         {
             return other is not null && Origin.TolerantEquals(other.Origin);
         }

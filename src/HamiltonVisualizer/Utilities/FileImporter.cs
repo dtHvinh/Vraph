@@ -32,7 +32,7 @@ internal static partial class FileImporter
                     node.NodeLabel.Text = label.Equals("null") ? $"e{i++}" : label;
                     node.NodeLabel.OnLabelSetFinished();
 
-                    if (node.PhysicManager.HasNoCollide())
+                    if (!node.PhysicManager.HasCollisions())
                         mainWindow.CreateNode(node);
                     l++;
                 }

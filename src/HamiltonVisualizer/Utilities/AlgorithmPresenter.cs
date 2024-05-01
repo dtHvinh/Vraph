@@ -119,7 +119,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
 
     public async Task PresentDFSAlgorithmAsync(IEnumerable<Node> nodes)
     {
-        Reset();
+        ResetOrCancel();
         try
         {
             if (SkipTransition)
@@ -136,7 +136,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
     }
     public async Task PresentHamiltonianCycleAlgorithmAsync(IEnumerable<Node> nodes)
     {
-        Reset();
+        ResetOrCancel();
         try
         {
             if (SkipTransition)
@@ -173,7 +173,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
     }
     public async Task PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
     {
-        Reset();
+        ResetOrCancel();
         ColorPalate.Reset();
         try
         {
@@ -199,7 +199,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
     }
     public async Task PresentLayeredBFSAlgorithm(IEnumerable<BFSComponent<Node>> layeredNode)
     {
-        Reset();
+        ResetOrCancel();
         ColorPalate.Reset();
         try
         {
@@ -224,11 +224,12 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
         IsDirectedGraph = !IsDirectedGraph;
         GraphLineArrowVisibilityChange();
     }
-    public void Reset()
+    public void ResetOrCancel()
     {
         if (_isModified)
         {
             CancellationTokenSource.Cancel();
+            CancellationTokenSource.Dispose();
             foreach (Node node in _nodes)
             {
                 node.Background = ConstantValues.ControlColors.NodeDefaultBackground;

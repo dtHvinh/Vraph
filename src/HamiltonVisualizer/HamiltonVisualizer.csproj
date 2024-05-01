@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\HamiltonVisualizer.DataStructure\HamiltonVisualizer.DataStructure.csproj" />
-    <ProjectReference Include="..\..\HamiltonVisualizer.Mathematic\HamiltonVisualizer.Mathematic.csproj" />
+    <ProjectReference Include="..\HamiltonVisualizer.DataStructure\HamiltonVisualizer.DataStructure.csproj" />
+    <ProjectReference Include="..\HamiltonVisualizer.Mathematic\HamiltonVisualizer.Mathematic.csproj" />
   </ItemGroup>
 
   <ItemGroup>

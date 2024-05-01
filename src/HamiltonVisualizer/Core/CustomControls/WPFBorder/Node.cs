@@ -20,7 +20,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFBorder;
 /// </remarks>
 /// 
 [DebuggerDisplay("[Labels:{NodeLabel.Text};X:{Origin.X};Y:{Origin.Y}]")]
-internal sealed class Node : NodeBase
+internal sealed class Node : MovableObject
 {
     public bool _canChangeBackground = true; // prevent accidentally re-colorize selected node
 
@@ -45,7 +45,7 @@ internal sealed class Node : NodeBase
     public event OnNodeSelectedEventHandler? NodeSelected;
     public event OnNodeReleaseSelectEventHandler? NodeReleaseSelect;
 
-    public Node(CustomCanvas parent, Point position, GraphNodeCollection others)
+    public Node(CustomCanvas parent, Point position, NodeCollection others)
         : base(parent, position, others)
     {
         StyleUIComponent();

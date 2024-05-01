@@ -18,9 +18,7 @@ namespace HamiltonVisualizer.Core.Functionality;
 /// <param name="eventHandler">The event handler to raise.</param>
 internal sealed class ObjectPosition
 {
-    private bool _isDragging;
-
-    private readonly NodeBase _node;
+    private readonly MovableObject _node;
     private readonly CustomCanvas _drawingCanvas;
 
     private const double _maxX = ES.DrawingCanvasSidesWidth - ES.NodeWidth / 2;
@@ -29,7 +27,7 @@ internal sealed class ObjectPosition
     private const double _minY = ES.NodeWidth / 2;
 
     public ObjectPosition(
-        NodeBase node,
+        MovableObject node,
         CustomCanvas canvas)
     {
         _node = node;
@@ -42,32 +40,23 @@ internal sealed class ObjectPosition
     {
         _node.MouseDown += (sender, e) =>
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                _isDragging = true;
-                Mouse.Capture((IInputElement)sender);
-                _node.MouseMove += Node_MouseMove;
-                Mouse.OverrideCursor = Cursors.SizeAll;
-            }
+            Mouse.Capture((IInputElement)sender);
+            _node.MouseMove += Node_MouseMove;
+            Mouse.OverrideCursor = Cursors.SizeAll;
         };
 
         _node.MouseUp += (sender, e) =>
         {
-            if (_isDragging)
-            {
-                _isDragging = false;
-                Mouse.Capture(null);
-                _node.MouseMove -= Node_MouseMove;
-
-                _node.OnStateChanged(null, state: NodeState.Idle);
-                Mouse.OverrideCursor = Cursors.Arrow;
-            }
+            Mouse.Capture(null);
+            _node.MouseMove -= Node_MouseMove;
+            _node.StateChanged(null, state: NodeState.Idle);
+            Mouse.OverrideCursor = Cursors.Arrow;
         };
     }
 
     private void Node_MouseMove(object sender, MouseEventArgs e)
     {
-        if (e.LeftButton == MouseButtonState.Pressed && _isDragging)
+        if (e.LeftButton == MouseButtonState.Pressed)
         {
             Point curPos = e.GetPosition(_drawingCanvas);
             _node.Origin = curPos;

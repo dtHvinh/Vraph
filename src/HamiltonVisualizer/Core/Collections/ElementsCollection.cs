@@ -3,13 +3,13 @@ using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
 
 namespace HamiltonVisualizer.Core.Collections
 {
-    internal sealed class GraphElementsCollection
+    internal sealed class ElementsCollection
     {
-        private readonly GraphNodeCollection _nodes = [];
-        private readonly GraphLineCollection _edges = [];
+        private readonly NodeCollection _nodes = [];
+        private readonly LineCollection _edges = [];
 
-        public GraphNodeCollection Nodes { get => _nodes; }
-        public GraphLineCollection Edges { get => _edges; }
+        public NodeCollection Nodes { get => _nodes; }
+        public LineCollection Edges { get => _edges; }
 
         public void Add(Node node)
         {

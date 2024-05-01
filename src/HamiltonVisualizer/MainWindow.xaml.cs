@@ -21,7 +21,7 @@ public partial class MainWindow : Window
     internal readonly MainViewModel ViewModel = null!;
     internal readonly DrawManager DrawManager;
     internal readonly AlgorithmPresenter Algorithm;
-    internal readonly GraphElementsCollection ElementCollection;
+    internal readonly ElementsCollection ElementCollection;
     internal readonly SelectedNodeCollection SelectedNodeCollection = new();
     internal readonly IOManager IOManager;
     internal readonly Feature Feature;
@@ -31,7 +31,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        ElementCollection = new GraphElementsCollection();
+        ElementCollection = new ElementsCollection();
 
         ViewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
         ViewModel.SetRefs(new RefBag(ElementCollection.Nodes.AsReadOnly(),
@@ -100,7 +100,7 @@ public partial class MainWindow : Window
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        Algorithm.Reset();
+        Algorithm.ResetOrCancel();
     }
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
@@ -173,7 +173,7 @@ public partial class MainWindow : Window
         {
             if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
-                Algorithm.Reset();
+                Algorithm.ResetOrCancel();
                 CreateNodeAtPosition(e.GetPosition(_canvas));
             }
         };
@@ -253,7 +253,7 @@ public partial class MainWindow : Window
         {
             SelectedNodeCollection.Add((Node)sender);
             ViewModel.Refresh();
-            Algorithm.Reset();
+            Algorithm.ResetOrCancel();
         };
 
         // when release select on a mode
@@ -311,7 +311,7 @@ public partial class MainWindow : Window
         ViewModel.GraphModeChanged += (sender, e) =>
         {
             Algorithm.GraphTypeSwitch();
-            Algorithm.Reset();
+            Algorithm.ResetOrCancel();
         };
     }
 
@@ -380,7 +380,7 @@ public partial class MainWindow : Window
     {
         var node = new Node(_canvas, position, ElementCollection.Nodes);
 
-        if (node.PhysicManager.HasNoCollide())
+        if (!node.PhysicManager.HasCollisions())
         {
             SubscribeNodeEvents(node);
             SubscribeNodeContextMenuEvents(node);
