@@ -29,7 +29,7 @@ internal sealed class MainViewModel : ObservableObject
 
     private ReadOnlyCollection<Node> _nodes = null!; // _nodes in the list are guaranteed to be unique due to the duplicate check in view
     private ReadOnlyCollection<GraphLine> _edges = null!;
-    private SelectedNodeCollection _selectedNode = null!;
+    private SelectedNodePair _selectedNode = null!;
 
     public event PresentingTraversalAlgorithmEventHandler? PresentingTraversalAlgorithm;
     public event PresentingLayeredBFSEventHandler? PresentingLayeredBFSAlgorithm;

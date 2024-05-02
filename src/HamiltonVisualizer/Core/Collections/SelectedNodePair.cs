@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace HamiltonVisualizer.Core.Collections
 {
-    internal class SelectedNodeCollection : INotifyPropertyChanged
+    internal class SelectedNodePair : INotifyPropertyChanged
     {
         public HashSet<Node> Nodes { get; } = new(NodeComparer.Instance);
 
@@ -31,7 +31,7 @@ namespace HamiltonVisualizer.Core.Collections
 
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public (Node, Node) GetFirst2()
+        public (Node, Node) GetValues()
         {
             if (Nodes.Count < 2)
                 throw new InvalidOperationException("Not enough element to retrieve");

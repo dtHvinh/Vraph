@@ -3,6 +3,7 @@ using HamiltonVisualizer.Core.Collections;
 using HamiltonVisualizer.Core.CustomControls.WPFBorder;
 using HamiltonVisualizer.Core.CustomControls.WPFCanvas;
 using HamiltonVisualizer.Core.CustomControls.WPFLinePolygon;
+using HamiltonVisualizer.Core.Functionality;
 using HamiltonVisualizer.Events.EventArgs;
 using HamiltonVisualizer.Events.EventArgs.ForFeature.FeatureEventArgs;
 using HamiltonVisualizer.Events.EventArgs.ForNode;
@@ -20,9 +21,9 @@ public partial class MainWindow : Window
 {
     internal readonly MainViewModel ViewModel = null!;
     internal readonly DrawManager DrawManager;
-    internal readonly AlgorithmPresenter Algorithm;
-    internal readonly ElementsCollection ElementCollection;
-    internal readonly SelectedNodeCollection SelectedNodeCollection = new();
+    internal readonly AlgorithmPresenter Presenter;
+    internal readonly ElementCollection ElementCollection;
+    internal readonly SelectedNodePair SelectedPair = new();
     internal readonly IOManager IOManager;
     internal readonly Feature Feature;
 
@@ -31,14 +32,14 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        ElementCollection = new ElementsCollection();
+        ElementCollection = new ElementCollection();
 
         ViewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
         ViewModel.SetRefs(new RefBag(ElementCollection.Nodes.AsReadOnly(),
                                      ElementCollection.Edges.AsReadOnly(),
-                                     SelectedNodeCollection));
+                                     SelectedPair));
         DrawManager = new DrawManager(_canvas);
-        Algorithm = new AlgorithmPresenter(ElementCollection.Nodes, ElementCollection.Edges, options =>
+        Presenter = new AlgorithmPresenter(ElementCollection.Nodes, ElementCollection.Edges, options =>
         {
             options.EdgeTransition = 1500;
         });
@@ -100,7 +101,7 @@ public partial class MainWindow : Window
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)
     {
-        Algorithm.ResetOrCancel();
+        Presenter.ResetOrCancel();
     }
     private void SkipTransition_Click(object sender, RoutedEventArgs e)
     {
@@ -173,7 +174,7 @@ public partial class MainWindow : Window
         {
             if (e.LeftButton == MouseButtonState.Pressed && e.ClickCount == 2)
             {
-                Algorithm.ResetOrCancel();
+                Presenter.ResetOrCancel();
                 CreateNodeAtPosition(e.GetPosition(_canvas));
             }
         };
@@ -205,28 +206,28 @@ public partial class MainWindow : Window
     {
         ViewModel.PresentingTraversalAlgorithm += async (sender, e) =>
         {
-            Algorithm.SkipTransition = e.SkipTransition;
+            Presenter.SkipTransition = e.SkipTransition;
 
             switch (e.Name)
             {
                 case ConstantValues.AlgorithmNames.DFS:
-                    await Algorithm.PresentDFSAlgorithmAsync(e.Data);
+                    await Presenter.PresentDFSAlgorithmAsync(e.Data);
                     break;
                 case ConstantValues.AlgorithmNames.Hamilton:
-                    await Algorithm.PresentHamiltonianCycleAlgorithmAsync(e.Data);
+                    await Presenter.PresentHamiltonianCycleAlgorithmAsync(e.Data);
                     break;
             }
         };
 
         ViewModel.PresentingSCCAlgorithm += async (sender, e) =>
         {
-            Algorithm.SkipTransition = e.SkipTransition;
-            await Algorithm.PresentComponentAlgorithm(e.Data);
+            Presenter.SkipTransition = e.SkipTransition;
+            await Presenter.PresentComponentAlgorithm(e.Data);
         };
 
         ViewModel.PresentingLayeredBFSAlgorithm += async (sender, e) =>
         {
-            await Algorithm.PresentLayeredBFSAlgorithm(e.Data);
+            await Presenter.PresentLayeredBFSAlgorithm(e.Data);
         };
     }
     private void SubscribeNodeEvents(Node node)
@@ -251,15 +252,15 @@ public partial class MainWindow : Window
         // when at select mode
         node.NodeSelected += (object sender, NodeSelectedEventArgs e) =>
         {
-            SelectedNodeCollection.Add((Node)sender);
+            SelectedPair.Add((Node)sender);
             ViewModel.Refresh();
-            Algorithm.ResetOrCancel();
+            Presenter.ResetOrCancel();
         };
 
         // when release select on a mode
         node.NodeReleaseSelect += (object sender, NodeReleaseSelectEventArgs e) =>
         {
-            SelectedNodeCollection.Remove((Node)sender);
+            SelectedPair.Remove((Node)sender);
             ViewModel.Refresh();
         };
     }
@@ -290,12 +291,12 @@ public partial class MainWindow : Window
     }
     private void SubscribeCollectionEvents()
     {
-        SelectedNodeCollection.PropertyChanged += (sender, e) =>
+        SelectedPair.PropertyChanged += (sender, e) =>
         {
             // whenever 2 node selected, connect them.
-            if (SelectedNodeCollection.Count == 2)
+            if (SelectedPair.Count == 2)
             {
-                var nodes = SelectedNodeCollection.GetFirst2();
+                var nodes = SelectedPair.GetValues();
                 var node1 = nodes.Item1;
                 var node2 = nodes.Item2;
 
@@ -310,8 +311,8 @@ public partial class MainWindow : Window
     {
         ViewModel.GraphModeChanged += (sender, e) =>
         {
-            Algorithm.GraphTypeSwitch();
-            Algorithm.ResetOrCancel();
+            Presenter.GraphTypeSwitch();
+            Presenter.ResetOrCancel();
         };
     }
 
@@ -339,10 +340,19 @@ public partial class MainWindow : Window
     }
 
     //
+    private void CreateNodeCore(Node node)
+    {
+        SubscribeNodeEvents(node);
+        SubscribeNodeContextMenuEvents(node);
+
+        _canvas.Children.Add(node);
+        ElementCollection.Add(node);
+        ViewModel.RefreshWhenAdd(node);
+    }
     internal void DeleteAllCore()
     {
         ElementCollection.ClearAll();
-        SelectedNodeCollection.Nodes.Clear();
+        SelectedPair.Nodes.Clear();
         _canvas.Children.Clear();
 
         ViewModel.Clear();
@@ -353,7 +363,7 @@ public partial class MainWindow : Window
 
         ElementCollection.Remove(node);
         _canvas.Children.Remove(node);
-        SelectedNodeCollection.Remove(node);
+        SelectedPair.Remove(node);
         ViewModel.RefreshWhenRemove(node);
 
         // remove associate _edge.
@@ -366,28 +376,16 @@ public partial class MainWindow : Window
         });
 
     }
-
     internal void CreateNode(Node node)
     {
-        SubscribeNodeEvents(node);
-        SubscribeNodeContextMenuEvents(node);
-
-        _canvas.Children.Add(node);
-        ElementCollection.Add(node);
-        ViewModel.RefreshWhenAdd(node);
+        CreateNodeCore(node);
     }
     internal void CreateNodeAtPosition(Point position)
     {
-        var node = new Node(_canvas, position, ElementCollection.Nodes);
-
-        if (!node.PhysicManager.HasCollisions())
+        if (ObjectPhysic.HasNoCollisions(position, ElementCollection.Nodes))
         {
-            SubscribeNodeEvents(node);
-            SubscribeNodeContextMenuEvents(node);
-
-            _canvas.Children.Add(node);
-            ElementCollection.Add(node);
-            ViewModel.RefreshWhenAdd(node);
+            var node = new Node(_canvas, position, ElementCollection.Nodes);
+            CreateNode(node);
         }
     }
     internal void CreateLine(Node from, Node to)

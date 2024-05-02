@@ -43,13 +43,13 @@ internal sealed class ObjectPhysic : IPhysicInteraction
          });
     }
 
-    private static void CornerCheck(MovableObject other)
+    private void CornerCheck(MovableObject other)
     {
         if (ObjectPosition.IfStuckAtCorner(other.Origin))
         {
-            // TODO: improve
             other.Origin = new Point(Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesWidth - 17),
                 Random.Shared.Next(17, (int)ConstantValues.ControlSpecifications.DrawingCanvasSidesHeight - 17));
+            // other.PhysicManager.ApplyForce(_node, _impactForce);
         }
     }
 
@@ -66,7 +66,7 @@ internal sealed class ObjectPhysic : IPhysicInteraction
         return false;
     }
 
-    public static bool HasNoCollide(Point point, IEnumerable<Node> nodes)
+    public static bool HasNoCollisions(Point point, IEnumerable<Node> nodes)
     {
         foreach (Node n in nodes)
         {

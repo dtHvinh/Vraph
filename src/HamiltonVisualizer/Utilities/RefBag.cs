@@ -9,11 +9,11 @@ internal sealed class RefBag
 {
     public ReadOnlyCollection<Node> Nodes { get; private set; }
     public ReadOnlyCollection<GraphLine> Edges { get; private set; }
-    public SelectedNodeCollection SelectedNodeCollection { get; private set; }
+    public SelectedNodePair SelectedNodeCollection { get; private set; }
     public RefBag(
         List<Node> nodes,
         List<GraphLine> edges,
-        SelectedNodeCollection selected)
+        SelectedNodePair selected)
     {
         Nodes = nodes.AsReadOnly();
         Edges = edges.AsReadOnly();
@@ -24,7 +24,7 @@ internal sealed class RefBag
     public RefBag(
         ReadOnlyCollection<Node> nodes,
         ReadOnlyCollection<GraphLine> lines,
-        SelectedNodeCollection selectedNodeCollection)
+        SelectedNodePair selectedNodeCollection)
     {
         Nodes = nodes;
         Edges = lines;
