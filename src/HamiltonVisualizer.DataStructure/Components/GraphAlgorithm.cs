@@ -27,6 +27,7 @@ namespace HamiltonVisualizer.DataStructure.Components
             firstComp.AddChild(start);
 
             list.Add(firstComp);
+            cev.Add(start);
 
             while (queue.Count > 0)
             {
