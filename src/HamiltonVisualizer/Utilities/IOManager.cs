@@ -74,7 +74,6 @@ internal sealed class IOManager : ISetupInputBinding, IImplementKeyBindings, IIm
                 string[] dropFiles = (string[])e.Data.GetData(DataFormats.FileDrop, true);
                 if (_window.ElementCollection.Nodes.Any())
                 {
-
                     if (ActionGuard.BeforeImport(out bool needSaveFile))
                     {
                         if (needSaveFile)

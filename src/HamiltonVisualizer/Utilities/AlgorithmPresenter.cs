@@ -149,15 +149,36 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
             foreach (var node in nodes.Skip(1))
             {
                 CancellationTokenSource.Token.ThrowIfCancellationRequested();
-                var line = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
-                                && e.To.Origin.TolerantEquals(node.Origin));
-
+                GraphLine line = null!;
+                if (IsDirectedGraph)
+                {
+                    line = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
+                        && e.To.Origin.TolerantEquals(node.Origin));
+                }
+                else
+                {
+                    line = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
+                                            && e.To.Origin.TolerantEquals(node.Origin)
+                                            || e.To.Origin.TolerantEquals(previous.Origin)
+                                            && e.From.Origin.TolerantEquals(node.Origin));
+                }
                 line.ChangeColor(ColorizedNode);
                 previous = node;
             }
             var firstNode = nodes.First();
-            var lastLine = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
-                            && e.To.Origin.TolerantEquals(firstNode.Origin));
+            GraphLine lastLine = null!;
+            if (IsDirectedGraph)
+            {
+                lastLine = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
+                                            && e.To.Origin.TolerantEquals(firstNode.Origin));
+            }
+            else
+            {
+                lastLine = _linePolygons.First(e => e.From.Origin.TolerantEquals(previous.Origin)
+                                            && e.To.Origin.TolerantEquals(firstNode.Origin) ||
+                                            e.To.Origin.TolerantEquals(previous.Origin)
+                                            && e.From.Origin.TolerantEquals(firstNode.Origin));
+            }
             lastLine.ChangeColor(ColorizedNode);
 
             MessageBox.Show("Hoàn thành");
@@ -165,10 +186,6 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
         catch (OperationCanceledException)
         {
             MessageBox.Show("Kết Thúc");
-        }
-        catch
-        {
-            MessageBox.Show("Lỗi dữ liệu");
         }
     }
     public async Task PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)

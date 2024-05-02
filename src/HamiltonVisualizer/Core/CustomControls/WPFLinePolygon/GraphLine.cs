@@ -79,7 +79,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         }
         private Tuple<Point, Point, Point> CreateArrowHead()
         {
-            Point arrHead = To.Origin - Vector * 17;
+            Point arrHead = To.Origin - Vector * ConstantValues.ControlSpecifications.NodeWidth / 2;
 
             Point mediatorPoint = arrHead - Vector * HeadLength;
             Vector b = new(Vector.Y, Vector.X * -1);
