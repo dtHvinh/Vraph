@@ -18,10 +18,10 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
     public CancellationTokenSource CancellationTokenSource { get; private set; } = new CancellationTokenSource();
     public bool IsDirectedGraph { get; set; } = true;
     public bool SkipTransition { get; set; } = false;
-    public int NodeTransition = ConstantValues.Time.TransitionDefault;
-    public int EdgeTransition = ConstantValues.Time.TransitionDefault;
-    public SolidColorBrush ColorizedNode = ConstantValues.ControlColors.NodeTraversalBackground;
-    public SolidColorBrush ColorizedLine = ConstantValues.ControlColors.NodeTraversalBackground;
+    public int NodeTransition = ConstantValues.Time.NodeTransitionDefault;
+    public int EdgeTransition = ConstantValues.Time.NodeTransitionDefault;
+    public SolidColorBrush ColorizedNode = ConstantValues.ControlColors.NodeTraversalColor;
+    public SolidColorBrush ColorizedLine = ConstantValues.ControlColors.LineTraversalColor;
 
     public AlgorithmPresenter(List<Node> nodes,
                               List<GraphLine> graphLines,
@@ -71,7 +71,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
     private void ColorizeNodeCore(Node node, SolidColorBrush color, CancellationToken e)
     {
         e.ThrowIfCancellationRequested();
-        if (color != ConstantValues.ControlColors.NodeDefaultBackground)
+        if (color != ConstantValues.ControlColors.NodeDefaultColor)
             _isModified = true;
 
         node.Background = color;
@@ -249,7 +249,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
             CancellationTokenSource.Dispose();
             foreach (Node node in _nodes)
             {
-                node.Background = ConstantValues.ControlColors.NodeDefaultBackground;
+                node.Background = ConstantValues.ControlColors.NodeDefaultColor;
             }
             foreach (GraphLine line in _linePolygons)
             {

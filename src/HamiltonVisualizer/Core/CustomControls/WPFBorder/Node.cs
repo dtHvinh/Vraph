@@ -71,12 +71,12 @@ internal sealed class Node : MovableObject
         NodeDelete += (sender, e) =>
         {
             _canChangeBackground = true;
-            Background = ConstantValues.ControlColors.NodeDeleteBackground;
+            Background = ConstantValues.ControlColors.NodeDeleteColor;
         };
 
         NodeSelected += (sender, e) =>
         {
-            Background = ConstantValues.ControlColors.NodeSelectBackground;
+            Background = ConstantValues.ControlColors.NodeSelectedColor;
             IsSelected = true;
             _canChangeBackground = false;
         };

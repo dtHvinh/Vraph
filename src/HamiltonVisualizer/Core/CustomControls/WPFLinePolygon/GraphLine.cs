@@ -46,15 +46,15 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
         }
         public void ResetColor()
         {
-            _head.Fill = Brushes.Black;
-            _body.Stroke = Brushes.Black;
+            _head.Fill = ConstantValues.ControlColors.LineDefaultColor;
+            _body.Stroke = ConstantValues.ControlColors.LineDefaultColor;
         }
 
         private Line InitLine()
         {
             Line line = new()
             {
-                Stroke = Brushes.Black,
+                Stroke = ConstantValues.ControlColors.LineDefaultColor,
                 X1 = From.Origin.X,
                 X2 = To.Origin.X,
                 Y1 = From.Origin.Y,
@@ -71,7 +71,7 @@ namespace HamiltonVisualizer.Core.CustomControls.WPFLinePolygon
             var points = CreateArrowHead();
             var ah = new Polygon()
             {
-                Fill = Brushes.Black,
+                Fill = ConstantValues.ControlColors.LineDefaultColor,
                 Points = [points.Item1, points.Item2, points.Item3]
             };
             Panel.SetZIndex(ah, ConstantValues.ZIndex.Line);

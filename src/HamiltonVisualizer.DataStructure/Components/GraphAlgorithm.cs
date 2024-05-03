@@ -170,7 +170,7 @@ namespace HamiltonVisualizer.DataStructure.Components
             return list;
         }
 
-        private bool HamiltonianCycleUtil(TVertex cur, HashSet<TVertex> visited, List<TVertex> path, int count)
+        private bool HCU(TVertex cur, HashSet<TVertex> visited, List<TVertex> path, int count)
         {
             if (count == _graph.VertexCount)
             {
@@ -182,7 +182,7 @@ namespace HamiltonVisualizer.DataStructure.Components
                 if (visited.Add(next))
                 {
                     path.Add(next);
-                    if (HamiltonianCycleUtil(next, visited, path, count + 1))
+                    if (HCU(next, visited, path, count + 1))
                         return true;
                     visited.Remove(next);
                     path.Remove(next);
@@ -191,12 +191,12 @@ namespace HamiltonVisualizer.DataStructure.Components
 
             return false;
         }
-        public List<TVertex> HamiltonianCycle()
+        public List<TVertex> HC()
         {
             foreach (var u in _graph.Adjacent.Vertices)
             {
                 List<TVertex> path = [u];
-                if (HamiltonianCycleUtil(u, [u], path, 1))
+                if (HCU(u, [u], path, 1))
                 {
                     return path;
                 }

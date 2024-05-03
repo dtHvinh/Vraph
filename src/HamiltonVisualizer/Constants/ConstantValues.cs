@@ -25,10 +25,12 @@ internal sealed class ConstantValues
 
     public static class ControlColors
     {
-        public static readonly SolidColorBrush NodeDefaultBackground = Brushes.White;
-        public static readonly SolidColorBrush NodeTraversalBackground = Brushes.Aquamarine;
-        public static readonly SolidColorBrush NodeDeleteBackground = Brushes.Red;
-        public static readonly SolidColorBrush NodeSelectBackground = Brushes.LightGreen;
+        public static readonly SolidColorBrush NodeDefaultColor = Brushes.White;
+        public static readonly SolidColorBrush LineDefaultColor = Brushes.Gray;
+        public static readonly SolidColorBrush NodeTraversalColor = Brushes.Aquamarine;
+        public static readonly SolidColorBrush LineTraversalColor = Brushes.Aquamarine;
+        public static readonly SolidColorBrush NodeDeleteColor = Brushes.Red;
+        public static readonly SolidColorBrush NodeSelectedColor = Brushes.LightGreen;
     }
 
     public static class ControlSpecifications
@@ -40,7 +42,8 @@ internal sealed class ConstantValues
 
     public static class Time
     {
-        public const int TransitionDefault = 750;
+        public const int NodeTransitionDefault = 750;
+        public const int LineTransitionDefault = 550;
     }
 
 

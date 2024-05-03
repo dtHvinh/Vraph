@@ -34,10 +34,10 @@ internal static class ColorPalate
                 new ColorState(Brushes.DarkSeaGreen),
             ]);
 
-        SetUsed(ConstantValues.ControlColors.NodeDeleteBackground);
-        SetUsed(ConstantValues.ControlColors.NodeDefaultBackground);
-        SetUsed(ConstantValues.ControlColors.NodeDefaultBackground);
-        SetUsed(ConstantValues.ControlColors.NodeTraversalBackground);
+        SetUsed(ConstantValues.ControlColors.NodeDeleteColor);
+        SetUsed(ConstantValues.ControlColors.NodeDefaultColor);
+        SetUsed(ConstantValues.ControlColors.NodeDefaultColor);
+        SetUsed(ConstantValues.ControlColors.NodeTraversalColor);
         SetUsed(Brushes.Black);
     }
 
@@ -72,10 +72,10 @@ internal static class ColorPalate
         {
             color.IsUsed = false;
         }
-        SetUsed(ConstantValues.ControlColors.NodeDeleteBackground);
-        SetUsed(ConstantValues.ControlColors.NodeDefaultBackground);
-        SetUsed(ConstantValues.ControlColors.NodeDefaultBackground);
-        SetUsed(ConstantValues.ControlColors.NodeTraversalBackground);
+        SetUsed(ConstantValues.ControlColors.NodeDeleteColor);
+        SetUsed(ConstantValues.ControlColors.NodeDefaultColor);
+        SetUsed(ConstantValues.ControlColors.NodeDefaultColor);
+        SetUsed(ConstantValues.ControlColors.NodeTraversalColor);
         SetUsed(Brushes.Black);
     }
 }

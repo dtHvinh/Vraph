@@ -97,6 +97,7 @@ public partial class MainWindow : Window
         if (ActionGuard.ShouldContinue(ConstantValues.Messages.DeleteAllConfirmMessage))
         {
             DeleteAllCore();
+            Presenter.ResetOrCancel();
         }
     }
     private void ResetButton_Click(object sender, RoutedEventArgs e)

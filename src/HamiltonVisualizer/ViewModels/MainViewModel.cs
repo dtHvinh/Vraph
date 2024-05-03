@@ -120,7 +120,7 @@ internal sealed class MainViewModel : ObservableObject
     }
     public void DisplayHamiltonCycle()
     {
-        IEnumerable<Node> nodes = _graph.Algorithm.HamiltonianCycle();
+        IEnumerable<Node> nodes = _graph.Algorithm.HC();
         if (nodes.Count() == NoV)
         {
             OnPresentingTraversal(ConstantValues.AlgorithmNames.Hamilton, nodes);
