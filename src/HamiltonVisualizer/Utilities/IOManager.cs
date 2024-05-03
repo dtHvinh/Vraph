@@ -35,6 +35,8 @@ internal sealed class IOManager : ISetupInputBinding, IImplementKeyBindings, IIm
         _openFileDialog = new()
         {
             AddExtension = true,
+            FileName = "Graph",
+            DefaultExt = ".csv"
         };
         InitializeCommands();
         InitializeKeyBindings();
