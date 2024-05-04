@@ -32,6 +32,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        _canvas.SnapsToDevicePixels = true;
         ElementCollection = new ElementCollection();
 
         ViewModel = (MainViewModel)DataContext ?? throw new ArgumentNullException("Null");
@@ -111,6 +112,7 @@ public partial class MainWindow : Window
     private void GraphMode_Click(object sender, RoutedEventArgs e)
     {
         ViewModel.GraphModeSwitch();
+        Presenter.IsDirectedGraph = ViewModel.IsDirectionalGraph;
     }
 
     //

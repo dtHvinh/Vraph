@@ -8,11 +8,11 @@ using System.Windows.Media;
 
 namespace HamiltonVisualizer.Utilities;
 
-internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines)
+internal sealed class AlgorithmPresenter(List<Node> listNode, List<GraphLine> listLine)
 {
     private bool _isModified = false; // value indicate if reset actually need to be perform
-    private readonly List<Node> _nodes = nodes;
-    private readonly List<GraphLine> _linePolygons = lines;
+    private readonly List<Node> _nodes = listNode;
+    private readonly List<GraphLine> _linePolygons = listLine;
 
     public CancellationTokenSource CancellationTokenSource { get; private set; } = new CancellationTokenSource();
     public bool IsDirectedGraph { get; set; } = true;
@@ -50,7 +50,7 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
 
     private void ResetLinesColor()
     {
-        foreach (var line in lines)
+        foreach (var line in _linePolygons)
         {
             line.ResetColor();
         }
@@ -103,20 +103,6 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
     }
     public async Task PresentComponentAlgorithm(IEnumerable<IEnumerable<Node>> components)
     {
-
-        //    foreach (var component in components)
-        //    {
-        //        var color = ColorPalate.GetUnusedColor();
-        //        await ColorizeNodesAsync(component, ColorizedNode, 0, false, CancellationTokenSource.Token);
-        //    }
-
-        //    foreach (var node in _nodes.Where(e => e.Adjacent.Count == 0))
-        //    {
-        //        var color = ColorPalate.GetUnusedColor();
-        //        CancellationTokenSource.Token.ThrowIfCancellationRequested();
-        //        ColorizeNode(node, ColorizedNode, CancellationTokenSource.Token);
-        //    }
-
         await AlgorithmPresenterBuilder.CreateBuilder()
             .BeforeStart(BeforePresenting)
             .ForEachNode(_nodes)
@@ -133,8 +119,9 @@ internal sealed class AlgorithmPresenter(List<Node> nodes, List<GraphLine> lines
         await AlgorithmPresenterBuilder.CreateBuilder()
             .BeforeStart(BeforePresenting)
             .ForEachBFSComponent(layeredNode)
-            .ForEachNode(nodes)
+            .ForEachNode(_nodes)
             .ForEachLine(_linePolygons)
+            .WithGraph(IsDirectedGraph)
             .WithColor(ColorizedNode)
             .ConfigureTransition(SkipTransition ? 0 : NodeTransition)
             .WithCancellationToken(CancellationTokenSource.Token)

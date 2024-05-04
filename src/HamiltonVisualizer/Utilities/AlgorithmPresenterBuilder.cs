@@ -12,7 +12,7 @@ internal sealed class AlgorithmPresenterBuilder
     private IEnumerable<Node>? _nodes;
     private IEnumerable<IEnumerable<Node>>? _comps;
 
-    private bool _isDirected = true;
+    private bool? _isDirected;
     private CancellationToken _ct;
     private bool _delayAtStart = false;
     private int _transition = 0;
@@ -106,7 +106,7 @@ internal sealed class AlgorithmPresenterBuilder
     /// Should be called at the end of try block.
     /// </summary>
     /// <returns></returns>
-    private AlgorithmPresentResult BuildFinished()
+    private AlgorithmPresentResult WhenBuildFinished()
     {
         _postAction?.Invoke();
         return AlgorithmPresentResult.Finished;
@@ -116,7 +116,7 @@ internal sealed class AlgorithmPresenterBuilder
     /// Should be called at the end of catch block.
     /// </summary>
     /// <returns></returns>
-    private AlgorithmPresentResult BuildFail()
+    private AlgorithmPresentResult WhenBuildFail()
     {
         _result = AlgorithmPresentResult.Interrupted;
         _whenThrownAction?.Invoke();
@@ -137,11 +137,11 @@ internal sealed class AlgorithmPresenterBuilder
                 _delayAtStart,
                 _ct);
 
-            return BuildFinished();
+            return WhenBuildFinished();
         }
         catch
         {
-            return BuildFail();
+            return WhenBuildFail();
         }
     }
 
@@ -149,11 +149,9 @@ internal sealed class AlgorithmPresenterBuilder
     {
         try
         {
-            if (_nodes is null)
-                throw new InvalidOperationException("required data for present algorithm!");
-
-            if (_lines is null)
-                throw new InvalidOperationException("required data for present algorithm!");
+            ArgumentNullException.ThrowIfNull(_nodes);
+            ArgumentNullException.ThrowIfNull(_lines);
+            ArgumentNullException.ThrowIfNull(_isDirected);
 
             await ColorizeNodesAsync(
                 _nodes,
@@ -168,7 +166,7 @@ internal sealed class AlgorithmPresenterBuilder
             {
                 _ct.ThrowIfCancellationRequested();
                 GraphLine line = null!;
-                if (_isDirected)
+                if (_isDirected.Value)
                 {
                     line = _lines.First(e => e.From.Origin.TolerantEquals(previous.Origin)
                         && e.To.Origin.TolerantEquals(node.Origin));
@@ -188,7 +186,7 @@ internal sealed class AlgorithmPresenterBuilder
 
             GraphLine lastLine = null!;
 
-            if (_isDirected)
+            if (_isDirected.Value)
             {
                 lastLine = _lines.First(e => e.From.Origin.TolerantEquals(previous.Origin)
                                             && e.To.Origin.TolerantEquals(firstNode.Origin));
@@ -202,11 +200,11 @@ internal sealed class AlgorithmPresenterBuilder
             }
             lastLine.ChangeColor(_color);
 
-            return BuildFinished();
+            return WhenBuildFinished();
         }
         catch
         {
-            return BuildFail();
+            return WhenBuildFail();
         }
     }
 
@@ -217,21 +215,22 @@ internal sealed class AlgorithmPresenterBuilder
             ArgumentNullException.ThrowIfNull(_bfsComps);
             ArgumentNullException.ThrowIfNull(_lines);
             ArgumentNullException.ThrowIfNull(_color);
+            ArgumentNullException.ThrowIfNull(_isDirected);
 
             foreach (BFSComponent<Node> layer in _bfsComps)
             {
-                var lines = BFSComponentProcesser.GetLines(_lines, layer, _isDirected);
+                var lines = BFSComponentProcesser.GetLines(_lines, layer, _isDirected.Value);
                 ColorizeLines(lines, _color, _ct);
                 await ColorizeNodesAsync(layer.Children, _color, 0, false, _ct);
                 await Task.Delay(_transition, _ct);
                 ResetLinesColor(lines);
             }
 
-            return BuildFinished();
+            return WhenBuildFinished();
         }
         catch
         {
-            return BuildFail();
+            return WhenBuildFail();
         }
     }
 
@@ -253,11 +252,11 @@ internal sealed class AlgorithmPresenterBuilder
                 ColorizeNode(node, ColorPalate.GetUnusedColor(), _ct);
             }
 
-            return BuildFinished();
+            return WhenBuildFinished();
         }
         catch
         {
-            return BuildFail();
+            return WhenBuildFail();
         }
     }
 
