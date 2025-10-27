@@ -3,7 +3,7 @@ name: Build and Release WPF App
 on:
   push:
     tags:
-      - 'v*'    # Khi bạn tạo tag kiểu v1.0.0 thì trigger build
+      - 'v*'    
 
 jobs:
   build:
