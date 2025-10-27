@@ -19,7 +19,7 @@ jobs:
           dotnet-version: '8.0.x'  
 
       - name: Publish WPF app
-        run: dotnet publish HamiltonVisualizerWPF.csproj -c Release -r win-x64 --self-contained true -o publish
+        run: dotnet publish src/HamiltonVisualizer/HamiltonVisualizer.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o publish
 
       - name: Zip published files
         run: Compress-Archive -Path publish/* -DestinationPath Vraph-${{ github.ref_name }}.zip
