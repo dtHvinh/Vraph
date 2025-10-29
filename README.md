@@ -33,12 +33,25 @@ Vraph (Hamilton Visualizer) is an interactive graph visualization tool built wit
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### 📦 For Non-Technical Users (Recommended)
+
+**Don't have coding experience?** No problem! You can download the pre-built application and start using it right away:
+
+1. Visit the [Releases page](https://github.com/dtHvinh/Vraph/releases)
+2. Download the latest version (e.g., `Vraph-v1.0.0.zip`)
+3. Extract the zip file to a folder on your computer
+4. Run the executable file to launch the application
+
+No installation or coding required! 🎉
+
+### 👨‍💻 For Developers
+
+#### Prerequisites
 - Windows 10/11
 - .NET 8.0 SDK or later
 - Visual Studio 2022 (recommended) or Visual Studio Code with C# extension
 
-### Installation
+#### Installation
 
 1. **Clone the repository**
    ```bash
